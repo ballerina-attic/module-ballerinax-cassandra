@@ -23,6 +23,7 @@ import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
+import org.ballerinalang.model.values.BDataTable;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -45,7 +46,8 @@ public class Execute extends AbstractCassandraAction {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String query = getStringArgument(context, 0);
         CassandraDataSource dataSource = getDataSource(bConnector);
-        execute(dataSource, query, null); //TODO:add args
+        BDataTable dataTable = execute(dataSource, query, null); //TODO:add args
+        context.getControlStackNew().getCurrentFrame().returnValues[0] = dataTable;
         return getConnectorFuture();
     }
 }

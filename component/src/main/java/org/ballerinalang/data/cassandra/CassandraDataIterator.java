@@ -96,6 +96,11 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
+    public BValue getBlob(String columnName) {
+        return null;
+    }
+
+    @Override
     public Map<String, Object> getArray(String s) {
         //TODO
         return null;

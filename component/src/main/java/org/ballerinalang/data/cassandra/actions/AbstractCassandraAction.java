@@ -74,9 +74,9 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
     }
 
     private List<BDataTable.ColumnDefinition> extractColumnDefs(ResultSet rs) {
-        List<BDataTable.ColumnDefinition> columnDefs = new ArrayList<>();
+        List<BDataTable.ColumnDefinition> columnDefs = new ArrayList<BDataTable.ColumnDefinition>();
         for (ColumnDefinitions.Definition def : rs.getColumnDefinitions().asList()) {
-            columnDefs.add(new BDataTable.ColumnDefinition(def.getName(), this.convert(def.getType()), 0));
+            columnDefs.add(new BDataTable.ColumnDefinition(def.getName(), this.convert(def.getType())));
         }
         return columnDefs;
     }
