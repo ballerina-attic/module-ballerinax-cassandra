@@ -71,8 +71,7 @@ public class CassandraDataSource implements BValue {
             try {
                 queryOpts.setFetchSize(Integer.parseInt(value.stringValue()));
             } catch (NumberFormatException e) {
-                throw new BallerinaException("fetch size must be an integer value: " +
-                        value.stringValue(), e);
+                throw new BallerinaException("fetch size must be an integer value: " + value.stringValue(), e);
             }
         }
         return builder.withQueryOptions(queryOpts);

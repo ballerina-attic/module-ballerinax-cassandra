@@ -76,7 +76,7 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
     private List<BDataTable.ColumnDefinition> extractColumnDefs(ResultSet rs) {
         List<BDataTable.ColumnDefinition> columnDefs = new ArrayList<BDataTable.ColumnDefinition>();
         for (ColumnDefinitions.Definition def : rs.getColumnDefinitions().asList()) {
-            columnDefs.add(new BDataTable.ColumnDefinition(def.getName(), this.convert(def.getType())));
+            columnDefs.add(new BDataTable.ColumnDefinition(def.getName(), this.convert(def.getType()), 0));
         }
         return columnDefs;
     }
@@ -84,16 +84,14 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
     private TypeKind convert(DataType type) {
         if (DataType.ascii().equals(type)) {
             return TypeKind.STRING;
+        } else if (DataType.text().equals(type)) {
+            return TypeKind.STRING;
+        } else if (DataType.uuid().equals(type)) {
+            return TypeKind.STRING;
+        } else if (DataType.varchar().equals(type)) {
+            return TypeKind.STRING;
         } else if (DataType.bigint().equals(type)) {
             return TypeKind.INT;
-        } else if (DataType.blob().equals(type)) {
-            return TypeKind.STRING;
-        } else if (DataType.cboolean().equals(type)) {
-            return TypeKind.BOOLEAN;
-        } else if (DataType.cdouble().equals(type)) {
-            return TypeKind.FLOAT;
-        } else if (DataType.cfloat().equals(type)) {
-            return TypeKind.FLOAT;
         } else if (DataType.cint().equals(type)) {
             return TypeKind.INT;
         } else if (DataType.counter().equals(type)) {
@@ -104,21 +102,23 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
             return TypeKind.FLOAT;
         } else if (DataType.smallint().equals(type)) {
             return TypeKind.INT;
-        } else if (DataType.text().equals(type)) {
-            return TypeKind.STRING;
         } else if (DataType.time().equals(type)) {
             return TypeKind.INT;
         } else if (DataType.timestamp().equals(type)) {
             return TypeKind.INT;
         } else if (DataType.tinyint().equals(type)) {
             return TypeKind.INT;
-        } else if (DataType.uuid().equals(type)) {
-            return TypeKind.STRING;
-        } else if (DataType.varchar().equals(type)) {
-            return TypeKind.STRING;
         } else if (DataType.varint().equals(type)) {
             return TypeKind.INT;
-        } else {
+        } else if (DataType.cboolean().equals(type)) {
+            return TypeKind.BOOLEAN;
+        } else if (DataType.cdouble().equals(type)) {
+            return TypeKind.FLOAT;
+        } else if (DataType.cfloat().equals(type)) {
+            return TypeKind.FLOAT;
+        } else if (DataType.blob().equals(type)) {
+            return TypeKind.BLOB;
+        }  else {
             return TypeKind.STRING;
         }
     }

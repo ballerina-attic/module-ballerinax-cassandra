@@ -20,14 +20,17 @@ package org.ballerinalang.data.cassandra;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import org.ballerinalang.model.DataIterator;
-import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BDataTable;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
- * This iterator mainly wrap cassandra row.
+ * This iterator wraps a cassandra row.
  */
 public class CassandraDataIterator implements DataIterator {
 
@@ -49,14 +52,8 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public boolean isLast() {
-        //TODO
-        return false;
-    }
-
-    @Override
     public void close(boolean b) {
-        //TODO
+        /* ignore */
     }
 
     @Override
@@ -90,20 +87,40 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public BValue get(String s, int i) {
-        //TODO
-        return null;
-    }
-
-    @Override
-    public BValue getBlob(String columnName) {
-        return null;
-    }
-
-    @Override
     public Map<String, Object> getArray(String s) {
-        //TODO
         return null;
+    }
+
+    @Override
+    public void generateNext(List<BDataTable.ColumnDefinition> columnDefs, BStruct bStruct) {
+        int longRegIndex = -1;
+        int doubleRegIndex = -1;
+        int stringRegIndex = -1;
+        int booleanRegIndex = -1;
+        for (BDataTable.ColumnDefinition columnDef : columnDefs) {
+            String columnName = columnDef.getName();
+            TypeKind type = columnDef.getType();
+            switch (type) {
+            case STRING:
+                String sValue = getString(columnName);
+                bStruct.setStringField(++stringRegIndex, sValue);
+                break;
+            case INT:
+                long lValue = getInt(columnName);
+                bStruct.setIntField(++longRegIndex, lValue);
+                break;
+            case FLOAT:
+                double fValue = getFloat(columnName);
+                bStruct.setFloatField(++doubleRegIndex, fValue);
+                break;
+            case BOOLEAN:
+                boolean boolValue = getBoolean(columnName);
+                bStruct.setBooleanField(++booleanRegIndex, boolValue ? 1 : 0);
+                break;
+            default:
+                throw new BallerinaException("unsupported sql type found for the column " + columnName);
+            }
+        }
     }
 
     private void checkCurrentRow() {
