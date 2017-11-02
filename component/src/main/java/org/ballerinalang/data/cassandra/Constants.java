@@ -19,12 +19,25 @@ package org.ballerinalang.data.cassandra;
 
 /**
  * Constants for Cassandra Connector.
+ *
+ * @since 0.95.0
  */
 public final class Constants {
     public static final String CONNECTOR_NAME = "ClientConnector";
     public static final String DATASOURCE_KEY = "datasource_key";
+        public static final String QUESTION_MARK = "?";
 
-    public static final String SSL_ENABLED = "sslEnabled";
-    public static final String CONSISTENCY_LEVEL = "consistencyLevel";
-    public static final String FETCH_SIZE = "fetchSize";
+    /**
+     * Constants for SQL DataTypes.
+     */
+    public static final class DataTypes {
+        public static final String LIST = "LIST";
+        public static final String INT = "INT";
+        public static final String BIGINT = "BIGINT";
+        public static final String VARINT = "VARINT";
+        public static final String FLOAT = "FLOAT";
+        public static final String DOUBLE = "DOUBLE";
+        public static final String TEXT = "TEXT";
+        public static final String BOOLEAN = "BOOLEAN";
+    }
 }

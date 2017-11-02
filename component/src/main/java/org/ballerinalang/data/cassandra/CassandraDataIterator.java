@@ -19,9 +19,13 @@ package org.ballerinalang.data.cassandra;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
+import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.DataIterator;
+import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BType;
+import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BDataTable;
+import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
@@ -30,7 +34,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This iterator wraps a cassandra row.
+ * This iterator wraps a cassandra data row.
+ *
+ * @since 0.95.0
  */
 public class CassandraDataIterator implements DataIterator {
 
@@ -38,8 +44,14 @@ public class CassandraDataIterator implements DataIterator {
 
     private Row current;
 
-    public CassandraDataIterator(ResultSet rs) {
+    private List<ColumnDefinition> columnDefs;
+
+    private BStructType bStructType;
+
+    public CassandraDataIterator(ResultSet rs, List<ColumnDefinition> columnDefs) {
         this.iterator = rs.iterator();
+        this.columnDefs = columnDefs;
+        generateStructType();
     }
 
     @Override
@@ -92,12 +104,13 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public void generateNext(List<BDataTable.ColumnDefinition> columnDefs, BStruct bStruct) {
+    public BStruct generateNext() {
+        BStruct bStruct = new BStruct(bStructType);
         int longRegIndex = -1;
         int doubleRegIndex = -1;
         int stringRegIndex = -1;
         int booleanRegIndex = -1;
-        for (BDataTable.ColumnDefinition columnDef : columnDefs) {
+        for (ColumnDefinition columnDef : columnDefs) {
             String columnName = columnDef.getName();
             TypeKind type = columnDef.getType();
             switch (type) {
@@ -121,6 +134,78 @@ public class CassandraDataIterator implements DataIterator {
                 throw new BallerinaException("unsupported sql type found for the column " + columnName);
             }
         }
+        return bStruct;
+    }
+
+    @Override
+    public List<ColumnDefinition> getColumnDefinitions() {
+        return this.columnDefs;
+    }
+
+    private void generateStructType() {
+        BType[] structTypes = new BType[columnDefs.size()];
+        BStructType.StructField[] structFields = new BStructType.StructField[columnDefs.size()];
+        int typeIndex  = 0;
+        for (ColumnDefinition columnDef : columnDefs) {
+            BType type;
+            switch (columnDef.getType()) {
+            case ARRAY:
+                type = BTypes.typeMap;
+                break;
+            case STRING:
+                type = BTypes.typeString;
+                break;
+            case BLOB:
+                type = BTypes.typeBlob;
+                break;
+            case INT:
+                type = BTypes.typeInt;
+                break;
+            case FLOAT:
+                type = BTypes.typeFloat;
+                break;
+            case BOOLEAN:
+                type = BTypes.typeBoolean;
+                break;
+            default:
+                type = BTypes.typeNull;
+            }
+            structTypes[typeIndex] = type;
+            structFields[typeIndex] = new BStructType.StructField(type, columnDef.getName());
+            ++typeIndex;
+        }
+
+        int[] fieldCount = populateMaxSizes(structTypes);
+        bStructType = new BStructType("RS", null);
+        bStructType.setStructFields(structFields);
+        bStructType.setFieldTypeCount(fieldCount);
+    }
+
+    private static int[] populateMaxSizes(BType[] paramTypes) {
+        int[] maxSizes = new int[6];
+        for (int i = 0; i < paramTypes.length; i++) {
+            BType paramType = paramTypes[i];
+            switch (paramType.getTag()) {
+            case TypeTags.INT_TAG:
+                ++maxSizes[0];
+                break;
+            case TypeTags.FLOAT_TAG:
+                ++maxSizes[1];
+                break;
+            case TypeTags.STRING_TAG:
+                ++maxSizes[2];
+                break;
+            case TypeTags.BOOLEAN_TAG:
+                ++maxSizes[3];
+                break;
+            case TypeTags.BLOB_TAG:
+                ++maxSizes[4];
+                break;
+            default:
+                ++maxSizes[5];
+            }
+        }
+        return maxSizes;
     }
 
     private void checkCurrentRow() {

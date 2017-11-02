@@ -23,13 +23,13 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.Session;
 import org.ballerinalang.model.types.BType;
-import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.exceptions.BallerinaException;
 
 /**
  * {@code CassandraDataSource} util class for Cassandra connector initialization.
+ *
+ * @since 0.95.0
  */
 public class CassandraDataSource implements BValue {
 
@@ -45,34 +45,30 @@ public class CassandraDataSource implements BValue {
         return session;
     }
 
-    public boolean init(String host, BMap mapProperties) {
+    public boolean init(String host, BStruct options) {
         Cluster.Builder builder = Cluster.builder();
         builder.addContactPoints(host.split(",")).build();
-        if (mapProperties != null && !mapProperties.isEmpty()) {
-            builder = this.createOptions(builder, mapProperties);
+        if (options != null) {
+            builder = this.createOptions(builder, options);
         }
         this.cluster = builder.build();
         this.session = this.cluster.connect();
         return true;
     }
 
-    private Cluster.Builder createOptions(Cluster.Builder builder, BMap options) {
-        BValue value = options.get(new BString(Constants.SSL_ENABLED));
-        if (value != null && Boolean.parseBoolean(value.stringValue())) {
+    private Cluster.Builder createOptions(Cluster.Builder builder, BStruct options) {
+        boolean sslEnabled = options.getBooleanField(0) != 0;
+        if (sslEnabled) {
             builder = builder.withSSL();
         }
         QueryOptions queryOpts = new QueryOptions();
-        value = options.get(new BString(Constants.CONSISTENCY_LEVEL));
-        if (value != null) {
-            queryOpts.setConsistencyLevel(ConsistencyLevel.valueOf(value.stringValue()));
+        String consistencyLevel = options.getStringField(0);
+        if (!consistencyLevel.isEmpty()) {
+            queryOpts.setConsistencyLevel(ConsistencyLevel.valueOf(consistencyLevel));
         }
-        value = options.get(new BString(Constants.FETCH_SIZE));
-        if (value != null) {
-            try {
-                queryOpts.setFetchSize(Integer.parseInt(value.stringValue()));
-            } catch (NumberFormatException e) {
-                throw new BallerinaException("fetch size must be an integer value: " + value.stringValue(), e);
-            }
+        int fetchSize = (int) options.getIntField(0);
+        if (fetchSize != -1) {
+            queryOpts.setFetchSize(fetchSize);
         }
         return builder.withQueryOptions(queryOpts);
     }

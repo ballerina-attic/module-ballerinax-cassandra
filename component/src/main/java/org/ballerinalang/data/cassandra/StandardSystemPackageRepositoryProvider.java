@@ -24,6 +24,8 @@ import org.ballerinalang.spi.SystemPackageRepositoryProvider;
 
 /**
  * This represents the standard Ballerina built-in system package repository provider.
+ *
+ * @since 0.95.0
  */
 @JavaSPIService("org.ballerinalang.spi.SystemPackageRepositoryProvider")
 public class StandardSystemPackageRepositoryProvider implements SystemPackageRepositoryProvider {

@@ -25,11 +25,14 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 
 /**
- * {@code Init} action initializes the Cassandra Connector.
+ * {@code Init} action initializes the Cassandra Connector with the given properties.
+ *
+ * @since 0.95.0
  */
 @BallerinaAction(
         packageName = "ballerina.data.cassandra",
@@ -43,11 +46,11 @@ public class Init extends AbstractCassandraAction {
     public ConnectorFuture execute(Context context) {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String host = bConnector.getStringField(0);
-        BMap connectorOptions = (BMap) bConnector.getRefField(0);
+        BStruct optionStruct = (BStruct) bConnector.getRefField(0);
         BMap sharedMap = (BMap) bConnector.getRefField(1);
         if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) == null) {
             CassandraDataSource datasource = new CassandraDataSource();
-            datasource.init(host, connectorOptions);
+            datasource.init(host, optionStruct);
             sharedMap.put(new BString(Constants.DATASOURCE_KEY), datasource);
         }
         return getConnectorFuture();
