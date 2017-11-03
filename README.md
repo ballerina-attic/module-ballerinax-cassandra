@@ -37,7 +37,9 @@ Sample
     
     
     function main (string[] args) {
-        c:ClientConnector conn = create c:ClientConnector("localhost", {sslEnabled:false, fetchSize:10, consistencyLevel: "ONE"});
+        endpoint<c:ClientConnector> conn {
+            create c:ClientConnector("localhost", {sslEnabled:false, fetchSize:10, consistencyLevel: "ONE"});
+        }
     
         conn.update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3}", null);
         println("Key space testballerina is created.");
