@@ -26,6 +26,13 @@
     <packaging>pom</packaging>
     <name>Ballerina - Cassandra Parent</name>
 
+    <scm>
+        <url>https://github.com/ballerinalang/connector-cassandra.git</url>
+        <developerConnection>scm:git:https://github.com/ballerinalang/connector-cassandra.git</developerConnection>
+        <connection>scm:git:https://github.com/ballerinalang/connector-cassandra.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <repositories>
         <repository>
             <id>wso2.releases</id>
