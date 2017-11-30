@@ -29,6 +29,9 @@ import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -93,9 +96,9 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public String getObjectAsString(String s) {
+    public String getBlob(String s) {
         this.checkCurrentRow();
-        return this.current.getObject(s).toString();
+        return getString(this.current.getBytes(s));
     }
 
     @Override
@@ -212,5 +215,17 @@ public class CassandraDataIterator implements DataIterator {
         if (this.current == null) {
             throw new BallerinaException("invalid position in the data iterator");
         }
+    }
+
+    private static String getString(ByteBuffer data) {
+        if (data == null) {
+            return null;
+        }
+        byte[] encode = getBase64Encode(new String(data.array(), Charset.defaultCharset()));
+        return new String(encode, Charset.defaultCharset());
+    }
+
+    private static byte[] getBase64Encode(String st) {
+        return Base64.getEncoder().encode(st.getBytes(Charset.defaultCharset()));
     }
 }

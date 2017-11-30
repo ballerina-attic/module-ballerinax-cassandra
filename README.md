@@ -50,11 +50,11 @@ function main (string[] args) {
                                                                     married boolean)", null);
     println("Table person created.");
 
-    c:Parameter pID = {cqlType:"int", value:1};
-    c:Parameter pName = {cqlType:"text", value:"Anupama"};
-    c:Parameter pSalary = {cqlType:"float", value:100.5};
-    c:Parameter pIncome = {cqlType:"double", value:1000.5};
-    c:Parameter pMarried = {cqlType:"boolean", value:true};
+    c:Parameter pID = {cqlType:c:Type.INT, value:1};
+    c:Parameter pName = {cqlType:c:Type.TEXT, value:"Anupama"};
+    c:Parameter pSalary = {cqlType:c:Type.FLOAT, value:100.5};
+    c:Parameter pIncome = {cqlType:c:Type.DOUBLE, value:1000.5};
+    c:Parameter pMarried = {cqlType:c:Type.BOOLEAN, value:true};
     c:Parameter[] pUpdate = [pID, pName, pSalary, pIncome, pMarried];
     conn.update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)", 
                                                                                                 pUpdate);

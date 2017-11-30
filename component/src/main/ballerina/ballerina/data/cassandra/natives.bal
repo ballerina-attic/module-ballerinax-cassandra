@@ -4,7 +4,7 @@ package ballerina.data.cassandra;
 @Field {value:"cqlType: The cassandra data type of the corresponding parameter"}
 @Field {value:"value: Value of paramter pass into the query"}
 public struct Parameter {
-    string cqlType;
+    Type cqlType;
     any value;
 }
 
@@ -18,6 +18,27 @@ public struct ConnectionProperties {
     string consistencyLevel;
     boolean sslEnabled;
     int fetchSize = -1;
+}
+
+
+@Description { value:"The Datatype of the parameter"}
+@Field { value:"INT: A 32-bit signed integer"}
+@Field { value:"BIGINT: A 64-bit signed long"}
+@Field { value:"VARINT: Arbitrary precision integer"}
+@Field { value:"FLOAT: A 32-bit IEEE-754 floating point"}
+@Field { value:"DOUBLE: A 64-bit IEEE-754 floating point"}
+@Field { value:"TEXT: UTF-8 encoded string"}
+@Field { value:"BOOLEAN: Boolean value either True or false"}
+@Field { value:"LIST: A collection of one or more ordered elements"}
+public enum Type {
+    INT,
+    BIGINT,
+    VARINT,
+    FLOAT,
+    DOUBLE,
+    TEXT,
+    BOOLEAN,
+    LIST
 }
 
 

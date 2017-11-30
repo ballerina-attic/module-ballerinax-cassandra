@@ -38,6 +38,7 @@ import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BBooleanArray;
 import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BDataTable;
+import org.ballerinalang.model.values.BEnumerator;
 import org.ballerinalang.model.values.BFloat;
 import org.ballerinalang.model.values.BFloatArray;
 import org.ballerinalang.model.values.BIntArray;
@@ -54,8 +55,10 @@ import org.ballerinalang.natives.exceptions.ArgumentOutOfRangeException;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * {@code AbstractCassandraAction} is the base class for all Cassandra connector actions.
@@ -114,8 +117,15 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
 
     private List<ColumnDefinition> getColumnDefinitions(ResultSet rs) {
         List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
+        Set<String> columnNames = new HashSet<>();
         for (ColumnDefinitions.Definition def : rs.getColumnDefinitions().asList()) {
-            columnDefs.add(new ColumnDefinition(def.getName(), this.convert(def.getType())));
+            String colName = def.getName();
+            if (columnNames.contains(colName)) {
+                String tableName = def.getTable().toUpperCase();
+                colName = tableName + "." + colName;
+            }
+            columnDefs.add(new ColumnDefinition(colName, this.convert(def.getType())));
+            columnNames.add(colName);
         }
         return columnDefs;
     }
@@ -176,11 +186,10 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
             for (int i = 0; i < paramCount; i++) {
                 BStruct paramValue = (BStruct) parameters.get(i);
                 if (paramValue != null) {
-                    BValue value = paramValue.getRefField(0);
-                    String sqlType = paramValue.getStringField(0);
-                    if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG
-                            && !org.ballerinalang.nativeimpl.actions.data.sql.Constants.SQLDataTypes.ARRAY
-                            .equalsIgnoreCase(sqlType)) {
+                    String cqlType = getCQLType(paramValue);
+                    BValue value = paramValue.getRefField(1);
+                    if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
+                            .equalsIgnoreCase(cqlType)) {
                         count = (int) ((BNewArray) value).size();
                     } else {
                         count = 1;
@@ -242,8 +251,8 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
         for (int index = 0; index < paramCount; index++) {
             BStruct paramStruct = (BStruct) params.get(index);
             if (paramStruct != null) {
-                String cqlType = paramStruct.getStringField(0);
-                BValue value = paramStruct.getRefField(0);
+                String cqlType = getCQLType(paramStruct);
+                BValue value = paramStruct.getRefField(1);
                 //If the parameter is an array and sql type is not "array" then treat it as an array of parameters
                 if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
                         .equalsIgnoreCase(cqlType)) {
@@ -271,14 +280,12 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
                             throw new BallerinaException("unsupported array type for parameter index " + index);
                         }
                         dataList.add(paramValue);
-                        //boundStmt.bind(paramValue);
                     }
                 } else {
                     bindValue(dataList, value, cqlType);
                 }
             } else {
                 dataList.add(null);
-                //boundStmt.bind(null);
             }
         }
         boundStmt.bind(dataList.toArray());
@@ -302,6 +309,16 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
         } else if (Constants.DataTypes.BOOLEAN.equals(cSQLDataType)) {
             dataList.add(Boolean.parseBoolean(value.stringValue()));
         }
+    }
+
+    private String getCQLType(BStruct parameter) {
+        String sqlType = "";
+        BEnumerator typeEnum = (BEnumerator) parameter.getRefField(0);
+        if (typeEnum != null) {
+            sqlType = typeEnum.getName();
+        }
+        return sqlType;
+
     }
 
 }
