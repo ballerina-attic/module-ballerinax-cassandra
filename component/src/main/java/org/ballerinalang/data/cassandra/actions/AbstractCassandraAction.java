@@ -312,13 +312,12 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
     }
 
     private String getCQLType(BStruct parameter) {
-        String sqlType = "";
+        String sqlType = null;
         BEnumerator typeEnum = (BEnumerator) parameter.getRefField(0);
         if (typeEnum != null) {
             sqlType = typeEnum.getName();
         }
         return sqlType;
-
     }
 
 }
