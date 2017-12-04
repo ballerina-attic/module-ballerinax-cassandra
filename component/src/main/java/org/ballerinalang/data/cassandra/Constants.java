@@ -25,10 +25,10 @@ package org.ballerinalang.data.cassandra;
 public final class Constants {
     public static final String CONNECTOR_NAME = "ClientConnector";
     public static final String DATASOURCE_KEY = "datasource_key";
-        public static final String QUESTION_MARK = "?";
+    public static final String QUESTION_MARK = "?";
 
     /**
-     * Constants for SQL DataTypes.
+     * Constants for DataTypes.
      */
     public static final class DataTypes {
         public static final String LIST = "LIST";
