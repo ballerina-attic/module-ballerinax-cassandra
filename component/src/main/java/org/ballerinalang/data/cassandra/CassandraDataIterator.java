@@ -34,7 +34,6 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This iterator wraps a cassandra data row.
@@ -72,37 +71,42 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public String getString(String s) {
+    public String getString(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getString(s);
+        return this.current.getString(columnIndex - 1);
     }
 
     @Override
-    public long getInt(String s) {
+    public long getInt(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getInt(s);
+        return this.current.getInt(columnIndex - 1);
     }
 
     @Override
-    public double getFloat(String s) {
+    public double getFloat(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getFloat(s);
+        return this.current.getFloat(columnIndex - 1);
     }
 
     @Override
-    public boolean getBoolean(String s) {
+    public boolean getBoolean(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getBool(s);
+        return this.current.getBool(columnIndex - 1);
     }
 
     @Override
-    public String getBlob(String s) {
+    public String getBlob(int columnIndex) {
         this.checkCurrentRow();
-        return getString(this.current.getBytes(s));
+        return getString(this.current.getBytes(columnIndex - 1));
     }
 
     @Override
-    public Map<String, Object> getArray(String s) {
+    public Object[] getStruct(int i) {
+        return new Object[0];
+    }
+
+    @Override
+    public Object[] getArray(int columnIndex) {
         return null;
     }
 
@@ -113,24 +117,26 @@ public class CassandraDataIterator implements DataIterator {
         int doubleRegIndex = -1;
         int stringRegIndex = -1;
         int booleanRegIndex = -1;
+        int index = 0;
         for (ColumnDefinition columnDef : columnDefs) {
             String columnName = columnDef.getName();
             TypeKind type = columnDef.getType();
+            ++index;
             switch (type) {
             case STRING:
-                String sValue = getString(columnName);
+                String sValue = getString(index);
                 bStruct.setStringField(++stringRegIndex, sValue);
                 break;
             case INT:
-                long lValue = getInt(columnName);
+                long lValue = getInt(index);
                 bStruct.setIntField(++longRegIndex, lValue);
                 break;
             case FLOAT:
-                double fValue = getFloat(columnName);
+                double fValue = getFloat(index);
                 bStruct.setFloatField(++doubleRegIndex, fValue);
                 break;
             case BOOLEAN:
-                boolean boolValue = getBoolean(columnName);
+                boolean boolValue = getBoolean(index);
                 bStruct.setBooleanField(++booleanRegIndex, boolValue ? 1 : 0);
                 break;
             default:
@@ -143,6 +149,11 @@ public class CassandraDataIterator implements DataIterator {
     @Override
     public List<ColumnDefinition> getColumnDefinitions() {
         return this.columnDefs;
+    }
+
+    @Override
+    public BStructType getStructType() {
+        return this.bStructType;
     }
 
     private void generateStructType() {
