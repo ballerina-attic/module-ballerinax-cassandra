@@ -21,10 +21,11 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
+import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.model.values.BDataTable;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaAction;
 import org.ballerinalang.natives.annotations.ReturnType;
@@ -42,7 +43,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                           structType = "Parameter")
         },
-        returnType = { @ReturnType(type = TypeKind.DATATABLE) }
+        returnType = { @ReturnType(type = TypeKind.TABLE) }
 )
 public class Select extends AbstractCassandraAction {
 
@@ -51,9 +52,10 @@ public class Select extends AbstractCassandraAction {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String query = getStringArgument(context, 0);
         BRefValueArray parameters = (BRefValueArray) getRefArgument(context, 1);
+        BStructType structType = getStructType(context);
         CassandraDataSource dataSource = getDataSource(bConnector);
-        BDataTable dataTable = executeSelect(dataSource, query, parameters);
-        context.getControlStackNew().getCurrentFrame().returnValues[0] = dataTable;
+        BTable dataTable = executeSelect(dataSource, query, parameters, structType);
+        context.getControlStack().getCurrentFrame().returnValues[0] = dataTable;
         return getConnectorFuture();
     }
 }

@@ -46,11 +46,14 @@ public class Init extends AbstractCassandraAction {
     public ConnectorFuture execute(Context context) {
         BConnector bConnector = (BConnector) getRefArgument(context, 0);
         String host = bConnector.getStringField(0);
+        int port = (int) bConnector.getIntField(0);
+        String username = bConnector.getStringField(1);
+        String password = bConnector.getStringField(2);
         BStruct optionStruct = (BStruct) bConnector.getRefField(0);
         BMap sharedMap = (BMap) bConnector.getRefField(1);
         if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) == null) {
             CassandraDataSource datasource = new CassandraDataSource();
-            datasource.init(host, optionStruct);
+            datasource.init(host, port, username, password, optionStruct);
             sharedMap.put(new BString(Constants.DATASOURCE_KEY), datasource);
         }
         return getConnectorFuture();
