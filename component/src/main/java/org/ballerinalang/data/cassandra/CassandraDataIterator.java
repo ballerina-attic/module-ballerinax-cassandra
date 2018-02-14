@@ -19,13 +19,11 @@ package org.ballerinalang.data.cassandra;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.DataIterator;
 import org.ballerinalang.model.types.BStructType;
-import org.ballerinalang.model.types.BType;
-import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
@@ -50,10 +48,10 @@ public class CassandraDataIterator implements DataIterator {
 
     private BStructType bStructType;
 
-    public CassandraDataIterator(ResultSet rs, List<ColumnDefinition> columnDefs) {
+    public CassandraDataIterator(ResultSet rs, List<ColumnDefinition> columnDefs, BStructType structType) {
         this.iterator = rs.iterator();
         this.columnDefs = columnDefs;
-        generateStructType();
+        this.bStructType = structType;
     }
 
     @Override
@@ -105,6 +103,9 @@ public class CassandraDataIterator implements DataIterator {
         return new Object[0];
     }
 
+    @SuppressFBWarnings(value = "PZLA_PREFER_ZERO_LENGTH_ARRAYS",
+                        justification = "Functionality of obtaining an array is not implemented therefore it would be"
+                                + " incorrect to return an empty array")
     @Override
     public Object[] getArray(int columnIndex) {
         return null;
@@ -154,72 +155,6 @@ public class CassandraDataIterator implements DataIterator {
     @Override
     public BStructType getStructType() {
         return this.bStructType;
-    }
-
-    private void generateStructType() {
-        BType[] structTypes = new BType[columnDefs.size()];
-        BStructType.StructField[] structFields = new BStructType.StructField[columnDefs.size()];
-        int typeIndex  = 0;
-        for (ColumnDefinition columnDef : columnDefs) {
-            BType type;
-            switch (columnDef.getType()) {
-            case ARRAY:
-                type = BTypes.typeMap;
-                break;
-            case STRING:
-                type = BTypes.typeString;
-                break;
-            case BLOB:
-                type = BTypes.typeBlob;
-                break;
-            case INT:
-                type = BTypes.typeInt;
-                break;
-            case FLOAT:
-                type = BTypes.typeFloat;
-                break;
-            case BOOLEAN:
-                type = BTypes.typeBoolean;
-                break;
-            default:
-                type = BTypes.typeNull;
-            }
-            structTypes[typeIndex] = type;
-            structFields[typeIndex] = new BStructType.StructField(type, columnDef.getName());
-            ++typeIndex;
-        }
-
-        int[] fieldCount = populateMaxSizes(structTypes);
-        bStructType = new BStructType("RS", null);
-        bStructType.setStructFields(structFields);
-        bStructType.setFieldTypeCount(fieldCount);
-    }
-
-    private static int[] populateMaxSizes(BType[] paramTypes) {
-        int[] maxSizes = new int[6];
-        for (int i = 0; i < paramTypes.length; i++) {
-            BType paramType = paramTypes[i];
-            switch (paramType.getTag()) {
-            case TypeTags.INT_TAG:
-                ++maxSizes[0];
-                break;
-            case TypeTags.FLOAT_TAG:
-                ++maxSizes[1];
-                break;
-            case TypeTags.STRING_TAG:
-                ++maxSizes[2];
-                break;
-            case TypeTags.BOOLEAN_TAG:
-                ++maxSizes[3];
-                break;
-            case TypeTags.BLOB_TAG:
-                ++maxSizes[4];
-                break;
-            default:
-                ++maxSizes[5];
-            }
-        }
-        return maxSizes;
     }
 
     private void checkCurrentRow() {
