@@ -23,9 +23,12 @@ package org.ballerinalang.data.cassandra;
  * @since 0.95.0
  */
 public final class Constants {
-    public static final String CONNECTOR_NAME = "ClientConnector";
     public static final String DATASOURCE_KEY = "datasource_key";
     public static final String QUESTION_MARK = "?";
+    public static final String B_CONNECTOR = "BConnector";
+    public static final String CLIENT_ENDPOINT_CONFIG = "clientEndpointConfig";
+    public static final String CASSANDRA_PACKAGE_PATH = "ballerina.data.cassandra";
+    public static final String CLIENT_CONNECTOR = "ClientConnector";
 
     /**
      * Constants for DataTypes.
@@ -39,5 +42,16 @@ public final class Constants {
         public static final String DOUBLE = "DOUBLE";
         public static final String TEXT = "TEXT";
         public static final String BOOLEAN = "BOOLEAN";
+    }
+
+    /**
+     * Constants for Endpoint Configs.
+     */
+    public static final class EndpointConfig {
+        public static final String HOST = "host";
+        public static final String PORT = "port";
+        public static final String USERNAME = "username";
+        public static final String PASSWORD = "password";
+        public static final String OPTIONS = "options";
     }
 }

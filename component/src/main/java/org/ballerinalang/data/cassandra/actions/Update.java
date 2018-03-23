@@ -18,38 +18,36 @@
 package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
+
 /**
  * {@code Update} action executes a given data or schema update query.
  *
  * @since 0.95.0
  */
-@BallerinaAction(
-        packageName = "ballerina.data.cassandra",
-        actionName = "update",
-        connectorName = Constants.CONNECTOR_NAME,
-        args = {@Argument(name = "c", type = TypeKind.CONNECTOR),
-                @Argument(name = "query", type = TypeKind.STRING),
+@BallerinaFunction(
+        orgName = "ballerina", packageName = "data.cassandra",
+        functionName = "update",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                           structType = "Parameter")
         }
 )
 public class Update extends AbstractCassandraAction {
-
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        String query = getStringArgument(context, 0);
-        BRefValueArray parameters = (BRefValueArray) getRefArgument(context, 1);
-        CassandraDataSource dataSource = getDataSource(bConnector);
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        String query = context.getStringArgument(0);
+        BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(1);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         executeUpdate(dataSource, query, parameters);
-        return getConnectorFuture();
     }
 }
