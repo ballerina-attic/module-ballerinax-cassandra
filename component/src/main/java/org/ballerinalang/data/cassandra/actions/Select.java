@@ -19,6 +19,7 @@ package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
+import org.ballerinalang.data.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
@@ -53,7 +54,11 @@ public class Select extends AbstractCassandraAction {
         BRefValueArray parameters = (BRefValueArray) context.getRefArgument(1);
         BStructType structType = getStructType(context);
         CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        BTable dataTable = executeSelect(dataSource, query, parameters, structType);
-        context.setReturnValues(dataTable);
+        try {
+            BTable dataTable = executeSelect(dataSource, query, parameters, structType);
+            context.setReturnValues(dataTable);
+        } catch (Throwable e) {
+            context.setReturnValues(CassandraDataSourceUtils.getCassandraConnectorError(context, e));
+        }
     }
 }
