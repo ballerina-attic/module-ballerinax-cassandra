@@ -18,32 +18,29 @@
 package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
 
 /**
  * {@code Close} action is used to close the Cassandra session.
  *
  * @since 0.95.0
  */
-@BallerinaAction(
-        packageName = "ballerina.data.cassandra",
-        actionName = "close",
-        connectorName = Constants.CONNECTOR_NAME,
-        args = { @Argument(name = "c", type = TypeKind.CONNECTOR) }
+@BallerinaFunction(
+        orgName = "ballerina", packageName = "data.cassandra",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        functionName = "close"
 )
 public class Close extends AbstractCassandraAction {
 
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        CassandraDataSource datasource = getDataSource(bConnector);
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         close(datasource);
-        return getConnectorFuture();
     }
 }

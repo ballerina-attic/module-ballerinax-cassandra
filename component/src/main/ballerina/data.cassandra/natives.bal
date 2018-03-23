@@ -164,9 +164,6 @@ public struct SocketOptionsConfiguration {
     // boolean tcpNoDelay;
 }
 
-
-
-
 @Description {value:"The Datatype of the parameter"}
 @Field {value:"INT: A 32-bit signed integer"}
 @Field {value:"BIGINT: A 64-bit signed long"}
@@ -187,31 +184,70 @@ public enum Type {
     LIST
 }
 
-
 @Description {value:"Cassandra client connector."}
-@Param {value:"host: Comma separated list of addresses of Cassandra nodes which are used to discover the cluster
+@Field {value:"host: Comma separated list of addresses of Cassandra nodes which are used to discover the cluster
 topology"}
-@Param {value:"port: The port configured for the Cassandra cluster"}
-@Param {value:"username: The username to connect to a authentication enabled Cassandra cluster"}
-@Param {value:"password: The password to connect to a authentication enabled Cassandra cluster"}
-@Param {value:"options: Optional properties for cassandra connection"}
-public connector ClientConnector (string host, int port, string username, string password, ConnectionProperties
-                                                                                           options) {
-
-    map sharedMap = {};
-
-    @Description {value:"Select data from cassandra datasource."}
-    @Param {value:"query: Query to be executed"}
-    @Param {value:"parameters: Parameter array used with the given query"}
-    @Param {value:"type:The Type result should be mapped to"}
-    @Return {value:"Result set for the given query"}
-    native action select (string query, Parameter[] parameters, type structType) (table);
-
-    @Description {value:"Execute update query on cassandra datasource."}
-    @Param {value:"query: Query to be executed"}
-    @Param {value:"parameters: Parameter array used with the given query"}
-    native action update (string query, Parameter[] parameters);
-
-    @Description {value:"The close action implementation to shutdown the cassandra connections."}
-    native action close ();
+@Field {value:"port: The port configured for the Cassandra cluster"}
+@Field {value:"username: The username to connect to a authentication enabled Cassandra cluster"}
+@Field {value:"password: The password to connect to a authentication enabled Cassandra cluster"}
+@Field {value:"options: Optional properties for cassandra connection"}
+public struct ClientConnector {
+    string host;
+    int port;
+    string username;
+    string password;
+    ConnectionProperties options;
 }
+
+@Description {value:"Select data from cassandra datasource."}
+@Param {value:"query: Query to be executed"}
+@Param {value:"parameters: Parameter array used with the given query"}
+@Param {value:"type:The Type result should be mapped to"}
+@Return {value:"Result set for the given query"}
+public native function <ClientConnector client> select (string queryString, Parameter[] parameters, typedesc structType)
+returns (table);
+
+@Description {value:"Execute update query on cassandra datasource."}
+@Param {value:"query: Query to be executed"}
+@Param {value:"parameters: Parameter array used with the given query"}
+public native function <ClientConnector client> update (string queryString, (Parameter[]|null) parameters);
+
+@Description {value:"The close action implementation to shutdown the cassandra connections."}
+public native function <ClientConnector client> close ();
+
+///////////////////////////////
+// Cassandra Client Endpoint
+/////////////////////////   //////
+
+public struct Client {
+    string epName;
+    //ClientEndpointConfiguration config;
+    ClientEndpointConfiguration clientEndpointConfig;
+}
+
+public struct ClientEndpointConfiguration {
+    string host = "";
+    int port = 0;
+    string username = "";
+    string password = "";
+    ConnectionProperties options;
+}
+
+public function <ClientEndpointConfiguration c> ClientEndpointConfiguration () {
+    c.options = {};
+}
+
+@Description {value:"Gets called when the endpoint is being initialize during package init time"}
+@Param {value:"epName: The endpoint name"}
+@Param {value:"config: The ClientEndpointConfiguration of the endpoint"}
+public function <Client ep> init (ClientEndpointConfiguration config) {
+    ep.clientEndpointConfig = config;
+    ep.initEndpoint();
+}
+
+@Description {value:"Initialize the endpoint"}
+public native function <Client ep> initEndpoint ();
+
+@Description {value:"Returns the connector that client code uses"}
+@Return {value:"The connector that client code uses"}
+public native function <Client ep> getClient () returns (ClientConnector);

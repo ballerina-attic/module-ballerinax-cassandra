@@ -18,28 +18,27 @@
 package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.ConnectorFuture;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.BStructType;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BRefValueArray;
+import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.natives.annotations.Argument;
-import org.ballerinalang.natives.annotations.BallerinaAction;
+import org.ballerinalang.natives.annotations.BallerinaFunction;
+import org.ballerinalang.natives.annotations.Receiver;
 import org.ballerinalang.natives.annotations.ReturnType;
 /**
  * {@code Select} action executes a given query and returns a datatable.
  *
  * @since 0.95.0
  */
-@BallerinaAction(
-        packageName = "ballerina.data.cassandra",
-        actionName = "select",
-        connectorName = Constants.CONNECTOR_NAME,
-        args = {@Argument(name = "c", type = TypeKind.CONNECTOR),
-                @Argument(name = "query", type = TypeKind.STRING),
+@BallerinaFunction(
+        orgName = "ballerina", packageName = "data.cassandra",
+        functionName = "select",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                           structType = "Parameter")
         },
@@ -48,14 +47,13 @@ import org.ballerinalang.natives.annotations.ReturnType;
 public class Select extends AbstractCassandraAction {
 
     @Override
-    public ConnectorFuture execute(Context context) {
-        BConnector bConnector = (BConnector) getRefArgument(context, 0);
-        String query = getStringArgument(context, 0);
-        BRefValueArray parameters = (BRefValueArray) getRefArgument(context, 1);
+    public void execute(Context context) {
+        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        String query = context.getStringArgument(0);
+        BRefValueArray parameters = (BRefValueArray) context.getRefArgument(1);
         BStructType structType = getStructType(context);
-        CassandraDataSource dataSource = getDataSource(bConnector);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
         BTable dataTable = executeSelect(dataSource, query, parameters, structType);
-        context.getControlStack().getCurrentFrame().returnValues[0] = dataTable;
-        return getConnectorFuture();
+        context.setReturnValues(dataTable);
     }
 }

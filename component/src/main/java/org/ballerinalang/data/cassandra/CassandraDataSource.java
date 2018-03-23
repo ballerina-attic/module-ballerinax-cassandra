@@ -38,8 +38,8 @@ import com.datastax.driver.core.policies.LatencyAwarePolicy;
 import com.datastax.driver.core.policies.LoggingRetryPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.types.BType;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
@@ -75,7 +75,7 @@ public class CassandraDataSource implements BValue {
      * @param options  BStruct containing available options for cluster connection initialization
      * @return true if initialization is successful
      */
-    public boolean init(String host, int port, String username, String password, BStruct options) {
+    public boolean init(String host, int port, String username, String password, Struct options) {
         Cluster.Builder builder = Cluster.builder();
         builder.addContactPoints(host.split(",")).build();
         if (port != -1) {
@@ -97,32 +97,32 @@ public class CassandraDataSource implements BValue {
      * @param options BStruct containing available options for cluster connection initialization
      * @return Populated Cluster Builder
      */
-    private Cluster.Builder populateOptions(Cluster.Builder builder, BStruct options) {
-        BStruct queryOptionsConfig = (BStruct) options.getRefField(ConnectionParam.QUERY_OPTIONS.getIndex());
+    private Cluster.Builder populateOptions(Cluster.Builder builder, Struct options) {
+        Struct queryOptionsConfig = options.getStructField(ConnectionParam.QUERY_OPTIONS.getKey());
         if (queryOptionsConfig != null) {
             populateQueryOptions(builder, queryOptionsConfig);
         }
-        BStruct poolingOptionsConfig = (BStruct) options.getRefField(ConnectionParam.POOLING_OPTIONS.getIndex());
+        Struct poolingOptionsConfig = options.getStructField(ConnectionParam.POOLING_OPTIONS.getKey());
         if (poolingOptionsConfig != null) {
             populatePoolingOptions(builder, poolingOptionsConfig);
         }
-        BStruct socketOptionsConfig = (BStruct) options.getRefField(ConnectionParam.SOCKET_OPTIONS.getIndex());
+        Struct socketOptionsConfig = options.getStructField(ConnectionParam.SOCKET_OPTIONS.getKey());
         if (socketOptionsConfig != null) {
             populateSocketOptions(builder, socketOptionsConfig);
         }
-        BStruct protocolOptionsConfig = (BStruct) options.getRefField(ConnectionParam.PROTOCOL_OPTIONS.getIndex());
+        Struct protocolOptionsConfig = options.getStructField(ConnectionParam.PROTOCOL_OPTIONS.getKey());
         if (protocolOptionsConfig != null) {
             populateProtocolOptions(builder, protocolOptionsConfig);
         }
-        String clusterName = options.getStringField(ConnectionParam.CLUSTER_NAME.getIndex());
+        String clusterName = options.getStringField(ConnectionParam.CLUSTER_NAME.getKey());
         if (!clusterName.isEmpty()) {
             builder.withClusterName(clusterName);
         }
-        boolean jmxReportingDisabled = options.getBooleanField(ConnectionParam.WITHOUT_JMX_REPORTING.getIndex()) != 0;
+        boolean jmxReportingDisabled = options.getBooleanField(ConnectionParam.WITHOUT_JMX_REPORTING.getKey());
         if (jmxReportingDisabled) {
             builder.withoutJMXReporting();
         }
-        boolean metricsDisabled = options.getBooleanField(ConnectionParam.WITHOUT_METRICS.getIndex()) != 0;
+        boolean metricsDisabled = options.getBooleanField(ConnectionParam.WITHOUT_METRICS.getKey());
         if (metricsDisabled) {
             builder.withoutMetrics();
         }
@@ -139,8 +139,8 @@ public class CassandraDataSource implements BValue {
      * @param builder Cluster Builder
      * @param options BStruct containing available options for cluster connection initialization
      */
-    private void populateRetryPolicy(Cluster.Builder builder, BStruct options) {
-        String retryPolicyString = options.getStringField(ConnectionParam.RETRY_POLICY.getIndex());
+    private void populateRetryPolicy(Cluster.Builder builder, Struct options) {
+        String retryPolicyString = options.getStringField(ConnectionParam.RETRY_POLICY.getKey());
         if (!retryPolicyString.isEmpty()) {
             RetryPolicy retryPolicy = retrieveRetryPolicy(retryPolicyString);
             switch (retryPolicy) {
@@ -183,15 +183,15 @@ public class CassandraDataSource implements BValue {
      * @param builder Cluster Builder
      * @param options BStruct containing available options for cluster connection initialization
      */
-    private void populateReconnectionPolicy(Cluster.Builder builder, BStruct options) {
-        String reconnectionPolicyString = options.getStringField(ConnectionParam.RECONNECTION_POLICY.getIndex());
+    private void populateReconnectionPolicy(Cluster.Builder builder, Struct options) {
+        String reconnectionPolicyString = options.getStringField(ConnectionParam.RECONNECTION_POLICY.getKey());
 
         if (!reconnectionPolicyString.isEmpty()) {
             ReconnectionPolicy reconnectionPolicy = retrieveReconnectionPolicy(reconnectionPolicyString);
             switch (reconnectionPolicy) {
             case CONSTANT_RECONNECTION_POLICY:
                 long constantReconnectionPolicyDelay = options
-                        .getIntField(ConnectionParam.CONSTANT_RECONNECTION_POLICY_DELAY.getIndex());
+                        .getIntField(ConnectionParam.CONSTANT_RECONNECTION_POLICY_DELAY.getKey());
                 if (constantReconnectionPolicyDelay != -1) {
                     builder.withReconnectionPolicy(new ConstantReconnectionPolicy(constantReconnectionPolicyDelay));
                 } else {
@@ -201,9 +201,9 @@ public class CassandraDataSource implements BValue {
                 break;
             case EXPONENTIAL_RECONNECTION_POLICY:
                 long exponentialReconnectionPolicyBaseDelay = options
-                        .getIntField(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY.getIndex());
+                        .getIntField(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY.getKey());
                 long exponentialReconnectionPolicyMaxDelay = options
-                        .getIntField(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY.getIndex());
+                        .getIntField(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY.getKey());
                 if (exponentialReconnectionPolicyBaseDelay != -1 && exponentialReconnectionPolicyMaxDelay != -1) {
                     builder.withReconnectionPolicy(
                             new ExponentialReconnectionPolicy(exponentialReconnectionPolicyBaseDelay,
@@ -236,11 +236,11 @@ public class CassandraDataSource implements BValue {
      * @param builder Cluster Builder
      * @param options BStruct containing available options for cluster connection initialization
      */
-    private void populateLoadBalancingPolicy(Cluster.Builder builder, BStruct options) {
-        String dataCenter = options.getStringField(ConnectionParam.DATA_CENTER.getIndex());
-        String loadBalancingPolicyString = options.getStringField(ConnectionParam.LOAD_BALANCING_POLICY.getIndex());
+    private void populateLoadBalancingPolicy(Cluster.Builder builder, Struct options) {
+        String dataCenter = options.getStringField(ConnectionParam.DATA_CENTER.getKey());
+        String loadBalancingPolicyString = options.getStringField(ConnectionParam.LOAD_BALANCING_POLICY.getKey());
         boolean allowRemoteDCsForLocalConsistencyLevel =
-                options.getBooleanField(ConnectionParam.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL.getIndex()) != 0;
+                options.getBooleanField(ConnectionParam.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL.getKey());
 
         if (!loadBalancingPolicyString.isEmpty()) {
             LoadBalancingPolicy loadBalancingPolicy = retrieveLoadBalancingPolicy(loadBalancingPolicyString);
@@ -305,34 +305,34 @@ public class CassandraDataSource implements BValue {
      * @param builder            Cluster Builder
      * @param queryOptionsConfig BStruct containing available query options for cluster connection initialization
      */
-    private void populateQueryOptions(Cluster.Builder builder, BStruct queryOptionsConfig) {
+    private void populateQueryOptions(Cluster.Builder builder, Struct queryOptionsConfig) {
         QueryOptions queryOptions = new QueryOptions();
 
-        String consistencyLevel = queryOptionsConfig.getStringField(QueryOptionsParam.CONSISTENCY_LEVEL.getIndex());
+        String consistencyLevel = queryOptionsConfig.getStringField(QueryOptionsParam.CONSISTENCY_LEVEL.getKey());
         String serialConsistencyLevel = queryOptionsConfig
-                .getStringField(QueryOptionsParam.SERIAL_CONSISTENCY_LEVEL.getIndex());
+                .getStringField(QueryOptionsParam.SERIAL_CONSISTENCY_LEVEL.getKey());
         boolean defaultIdempotence =
-                queryOptionsConfig.getBooleanField(QueryOptionsParam.DEFAULT_IDEMPOTENCE.getIndex()) != 0;
+                queryOptionsConfig.getBooleanField(QueryOptionsParam.DEFAULT_IDEMPOTENCE.getKey());
         boolean metadataEnabled =
-                queryOptionsConfig.getBooleanField(QueryOptionsParam.METADATA_ENABLED.getIndex()) != 0;
-        boolean reprepareOnUp = queryOptionsConfig.getBooleanField(QueryOptionsParam.REPREPARE_ON_UP.getIndex()) != 0;
+                queryOptionsConfig.getBooleanField(QueryOptionsParam.METADATA_ENABLED.getKey());
+        boolean reprepareOnUp = queryOptionsConfig.getBooleanField(QueryOptionsParam.REPREPARE_ON_UP.getKey());
         queryOptions.setReprepareOnUp(reprepareOnUp);
         boolean prepareOnAllHosts =
-                queryOptionsConfig.getBooleanField(QueryOptionsParam.PREPARE_ON_ALL_HOSTS.getIndex()) != 0;
+                queryOptionsConfig.getBooleanField(QueryOptionsParam.PREPARE_ON_ALL_HOSTS.getKey());
         queryOptions.setPrepareOnAllHosts(prepareOnAllHosts);
-        int fetchSize = (int) queryOptionsConfig.getIntField(QueryOptionsParam.FETCH_SIZE.getIndex());
+        int fetchSize = (int) queryOptionsConfig.getIntField(QueryOptionsParam.FETCH_SIZE.getKey());
         int maxPendingRefreshNodeListRequests = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_NODELIST_REQUESTS.getIndex());
+                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_NODELIST_REQUESTS.getKey());
         int maxPendingRefreshNodeRequests = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_NODE_REQUESTS.getIndex());
+                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_NODE_REQUESTS.getKey());
         int maxPendingRefreshSchemaRequests = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_SCHEMA_REQUESTS.getIndex());
+                .getIntField(QueryOptionsParam.MAX_PENDING_REFRESH_SCHEMA_REQUESTS.getKey());
         int refreshNodeListIntervalMillis = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.REFRESH_NODELIST_INTERVAL_MILLIS.getIndex());
+                .getIntField(QueryOptionsParam.REFRESH_NODELIST_INTERVAL_MILLIS.getKey());
         int refreshNodeIntervalMillis = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.REFRESH_NODE_INTERNAL_MILLIS.getIndex());
+                .getIntField(QueryOptionsParam.REFRESH_NODE_INTERNAL_MILLIS.getKey());
         int refreshSchemaIntervalMillis = (int) queryOptionsConfig
-                .getIntField(QueryOptionsParam.REFRESH_SCHEMA_INTERVAL_MILLIS.getIndex());
+                .getIntField(QueryOptionsParam.REFRESH_SCHEMA_INTERVAL_MILLIS.getKey());
 
         if (!consistencyLevel.isEmpty()) {
             queryOptions.setConsistencyLevel(retrieveConsistencyLevel(consistencyLevel));
@@ -372,32 +372,32 @@ public class CassandraDataSource implements BValue {
      * @param builder              Cluster Builder
      * @param poolingOptionsConfig BStruct containing available pooling options for cluster connection initialization
      */
-    private void populatePoolingOptions(Cluster.Builder builder, BStruct poolingOptionsConfig) {
+    private void populatePoolingOptions(Cluster.Builder builder, Struct poolingOptionsConfig) {
         PoolingOptions poolingOptions = new PoolingOptions();
 
         int coreConnectionsPerHostLocal = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.CORE_CONNECTIONS_PER_HOST_LOCAL.getIndex());
+                .getIntField(PoolingOptionsParam.CORE_CONNECTIONS_PER_HOST_LOCAL.getKey());
         int maxConnectionsPerHostLocal = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.MAX_CONNECTIONS_PER_HOST_LOCAL.getIndex());
+                .getIntField(PoolingOptionsParam.MAX_CONNECTIONS_PER_HOST_LOCAL.getKey());
         int newConnectionThresholdLocal = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.NEW_CONNECTION_THRESHOLD_LOCAL.getIndex());
+                .getIntField(PoolingOptionsParam.NEW_CONNECTION_THRESHOLD_LOCAL.getKey());
         int coreConnectionsPerHostRemote = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.CORE_CONNECTIONS_PER_HOST_REMOTE.getIndex());
+                .getIntField(PoolingOptionsParam.CORE_CONNECTIONS_PER_HOST_REMOTE.getKey());
         int maxConnectionsPerHostRemote = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.MAX_CONNECTIONS_PER_HOST_REMOTE.getIndex());
+                .getIntField(PoolingOptionsParam.MAX_CONNECTIONS_PER_HOST_REMOTE.getKey());
         int newConnectionThresholdRemote = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.NEW_CONNECTION_THRESHOLD_REMOTE.getIndex());
+                .getIntField(PoolingOptionsParam.NEW_CONNECTION_THRESHOLD_REMOTE.getKey());
         int maxRequestsPerConnectionLocal = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.MAX_REQUESTS_PER_CONNECTION_LOCAL.getIndex());
+                .getIntField(PoolingOptionsParam.MAX_REQUESTS_PER_CONNECTION_LOCAL.getKey());
         int maxRequestsPerConnectionRemote = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.MAX_REQUESTS_PER_CONNECTION_REMOTE.getIndex());
+                .getIntField(PoolingOptionsParam.MAX_REQUESTS_PER_CONNECTION_REMOTE.getKey());
         int idleTimeoutSeconds = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.IDLE_TIMEOUT_SECONDS.getIndex());
+                .getIntField(PoolingOptionsParam.IDLE_TIMEOUT_SECONDS.getKey());
         int poolTimeoutMillis = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.POOL_TIMEOUT_MILLIS.getIndex());
-        int maxQueueSize = (int) poolingOptionsConfig.getIntField(PoolingOptionsParam.MAX_QUEUE_SIZE.getIndex());
+                .getIntField(PoolingOptionsParam.POOL_TIMEOUT_MILLIS.getKey());
+        int maxQueueSize = (int) poolingOptionsConfig.getIntField(PoolingOptionsParam.MAX_QUEUE_SIZE.getKey());
         int heartbeatIntervalSeconds = (int) poolingOptionsConfig
-                .getIntField(PoolingOptionsParam.HEART_BEAT_INTERVAL_SECONDS.getIndex());
+                .getIntField(PoolingOptionsParam.HEART_BEAT_INTERVAL_SECONDS.getKey());
 
         if (coreConnectionsPerHostLocal != -1) {
             poolingOptions.setCoreConnectionsPerHost(HostDistance.LOCAL, coreConnectionsPerHostLocal);
@@ -445,17 +445,17 @@ public class CassandraDataSource implements BValue {
      * @param builder             Cluster Builder
      * @param socketOptionsConfig BStruct containing available socket options for cluster connection initialization
      */
-    private void populateSocketOptions(Cluster.Builder builder, BStruct socketOptionsConfig) {
+    private void populateSocketOptions(Cluster.Builder builder, Struct socketOptionsConfig) {
         SocketOptions socketOptions = new SocketOptions();
 
         int connectTimeoutMillis = (int) socketOptionsConfig
-                .getIntField(SocketOptionsParam.CONNECT_TIMEOUT_MILLIS.getIndex());
+                .getIntField(SocketOptionsParam.CONNECT_TIMEOUT_MILLIS.getKey());
         int readTimeoutMillis = (int) socketOptionsConfig
-                .getIntField(SocketOptionsParam.READ_TIMEOUT_MILLIS.getIndex());
-        int soLinger = (int) socketOptionsConfig.getIntField(SocketOptionsParam.SO_LINGER.getIndex());
+                .getIntField(SocketOptionsParam.READ_TIMEOUT_MILLIS.getKey());
+        int soLinger = (int) socketOptionsConfig.getIntField(SocketOptionsParam.SO_LINGER.getKey());
         int receiveBufferSize = (int) socketOptionsConfig
-                .getIntField(SocketOptionsParam.RECEIVE_BUFFER_SIZE.getIndex());
-        int sendBufferSize = (int) socketOptionsConfig.getIntField(SocketOptionsParam.SEND_BUFFER_SIZE.getIndex());
+                .getIntField(SocketOptionsParam.RECEIVE_BUFFER_SIZE.getKey());
+        int sendBufferSize = (int) socketOptionsConfig.getIntField(SocketOptionsParam.SEND_BUFFER_SIZE.getKey());
 
         if (connectTimeoutMillis != -1) {
             socketOptions.setConnectTimeoutMillis(connectTimeoutMillis);
@@ -476,9 +476,9 @@ public class CassandraDataSource implements BValue {
     /* TODO: Driver does not set these by default. It takes the default values of the underlying netty transport.
         But if we take the inputs as booleans and if the value set in the bal file is "false", we wouldn't know
         if it was set by the user or not. So need to decide how to handle this.
-        boolean keepAlive = socketOptionsConfig.getBooleanField(SocketOptionsParam.KEEP_ALIVE.getIndex()) != 0;
-        boolean reuseAddress = socketOptionsConfig.getBooleanField(SocketOptionsParam.REUSE_ADDRESS.getIndex()) != 0;
-        boolean tcpNoDelay = socketOptionsConfig.getBooleanField(SocketOptionsParam.TCP_NO_DELAY.getIndex()) != 0;
+        boolean keepAlive = socketOptionsConfig.getBooleanField(SocketOptionsParam.KEEP_ALIVE.getKey()) != 0;
+        boolean reuseAddress = socketOptionsConfig.getBooleanField(SocketOptionsParam.REUSE_ADDRESS.getKey()) != 0;
+        boolean tcpNoDelay = socketOptionsConfig.getBooleanField(SocketOptionsParam.TCP_NO_DELAY.getKey()) != 0;
 
         socketOptions.setKeepAlive(keepAlive);
         socketOptions.setReuseAddress(reuseAddress);
@@ -493,15 +493,15 @@ public class CassandraDataSource implements BValue {
      * @param builder               Cluster Builder
      * @param protocolOptionsConfig BStruct containing available protocol options for cluster connection initialization
      */
-    private void populateProtocolOptions(Cluster.Builder builder, BStruct protocolOptionsConfig) {
-        boolean sslEnabled = protocolOptionsConfig.getBooleanField(ProtocolOptionsParam.SSL_ENABLED.getIndex()) != 0;
-        boolean noCompact = protocolOptionsConfig.getBooleanField(ProtocolOptionsParam.NO_COMPACT.getIndex()) != 0;
+    private void populateProtocolOptions(Cluster.Builder builder, Struct protocolOptionsConfig) {
+        boolean sslEnabled = protocolOptionsConfig.getBooleanField(ProtocolOptionsParam.SSL_ENABLED.getKey());
+        boolean noCompact = protocolOptionsConfig.getBooleanField(ProtocolOptionsParam.NO_COMPACT.getKey());
 
         int maxSchemaAgreementWaitSeconds = (int) protocolOptionsConfig
-                .getIntField(ProtocolOptionsParam.MAX_SCHEMA_AGREEMENT_WAIT_SECONDS.getIndex());
-        String compression = protocolOptionsConfig.getStringField(ProtocolOptionsParam.COMPRESSION.getIndex());
+                .getIntField(ProtocolOptionsParam.MAX_SCHEMA_AGREEMENT_WAIT_SECONDS.getKey());
+        String compression = protocolOptionsConfig.getStringField(ProtocolOptionsParam.COMPRESSION.getKey());
         String initialProtocolVersion = protocolOptionsConfig
-                .getStringField(ProtocolOptionsParam.INITIAL_PROTOCOL_VERSION.getIndex());
+                .getStringField(ProtocolOptionsParam.INITIAL_PROTOCOL_VERSION.getKey());
 
         if (sslEnabled) {
             builder = builder.withSSL();
@@ -574,107 +574,122 @@ public class CassandraDataSource implements BValue {
 
     private enum SocketOptionsParam {
         // int params
-        CONNECT_TIMEOUT_MILLIS(0), READ_TIMEOUT_MILLIS(1), SO_LINGER(2), RECEIVE_BUFFER_SIZE(3), SEND_BUFFER_SIZE(4),
+        CONNECT_TIMEOUT_MILLIS("connectTimeoutMillis"), READ_TIMEOUT_MILLIS("readTimeoutMillis"), SO_LINGER(
+                "soLinger"), RECEIVE_BUFFER_SIZE("receiveBufferSize"), SEND_BUFFER_SIZE("sendBufferSize"),
 
         // boolean params
-        KEEP_ALIVE(0), REUSE_ADDRESS(1), TCP_NO_DELAY(2);
+        KEEP_ALIVE("keepAlive"), REUSE_ADDRESS("reuseAddress"), TCP_NO_DELAY("tcpNoDelay");
 
-        private int index;
+        private String key;
 
-        SocketOptionsParam(int index) {
-            this.index = index;
+        SocketOptionsParam(String key) {
+            this.key = key;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
     }
 
     private enum PoolingOptionsParam {
         // int params
-        MAX_REQUESTS_PER_CONNECTION_LOCAL(0), MAX_REQUESTS_PER_CONNECTION_REMOTE(1), IDLE_TIMEOUT_SECONDS(
-                2), POOL_TIMEOUT_MILLIS(3), MAX_QUEUE_SIZE(4), HEART_BEAT_INTERVAL_SECONDS(
-                5), CORE_CONNECTIONS_PER_HOST_LOCAL(6), MAX_CONNECTIONS_PER_HOST_LOCAL(
-                7), NEW_CONNECTION_THRESHOLD_LOCAL(8), CORE_CONNECTIONS_PER_HOST_REMOTE(
-                9), MAX_CONNECTIONS_PER_HOST_REMOTE(10), NEW_CONNECTION_THRESHOLD_REMOTE(11);
+        MAX_REQUESTS_PER_CONNECTION_LOCAL("maxRequestsPerConnectionLocal"), MAX_REQUESTS_PER_CONNECTION_REMOTE(
+                "maxRequestsPerConnectionRemote"), IDLE_TIMEOUT_SECONDS("idleTimeoutSeconds"), POOL_TIMEOUT_MILLIS(
+                "poolTimeoutMillis"), MAX_QUEUE_SIZE("maxQueueSize"), HEART_BEAT_INTERVAL_SECONDS(
+                "heartbeatIntervalSeconds"), CORE_CONNECTIONS_PER_HOST_LOCAL(
+                "coreConnectionsPerHostLocal"), MAX_CONNECTIONS_PER_HOST_LOCAL(
+                "maxConnectionsPerHostLocal"), NEW_CONNECTION_THRESHOLD_LOCAL(
+                "newConnectionThresholdLocal"), CORE_CONNECTIONS_PER_HOST_REMOTE(
+                "coreConnectionsPerHostRemote"), MAX_CONNECTIONS_PER_HOST_REMOTE(
+                "maxConnectionsPerHostRemote"), NEW_CONNECTION_THRESHOLD_REMOTE("newConnectionThresholdRemote");
 
-        private int index;
+        private String key;
 
-        PoolingOptionsParam(int index) {
-            this.index = index;
+        PoolingOptionsParam(String index) {
+            this.key = index;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
     }
 
     private enum QueryOptionsParam {
         // string params
-        CONSISTENCY_LEVEL(0), SERIAL_CONSISTENCY_LEVEL(1),
+        CONSISTENCY_LEVEL("consistencyLevel"), SERIAL_CONSISTENCY_LEVEL("serialConsistencyLevel"),
 
         // boolean params
-        DEFAULT_IDEMPOTENCE(0), METADATA_ENABLED(1), REPREPARE_ON_UP(2), PREPARE_ON_ALL_HOSTS(3),
+        DEFAULT_IDEMPOTENCE("defaultIdempotence"), METADATA_ENABLED("metadataEnabled"), REPREPARE_ON_UP(
+                "reprepareOnUp"), PREPARE_ON_ALL_HOSTS("prepareOnAllHosts"),
 
         // int params
-        FETCH_SIZE(0), MAX_PENDING_REFRESH_NODELIST_REQUESTS(1), MAX_PENDING_REFRESH_NODE_REQUESTS(
-                2), MAX_PENDING_REFRESH_SCHEMA_REQUESTS(3), REFRESH_NODELIST_INTERVAL_MILLIS(
-                4), REFRESH_NODE_INTERNAL_MILLIS(5), REFRESH_SCHEMA_INTERVAL_MILLIS(6);
+        FETCH_SIZE("fetchSize"), MAX_PENDING_REFRESH_NODELIST_REQUESTS(
+                "maxPendingRefreshNodeListRequests"), MAX_PENDING_REFRESH_NODE_REQUESTS(
+                "maxPendingRefreshNodeRequests"), MAX_PENDING_REFRESH_SCHEMA_REQUESTS(
+                "maxPendingRefreshSchemaRequests"), REFRESH_NODELIST_INTERVAL_MILLIS(
+                "refreshNodeListIntervalMillis"), REFRESH_NODE_INTERNAL_MILLIS(
+                "refreshNodeIntervalMillis"), REFRESH_SCHEMA_INTERVAL_MILLIS("refreshSchemaIntervalMillis");
 
-        private int index;
+        private String key;
 
-        QueryOptionsParam(int index) {
-            this.index = index;
+        QueryOptionsParam(String key) {
+            this.key = key;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
     }
 
     private enum ProtocolOptionsParam {
         // boolean params
-        SSL_ENABLED(0), NO_COMPACT(1),
+        SSL_ENABLED("sslEnabled"), NO_COMPACT("noCompact"),
 
         // int params
-        MAX_SCHEMA_AGREEMENT_WAIT_SECONDS(0),
+        MAX_SCHEMA_AGREEMENT_WAIT_SECONDS("maxSchemaAgreementWaitSeconds"),
 
         // string params
-        INITIAL_PROTOCOL_VERSION(0), COMPRESSION(1);
+        INITIAL_PROTOCOL_VERSION("initialProtocolVersion"), COMPRESSION("compression");
 
-        private int index;
+        private String key;
 
-        ProtocolOptionsParam(int index) {
-            this.index = index;
+        ProtocolOptionsParam(String key) {
+            this.key = key;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
     }
 
     private enum ConnectionParam {
         // string params
-        CLUSTER_NAME(0), LOAD_BALANCING_POLICY(1), RECONNECTION_POLICY(2), RETRY_POLICY(3), DATA_CENTER(4),
+        CLUSTER_NAME("clusterName"), LOAD_BALANCING_POLICY("loadBalancingPolicy"), RECONNECTION_POLICY(
+                "reconnectionPolicy"), RETRY_POLICY("retryPolicy"), DATA_CENTER("dataCenter"),
 
         // boolean params
-        WITHOUT_METRICS(0), WITHOUT_JMX_REPORTING(1), ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL(2),
+        WITHOUT_METRICS("withoutMetrics"), WITHOUT_JMX_REPORTING(
+                "withoutJMXReporting"), ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL(
+                "allowRemoteDCsForLocalConsistencyLevel"),
 
         // int params
-        CONSTANT_RECONNECTION_POLICY_DELAY(0), EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY(
-                1), EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY(2),
+        CONSTANT_RECONNECTION_POLICY_DELAY(
+                "constantReconnectionPolicyDelay"), EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY(
+                "exponentialReconnectionPolicyBaseDelay"), EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY(
+                "exponentialReconnectionPolicyMaxDelay"),
 
         // ref params
-        QUERY_OPTIONS(0), POOLING_OPTIONS(1), SOCKET_OPTIONS(2), PROTOCOL_OPTIONS(3);
+        QUERY_OPTIONS("queryOptionsConfig"), POOLING_OPTIONS("poolingOptionsConfig"), SOCKET_OPTIONS(
+                "socketOptionsConfig"), PROTOCOL_OPTIONS("protocolOptionsConfig");
 
-        private int index;
+        private String key;
 
-        ConnectionParam(int index) {
-            this.index = index;
+        ConnectionParam(String key) {
+            this.key = key;
         }
 
-        private int getIndex() {
-            return index;
+        private String getKey() {
+            return key;
         }
 
     }

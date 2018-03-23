@@ -23,8 +23,7 @@ import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.connector.api.AbstractNativeAction;
-import org.ballerinalang.connector.api.ConnectorFuture;
+import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
 import org.ballerinalang.data.cassandra.CassandraDataIterator;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
 import org.ballerinalang.data.cassandra.Constants;
@@ -50,10 +49,8 @@ import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BTable;
-import org.ballerinalang.model.values.BTypeValue;
+import org.ballerinalang.model.values.BTypeDescValue;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.nativeimpl.actions.ClientConnectorFuture;
-import org.ballerinalang.natives.exceptions.ArgumentOutOfRangeException;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -67,15 +64,15 @@ import java.util.Set;
  *
  * @since 0.95.0
  */
-public abstract class AbstractCassandraAction extends AbstractNativeAction {
+public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit {
 
-    @Override
-    public BValue getRefArgument(Context context, int index) {
+    /*@Override
+    *//*public BValue getRefArgument(Context context, int index) {
         if (index > -1) {
             return context.getControlStack().getCurrentFrame().getRefRegs()[index];
         }
         throw new ArgumentOutOfRangeException(index);
-    }
+    }*/
 
     public BTable executeSelect(CassandraDataSource dataSource, String query, BRefValueArray parameters, BStructType
             type) {
@@ -98,11 +95,11 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
         dbDataSource.getCluster().close();
     }
 
-    protected ConnectorFuture getConnectorFuture() {
+    /*protected ConnectorFuture getConnectorFuture() {
         ClientConnectorFuture future = new ClientConnectorFuture();
         future.notifySuccess();
         return future;
-    }
+    }*/
 
     protected CassandraDataSource getDataSource(BConnector bConnector) {
         CassandraDataSource datasource = null;
@@ -118,9 +115,9 @@ public abstract class AbstractCassandraAction extends AbstractNativeAction {
         return datasource;
     }
 
-    BStructType getStructType(Context context) {
+    protected BStructType getStructType(Context context) {
         BStructType structType = null;
-        BTypeValue type = (BTypeValue) getRefArgument(context, 2);
+        BTypeDescValue type = (BTypeDescValue) context.getNullableRefArgument(2);
         if (type != null) {
             structType = (BStructType) type.value();
         }
