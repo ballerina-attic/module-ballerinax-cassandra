@@ -29,6 +29,9 @@ public final class Constants {
     public static final String CLIENT_ENDPOINT_CONFIG = "clientEndpointConfig";
     public static final String CASSANDRA_PACKAGE_PATH = "ballerina.data.cassandra";
     public static final String CLIENT_CONNECTOR = "ClientConnector";
+    public static final String CASSANDRA_CONNECTOR_ERROR = "CassandraConnectorError";
+    public static final String CASSANDRA_EXCEPTION_OCCURED = "Exception Occurred while executing Cassandra database "
+            + "operation";
 
     /**
      * Constants for DataTypes.

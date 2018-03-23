@@ -19,6 +19,7 @@ package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
+import org.ballerinalang.data.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BRefValueArray;
@@ -48,6 +49,10 @@ public class Update extends AbstractCassandraAction {
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(1);
         CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        executeUpdate(dataSource, query, parameters);
+        try {
+            executeUpdate(dataSource, query, parameters);
+        } catch (Throwable e) {
+            context.setReturnValues(CassandraDataSourceUtils.getCassandraConnectorError(context, e));
+        }
     }
 }

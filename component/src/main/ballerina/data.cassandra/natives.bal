@@ -205,15 +205,25 @@ public struct ClientConnector {
 @Param {value:"type:The Type result should be mapped to"}
 @Return {value:"Result set for the given query"}
 public native function <ClientConnector client> select (string queryString, Parameter[] parameters, typedesc structType)
-returns (table);
+returns (table | CassandraConnectorError);
 
 @Description {value:"Execute update query on cassandra datasource."}
 @Param {value:"query: Query to be executed"}
 @Param {value:"parameters: Parameter array used with the given query"}
-public native function <ClientConnector client> update (string queryString, (Parameter[]|null) parameters);
+public native function <ClientConnector client> update (string queryString, (Parameter[]|null) parameters) returns
+(CassandraConnectorError | null);
 
 @Description {value:"The close action implementation to shutdown the cassandra connections."}
-public native function <ClientConnector client> close ();
+public native function <ClientConnector client> close () returns (CassandraConnectorError | null);
+
+
+@Description {value:"CassandraConnectorError struct represents an error occured during the Cassandra client invocation"}
+@Field {value:"message:  An error message explaining about the error"}
+@Field {value:"cause: The error(s) that caused CassandraConnectorError to get thrown"}
+public struct CassandraConnectorError {
+    string message;
+    error[] cause;
+}
 
 ///////////////////////////////
 // Cassandra Client Endpoint

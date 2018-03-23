@@ -79,6 +79,14 @@ public class CassandraActionsTest extends CassandraBaseTest {
         }
     }
 
+    @Test(description = "This method tests Cassandra update failure scenario")
+    public void testUpdateExceptionScenario() throws Exception {
+        BValue[] results = BRunUtil.invoke(result, "testDuplicateKeySpaceCreation");
+        Assert.assertNotNull(results);
+        Assert.assertTrue(results[0].stringValue().contains("Keyspace duplicatekstest already exists"));
+
+    }
+
     @Test(description = "This method tests table creation in a Cassandra database")
     public void testTableCreation() throws Exception {
         BRunUtil.invoke(result, "testTableCreation");
@@ -114,6 +122,13 @@ public class CassandraActionsTest extends CassandraBaseTest {
         float salary = (float) ((BFloat) results[2]).floatValue();
         Assert.assertTrue(id == 1 && "Jack".equals(name) && Float.compare(salary, 100.2f) == 0,
                 "Retrieved data is incorrect");
+    }
+
+    @Test(description = "This method tests selection failure from Cassandra database")
+    public void testSelectExceptionScenario() {
+        BValue[] results = BRunUtil.invoke(result, "testSelectNonExistentColumn");
+        Assert.assertNotNull(results);
+        Assert.assertTrue(results[0].stringValue().contains("Undefined column name x"));
     }
 
     @Test(description = "This method tests select action with parameter arrays")

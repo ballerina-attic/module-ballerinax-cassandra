@@ -19,6 +19,7 @@ package org.ballerinalang.data.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.data.cassandra.CassandraDataSource;
+import org.ballerinalang.data.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
@@ -41,6 +42,10 @@ public class Close extends AbstractCassandraAction {
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
-        close(datasource);
+        try {
+            close(datasource);
+        } catch (Throwable e) {
+            context.setReturnValues(CassandraDataSourceUtils.getCassandraConnectorError(context, e));
+        }
     }
 }
