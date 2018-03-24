@@ -36,18 +36,29 @@ public struct ConnectionProperties {
     string retryPolicy;
     string dataCenter;
 
-    boolean withoutMetrics = false;
-    boolean withoutJMXReporting = false;
-    boolean allowRemoteDCsForLocalConsistencyLevel = false;
+    boolean withoutMetrics;
+    boolean withoutJMXReporting;
+    boolean allowRemoteDCsForLocalConsistencyLevel;
 
-    int constantReconnectionPolicyDelay = -1;
-    int exponentialReconnectionPolicyBaseDelay = -1;
-    int exponentialReconnectionPolicyMaxDelay = -1;
+    int constantReconnectionPolicyDelay;
+    int exponentialReconnectionPolicyBaseDelay;
+    int exponentialReconnectionPolicyMaxDelay;
 
     QueryOptionsConfiguration queryOptionsConfig;
     PoolingOptionsConfiguration poolingOptionsConfig;
     SocketOptionsConfiguration socketOptionsConfig;
     ProtocolOptionsConfiguration protocolOptionsConfig;
+}
+
+public function <ConnectionProperties cp> ConnectionProperties () {
+    cp.constantReconnectionPolicyDelay = -1;
+    cp.exponentialReconnectionPolicyBaseDelay = -1;
+    cp.exponentialReconnectionPolicyMaxDelay = -1;
+
+    cp.queryOptionsConfig = {};
+    cp.poolingOptionsConfig = {};
+    cp.socketOptionsConfig = {};
+    cp.protocolOptionsConfig = {};
 }
 
 @Description {value:"Options of the Cassandra native binary protocol"}
@@ -61,10 +72,14 @@ public struct ProtocolOptionsConfiguration {
     boolean sslEnabled;
     boolean noCompact;
 
-    int maxSchemaAgreementWaitSeconds = -1;
+    int maxSchemaAgreementWaitSeconds;
 
     string initialProtocolVersion;
     string compression;
+}
+
+public function <ProtocolOptionsConfiguration pc> ProtocolOptionsConfiguration () {
+    pc.maxSchemaAgreementWaitSeconds = -1;
 }
 
 @Description {value:"Options related to defaults for individual queries"}
@@ -98,18 +113,32 @@ public struct QueryOptionsConfiguration {
     string consistencyLevel;
     string serialConsistencyLevel;
 
-    boolean defaultIdempotence = false;
+    boolean defaultIdempotence;
+    boolean metadataEnabled;
+    boolean reprepareOnUp;
+    boolean prepareOnAllHosts;
+
+    int fetchSize;
+    int maxPendingRefreshNodeListRequests;
+    int maxPendingRefreshNodeRequests;
+    int maxPendingRefreshSchemaRequests;
+    int refreshNodeListIntervalMillis;
+    int refreshNodeIntervalMillis;
+    int refreshSchemaIntervalMillis;
+}
+
+public function <QueryOptionsConfiguration qc> QueryOptionsConfiguration () {
     boolean metadataEnabled = true;
     boolean reprepareOnUp = true;
     boolean prepareOnAllHosts = true;
 
-    int fetchSize = -1;
-    int maxPendingRefreshNodeListRequests = -1;
-    int maxPendingRefreshNodeRequests = -1;
-    int maxPendingRefreshSchemaRequests = -1;
-    int refreshNodeListIntervalMillis = -1;
-    int refreshNodeIntervalMillis = -1;
-    int refreshSchemaIntervalMillis = -1;
+    qc.fetchSize = -1;
+    qc.maxPendingRefreshNodeListRequests = -1;
+    qc.maxPendingRefreshNodeRequests = -1;
+    qc.maxPendingRefreshSchemaRequests = -1;
+    qc.refreshNodeListIntervalMillis = -1;
+    qc.refreshNodeIntervalMillis = -1;
+    qc.refreshSchemaIntervalMillis = -1;
 }
 
 @Description {value:"Options related to connection pooling"}
@@ -129,18 +158,33 @@ local host"}
 @Field {value:"newConnectionThresholdRemote: The threshold that triggers the creation of a new connection to a
 remote host"}
 public struct PoolingOptionsConfiguration {
-    int maxRequestsPerConnectionLocal = -1;
-    int maxRequestsPerConnectionRemote = -1;
-    int idleTimeoutSeconds = -1;
-    int poolTimeoutMillis = -1;
-    int maxQueueSize = -1;
-    int heartbeatIntervalSeconds = -1;
-    int coreConnectionsPerHostLocal = -1;
-    int maxConnectionsPerHostLocal = -1;
-    int newConnectionThresholdLocal = -1;
-    int coreConnectionsPerHostRemote = -1;
-    int maxConnectionsPerHostRemote = -1;
-    int newConnectionThresholdRemote = -1;
+    int maxRequestsPerConnectionLocal;
+    int maxRequestsPerConnectionRemote;
+    int idleTimeoutSeconds;
+    int poolTimeoutMillis;
+    int maxQueueSize;
+    int heartbeatIntervalSeconds;
+    int coreConnectionsPerHostLocal;
+    int maxConnectionsPerHostLocal;
+    int newConnectionThresholdLocal;
+    int coreConnectionsPerHostRemote;
+    int maxConnectionsPerHostRemote;
+    int newConnectionThresholdRemote;
+}
+
+public function <PoolingOptionsConfiguration pc> PoolingOptionsConfiguration () {
+    pc.maxRequestsPerConnectionLocal = -1;
+    pc.maxRequestsPerConnectionRemote = -1;
+    pc.idleTimeoutSeconds = -1;
+    pc.poolTimeoutMillis = -1;
+    pc.maxQueueSize = -1;
+    pc.heartbeatIntervalSeconds = -1;
+    pc.coreConnectionsPerHostLocal = -1;
+    pc.maxConnectionsPerHostLocal = -1;
+    pc.newConnectionThresholdLocal = -1;
+    pc.coreConnectionsPerHostRemote = -1;
+    pc.maxConnectionsPerHostRemote = -1;
+    pc.newConnectionThresholdRemote = -1;
 }
 
 @Description {value:"Options to configure low-level socket options for the connections kept to the Cassandra hosts"}
@@ -150,11 +194,11 @@ public struct PoolingOptionsConfiguration {
 @Field {value:"receiveBufferSize: A hint to the size of the underlying buffers for incoming network I/O"}
 @Field {value:"sendBufferSize: A hint to the size of the underlying buffers for outgoing network I/O"}
 public struct SocketOptionsConfiguration {
-    int connectTimeoutMillis = -1;
-    int readTimeoutMillis = -1;
-    int soLinger = -1;
-    int receiveBufferSize = -1;
-    int sendBufferSize = -1;
+    int connectTimeoutMillis;
+    int readTimeoutMillis;
+    int soLinger;
+    int receiveBufferSize;
+    int sendBufferSize;
 
     // TODO: Driver do not set these by default. It takes the default values of the underlying netty transport.
     // But if we take the inputs as booleans and if the value set in the bal file is "false", we wouldn't know
@@ -163,6 +207,15 @@ public struct SocketOptionsConfiguration {
     // boolean reuseAddress;
     // boolean tcpNoDelay;
 }
+
+public function <SocketOptionsConfiguration sc> SocketOptionsConfiguration () {
+    sc.connectTimeoutMillis = -1;
+    sc.readTimeoutMillis = -1;
+    sc.soLinger = -1;
+    sc.receiveBufferSize = -1;
+    sc.sendBufferSize = -1;
+}
+
 
 @Description {value:"The Datatype of the parameter"}
 @Field {value:"INT: A 32-bit signed integer"}
@@ -199,6 +252,12 @@ public struct ClientConnector {
     ConnectionProperties options;
 }
 
+@Description {value:"Initialize the ClientConnector with default values"}
+public function <ClientConnector c> ClientConnector () {
+    c.port = -1;
+    c.options = {};
+}
+
 @Description {value:"Select data from cassandra datasource."}
 @Param {value:"query: Query to be executed"}
 @Param {value:"parameters: Parameter array used with the given query"}
@@ -231,7 +290,6 @@ public struct CassandraConnectorError {
 
 public struct Client {
     string epName;
-    //ClientEndpointConfiguration config;
     ClientEndpointConfiguration clientEndpointConfig;
 }
 
