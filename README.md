@@ -29,7 +29,8 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina.data.cassandra as c;
+import ballerina/data.cassandra as c;
+import ballerina/io;
 
 struct RS {
     int id;
@@ -39,21 +40,25 @@ struct RS {
 
 
 function main (string[] args) {
-    endpoint<c:ClientConnector> conn {
-        create c:ClientConnector("localhost", 9042, "cassandra", "cassandra", { 
+    endpoint c:Client conn {
+        host:"localhost",
+        port:9042,
+        username:"cassandra",
+        password:"cassandra",
+        options:{ 
         queryOptionsConfig:{consistencyLevel:"ONE", defaultIdempotence:false}, 
         protocolOptionsConfig:{sslEnabled:false}, 
         socketOptionsConfig:{connectTimeoutMillis:500, readTimeoutMillis:1000}, 
-        poolingOptionsConfig:{maxConnectionsPerHostLocal:5, newConnectionThresholdLocal:10}});
-    }
+        poolingOptionsConfig:{maxConnectionsPerHostLocal:5, newConnectionThresholdLocal:10}}
+    };
 
-    conn.update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy', 
+    _ = conn -> update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy', 
     'replication_factor' : 3}", null);
-    println("Key space testballerina is created.");
+    io:println("Key space testballerina is created.");
 
-    conn.update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double, 
+    _ = conn -> update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double, 
     married boolean)", null);
-    println("Table person created.");
+    io:println("Table person created.");
 
     c:Parameter pID = {cqlType:c:Type.INT, value:1};
     c:Parameter pName = {cqlType:c:Type.TEXT, value:"Anupama"};
@@ -61,37 +66,37 @@ function main (string[] args) {
     c:Parameter pIncome = {cqlType:c:Type.DOUBLE, value:1000.5};
     c:Parameter pMarried = {cqlType:c:Type.BOOLEAN, value:true};
     c:Parameter[] pUpdate = [pID, pName, pSalary, pIncome, pMarried];
-    conn.update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)",
+    _ = conn -> update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)",
                 pUpdate);
-    println("Insert One Row to Table person.");
+    io:println("Insert One Row to Table person.");
 
     c:Parameter[] paramsSelect1 = [pID];
-    table dt1 = conn.select("select id, name, salary from testballerina.person where id = ?",
+    table dt1 =? conn -> select("select id, name, salary from testballerina.person where id = ?",
     paramsSelect1, typeof RS);
     while (dt1.hasNext()) {
-        var rs, _ = (RS) dt1.getNext();
+        var rs =? <RS> dt1.getNext();
         int id = rs.id;
         string name = rs.name;
         float salary = rs.salary;
-        println("Person:" + rs.id + "|" + rs.name + "|" + rs.salary);
+        io:println("Person:" + rs.id + "|" + rs.name + "|" + rs.salary);
     }
 
     c:Parameter[] paramsSelect2 = [pID, pName];
-    table dt2 = conn.select("select id, name, salary from testballerina.person where id = ? and name = ? 
+    table dt2 =? conn -> select("select id, name, salary from testballerina.person where id = ? and name = ? 
     ALLOW FILTERING", paramsSelect2, typeof RS);
-    var j, _ = <json>dt2;
-    println(j);
+    var j =? <json>dt2;
+    io:println(j);
 
     c:Parameter[] paramsSelect3 = [pSalary];
-    table dt3 = conn.select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
+    table dt3 =? conn -> select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
     paramsSelect3, typeof RS);
-    var x, _ = <xml>dt3;
-    println(x);
+    var x =? <xml>dt3;
+    io:println(x);
 
-    conn.update("DROP KEYSPACE testballerina", null);
-    println("KEYSPACE testballerina dropped.");
+    _ = conn -> update("DROP KEYSPACE testballerina", null);
+    io:println("KEYSPACE testballerina dropped.");
 
-    conn.close();
-    println("Connection closed.");
+    _ = conn -> close();
+    io:println("Connection closed.");
 }
  ```
