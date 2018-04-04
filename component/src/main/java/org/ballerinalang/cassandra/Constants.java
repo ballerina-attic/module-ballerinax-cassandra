@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.cassandra;
+package org.ballerinalang.cassandra;
 
 /**
  * Constants for Cassandra Connector.
@@ -27,7 +27,7 @@ public final class Constants {
     public static final String QUESTION_MARK = "?";
     public static final String B_CONNECTOR = "BConnector";
     public static final String CLIENT_ENDPOINT_CONFIG = "clientEndpointConfig";
-    public static final String CASSANDRA_PACKAGE_PATH = "ballerina.data.cassandra";
+    public static final String CASSANDRA_PACKAGE_PATH = "ballerina.cassandra";
     public static final String CLIENT_CONNECTOR = "ClientConnector";
     public static final String CASSANDRA_CONNECTOR_ERROR = "CassandraConnectorError";
     public static final String CASSANDRA_EXCEPTION_OCCURED = "Exception Occurred while executing Cassandra database "

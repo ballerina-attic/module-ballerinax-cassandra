@@ -16,11 +16,11 @@
  * under the License.
  */
 
-package org.ballerinalang.data.cassandra.endpoint;
+package org.ballerinalang.cassandra.endpoint;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.data.cassandra.Constants;
+import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
@@ -33,11 +33,11 @@ import org.ballerinalang.natives.annotations.ReturnType;
  * @since 0.5.4
  */
 
-@BallerinaFunction(orgName = "ballerina", packageName = "data.cassandra",
+@BallerinaFunction(orgName = "ballerina", packageName = "cassandra",
                    functionName = "getClient",
                    receiver = @Receiver(type = TypeKind.STRUCT,
                                         structType = "Client",
-                                        structPackage = "ballerina.data.cassandra"),
+                                        structPackage = "ballerina.cassandra"),
                    returnType = { @ReturnType(type = TypeKind.STRUCT) },
                    isPublic = true)
 public class GetClient extends BlockingNativeCallableUnit {

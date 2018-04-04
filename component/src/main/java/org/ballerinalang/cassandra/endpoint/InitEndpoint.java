@@ -16,14 +16,14 @@
  * under the License.
  */
 
-package org.ballerinalang.data.cassandra.endpoint;
+package org.ballerinalang.cassandra.endpoint;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
+import org.ballerinalang.cassandra.CassandraDataSource;
+import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Struct;
-import org.ballerinalang.data.cassandra.CassandraDataSource;
-import org.ballerinalang.data.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
@@ -37,10 +37,10 @@ import org.ballerinalang.natives.annotations.Receiver;
  */
 
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "data.cassandra",
+        orgName = "ballerina", packageName = "cassandra",
         functionName = "initEndpoint",
         receiver = @Receiver(type = TypeKind.STRUCT, structType = "Client",
-                             structPackage = "ballerina.data.cassandra"),
+                             structPackage = "ballerina.cassandra"),
         args = {@Argument(name = "epName", type = TypeKind.STRING),
                 @Argument(name = "config", type = TypeKind.STRUCT, structType = "ClientEndpointConfiguration")},
         isPublic = true

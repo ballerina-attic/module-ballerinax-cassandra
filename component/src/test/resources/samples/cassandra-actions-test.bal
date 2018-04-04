@@ -1,4 +1,4 @@
-import ballerina/data.cassandra as c;
+import ballerina/cassandra as c;
 
 struct RS {
     int id;

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.data.cassandra.actions;
+package org.ballerinalang.cassandra.actions;
 
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;

@@ -1,4 +1,4 @@
-import ballerina/data.cassandra as c;
+import ballerina/cassandra as c;
 
 const int port = 9142;
 const string host = "localhost";

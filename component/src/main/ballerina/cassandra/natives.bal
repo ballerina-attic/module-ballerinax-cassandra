@@ -1,4 +1,4 @@
-package ballerina.data.cassandra;
+package ballerina.cassandra;
 
 @Description {value:"Parameter struct represents a query parameter for the queries specified in connector actions."}
 @Field {value:"cqlType: The cassandra data type of the corresponding parameter"}

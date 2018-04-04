@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.ballerinalang.data.cassandra;
+package org.ballerinalang.cassandra;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.model.values.BStruct;

@@ -20,9 +20,9 @@ under the License.
 <suite name="MongoDBConnector_IntegrationTest_Suite" verbose="1">
     <test name="Cassandra-Connector-Tests" preserve-order="true" parallel="false">
         <classes>
-            <class name="org.ballerinalang.data.cassandra.actions.CassandraBaseTest"/>
-            <class name="org.ballerinalang.data.cassandra.actions.CassandraActionsTest"/>
-            <class name="org.ballerinalang.data.cassandra.actions.CassandraConnectionInitTest"/>
+            <class name="org.ballerinalang.cassandra.actions.CassandraBaseTest"/>
+            <class name="org.ballerinalang.cassandra.actions.CassandraActionsTest"/>
+            <class name="org.ballerinalang.cassandra.actions.CassandraConnectionInitTest"/>
         </classes>
     </test>
 </suite>

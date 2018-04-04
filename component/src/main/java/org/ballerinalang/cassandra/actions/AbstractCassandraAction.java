@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.cassandra.actions;
+package org.ballerinalang.cassandra.actions;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ColumnDefinitions;
@@ -24,9 +24,9 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BlockingNativeCallableUnit;
-import org.ballerinalang.data.cassandra.CassandraDataIterator;
-import org.ballerinalang.data.cassandra.CassandraDataSource;
-import org.ballerinalang.data.cassandra.Constants;
+import org.ballerinalang.cassandra.CassandraDataIterator;
+import org.ballerinalang.cassandra.CassandraDataSource;
+import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BStructType;
