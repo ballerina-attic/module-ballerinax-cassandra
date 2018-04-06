@@ -1,9 +1,9 @@
 import ballerina/cassandra as c;
 
-const int port = 9142;
-const string host = "localhost";
-const string username = "cassandra";
-const string password = "cassandra";
+@final int port = 9142;
+@final string host = "localhost";
+@final string username = "cassandra";
+@final string password = "cassandra";
 
 function testConnectionInitWithLBPolicy() {
     endpoint c:Client conn {

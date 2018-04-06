@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.ballerinalang.cassandra.endpoint;
 
 import org.ballerinalang.bre.Context;
@@ -28,29 +27,28 @@ import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
 
 /**
- * Initiates the data source.
+ * Creates a Cassandra client.
  *
  * @since 0.5.4
  */
-
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
-        functionName = "initEndpoint",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "Client",
-                             structPackage = "ballerina.cassandra"),
-        args = {@Argument(name = "epName", type = TypeKind.STRING),
-                @Argument(name = "config", type = TypeKind.STRUCT, structType = "ClientEndpointConfiguration")},
+        functionName = "createCassandraClient",
+        args = {
+                @Argument(name = "clientEndpointConfig",
+                          type = TypeKind.STRUCT,
+                          structType = "ClientEndpointConfiguration")
+        },
         isPublic = true
 )
-public class InitEndpoint extends BlockingNativeCallableUnit {
+public class CreateCassandraClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        Struct clientEndpoint = BLangConnectorSPIUtil.getConnectorEndpointStruct(context);
-        Struct clientEndpointConfig = clientEndpoint.getStructField(Constants.CLIENT_ENDPOINT_CONFIG);
+        BStruct configBStruct = (BStruct) context.getRefArgument(0);
+        Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
         //Extract parameters from the endpoint config
         String host = clientEndpointConfig.getStringField(Constants.EndpointConfig.HOST);
@@ -62,17 +60,9 @@ public class InitEndpoint extends BlockingNativeCallableUnit {
         CassandraDataSource dataSource = new CassandraDataSource();
         dataSource.init(host, port, username, password, options);
 
-        BStruct ballerinaClientConnector;
-        if (clientEndpoint.getNativeData(Constants.B_CONNECTOR) != null) {
-            ballerinaClientConnector = (BStruct) clientEndpoint.getNativeData(Constants.B_CONNECTOR);
-        } else {
-            ballerinaClientConnector = BLangConnectorSPIUtil
-                    .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH,
-                            Constants.CLIENT_CONNECTOR, host, port, username, password, options, clientEndpointConfig);
-            clientEndpoint.addNativeData(Constants.B_CONNECTOR, ballerinaClientConnector);
-        }
-
-        ballerinaClientConnector.addNativeData(Constants.CLIENT_CONNECTOR, dataSource);
-        context.setReturnValues();
+        BStruct cassandraClient = BLangConnectorSPIUtil
+                .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH, Constants.CASSANDRA_CLIENT);
+        cassandraClient.addNativeData(Constants.CASSANDRA_CLIENT, dataSource);
+        context.setReturnValues(cassandraClient);
     }
 }

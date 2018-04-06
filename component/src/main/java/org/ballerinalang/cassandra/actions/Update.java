@@ -36,7 +36,7 @@ import org.ballerinalang.natives.annotations.Receiver;
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
         functionName = "update",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CASSANDRA_CLIENT),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                           structType = "Parameter")
@@ -48,7 +48,7 @@ public class Update extends AbstractCassandraAction {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(1);
-        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
         try {
             executeUpdate(dataSource, query, parameters);
         } catch (Throwable e) {

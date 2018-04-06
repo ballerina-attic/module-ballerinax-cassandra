@@ -37,13 +37,13 @@ import org.ballerinalang.model.values.BBlobArray;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BBooleanArray;
 import org.ballerinalang.model.values.BConnector;
-import org.ballerinalang.model.values.BEnumerator;
 import org.ballerinalang.model.values.BFloat;
 import org.ballerinalang.model.values.BFloatArray;
 import org.ballerinalang.model.values.BIntArray;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BNewArray;
+import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
@@ -66,14 +66,6 @@ import java.util.Set;
  */
 public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit {
 
-    /*@Override
-    *//*public BValue getRefArgument(Context context, int index) {
-        if (index > -1) {
-            return context.getControlStack().getCurrentFrame().getRefRegs()[index];
-        }
-        throw new ArgumentOutOfRangeException(index);
-    }*/
-
     public BTable executeSelect(CassandraDataSource dataSource, String query, BRefValueArray parameters, BStructType
             type) {
         String processedQuery = createProcessedQueryString(query, parameters);
@@ -94,12 +86,6 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         dbDataSource.getSession().close();
         dbDataSource.getCluster().close();
     }
-
-    /*protected ConnectorFuture getConnectorFuture() {
-        ClientConnectorFuture future = new ClientConnectorFuture();
-        future.notifySuccess();
-        return future;
-    }*/
 
     protected CassandraDataSource getDataSource(BConnector bConnector) {
         CassandraDataSource datasource = null;
@@ -322,9 +308,9 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
 
     private String getCQLType(BStruct parameter) {
         String sqlType = null;
-        BEnumerator typeEnum = (BEnumerator) parameter.getRefField(0);
-        if (typeEnum != null) {
-            sqlType = typeEnum.getName();
+        BRefType type = parameter.getRefField(0);
+        if (type != null) {
+            sqlType = type.stringValue();
         }
         return sqlType;
     }

@@ -33,7 +33,7 @@ import org.ballerinalang.natives.annotations.Receiver;
  */
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CASSANDRA_CLIENT),
         functionName = "close"
 )
 public class Close extends AbstractCassandraAction {
@@ -41,7 +41,7 @@ public class Close extends AbstractCassandraAction {
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
-        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
         try {
             close(datasource);
         } catch (Throwable e) {

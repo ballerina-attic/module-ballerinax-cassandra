@@ -38,7 +38,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
         functionName = "select",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CASSANDRA_CLIENT),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
                           structType = "Parameter")
@@ -53,7 +53,7 @@ public class Select extends AbstractCassandraAction {
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getRefArgument(1);
         BStructType structType = getStructType(context);
-        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
         try {
             BTable dataTable = executeSelect(dataSource, query, parameters, structType);
             context.setReturnValues(dataTable);
