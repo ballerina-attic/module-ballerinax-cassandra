@@ -114,9 +114,37 @@ public class CassandraActionsTest extends CassandraBaseTest {
         Assert.assertTrue(found, "The data might not have been inserted");
     }
 
+    @Test(description = "This method tests insertion with nil param array")
+    public void testInsertWithNilParams() {
+        BRunUtil.invoke(result, "testInsertWithNilParams");
+        PreparedStatement selectStmt = session.prepare("select * from peopleinfoks.person where id = 10");
+        ResultSet resultSet = session.execute(selectStmt.bind());
+        List<Row> resultList = resultSet.all();
+        boolean found = false;
+        for (Row row : resultList) {
+            if (row.get("id", Integer.class) == 10 && "Jim".equals(row.get("name", String.class))
+                    && Float.compare(row.get("salary", Float.class), 101.5f) == 0
+                    && Double.compare(row.get("income", Double.class), 1001.5) == 0 && !row
+                    .get("married", Boolean.class)) {
+                found = true;
+            }
+        }
+        Assert.assertTrue(found, "The data might not have been inserted");
+    }
+
     @Test(description = "This method tests selection from Cassandra database")
     public void testSelect() {
         BValue[] results = BRunUtil.invoke(result, "testSelect");
+        long id = ((BInteger) results[0]).intValue();
+        String name = results[1].stringValue();
+        float salary = (float) ((BFloat) results[2]).floatValue();
+        Assert.assertTrue(id == 1 && "Jack".equals(name) && Float.compare(salary, 100.2f) == 0,
+                "Retrieved data is incorrect");
+    }
+
+    @Test(description = "This method tests selection from Cassandra database with nil param array")
+    public void testSelectWithNilParams() {
+        BValue[] results = BRunUtil.invoke(result, "testSelectWithNilParams");
         long id = ((BInteger) results[0]).intValue();
         String name = results[1].stringValue();
         float salary = (float) ((BFloat) results[2]).floatValue();

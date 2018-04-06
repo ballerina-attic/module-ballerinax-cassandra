@@ -53,13 +53,13 @@ public type CassandraClient object {
 @Param {value:"parameters: Parameter array used with the given query"}
 @Param {value:"type:The Type result should be mapped to"}
 @Return {value:"Result set for the given query"}
-public native function select (string queryString, Parameter[] parameters, typedesc recordType)
+public native function select (string queryString, (Parameter[] | ()) parameters, typedesc recordType)
 returns (table | CassandraConnectorError);
 
 @Description {value:"Execute update query on cassandra datasource."}
 @Param {value:"query: Query to be executed"}
 @Param {value:"parameters: Parameter array used with the given query"}
-public native function update (string queryString, (Parameter[]|()) parameters) returns
+public native function update (string queryString, (Parameter[] | ()) parameters) returns
 (CassandraConnectorError | ());
 
 @Description {value:"The close action implementation to shutdown the cassandra connections."}
@@ -71,6 +71,6 @@ public native function close () returns (CassandraConnectorError | ());
 @Field {value:"message:  An error message explaining about the error"}
 @Field {value:"cause: The error(s) that caused CassandraConnectorError to get thrown"}
 public type CassandraConnectorError {
-string message,
-error[] cause,
+    string message,
+    error[] cause,
 };

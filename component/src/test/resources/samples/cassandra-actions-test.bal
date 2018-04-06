@@ -156,3 +156,42 @@ function testSelectNonExistentColumn() returns (any) {
     return result;
 }
 
+function testInsertWithNilParams() {
+    endpoint c:Client conn {
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
+    };
+
+    _ = conn -> update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (10,'Jim',101.5,1001.5,false)",
+        ());
+    _ = conn -> close();
+}
+
+function testSelectWithNilParams() returns (int, string, float) {
+    endpoint c:Client conn {
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
+    };
+
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", (), typeof
+        RS);
+    table dt = check temp;
+    int id;
+    string name;
+    float salary;
+    while (dt.hasNext()) {
+        var rs = check <RS> dt.getNext();
+        id = rs.id;
+        name = rs.name;
+        salary = rs.salary;
+    }
+    _ = conn -> close();
+    return (id, name, salary);
+}
+
