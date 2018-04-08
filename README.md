@@ -29,7 +29,7 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina/data.cassandra as c;
+import ballerina/cassandra as c;
 import ballerina/io;
 
 struct RS {

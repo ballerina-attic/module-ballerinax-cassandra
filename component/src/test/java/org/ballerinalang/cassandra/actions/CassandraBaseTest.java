@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.cassandra.actions;
+package org.ballerinalang.cassandra.actions;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;

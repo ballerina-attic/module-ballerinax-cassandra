@@ -15,12 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ballerinalang.data.cassandra.actions;
+package org.ballerinalang.cassandra.actions;
 
 import org.ballerinalang.bre.Context;
-import org.ballerinalang.data.cassandra.CassandraDataSource;
-import org.ballerinalang.data.cassandra.CassandraDataSourceUtils;
-import org.ballerinalang.data.cassandra.Constants;
+import org.ballerinalang.cassandra.CassandraDataSource;
+import org.ballerinalang.cassandra.CassandraDataSourceUtils;
+import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
@@ -32,8 +32,8 @@ import org.ballerinalang.natives.annotations.Receiver;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "data.cassandra",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = "ClientConnector"),
+        orgName = "ballerina", packageName = "cassandra",
+        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CASSANDRA_CLIENT),
         functionName = "close"
 )
 public class Close extends AbstractCassandraAction {
@@ -41,7 +41,7 @@ public class Close extends AbstractCassandraAction {
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
-        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT_CONNECTOR);
+        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
         try {
             close(datasource);
         } catch (Throwable e) {

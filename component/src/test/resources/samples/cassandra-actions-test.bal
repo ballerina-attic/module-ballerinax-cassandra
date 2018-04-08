@@ -1,11 +1,11 @@
-import ballerina/data.cassandra as c;
+import ballerina/cassandra as c;
 
-struct RS {
+type RS {
     int id;
     string name;
     float salary;
     boolean married;
-}
+};
 
 function testKeySpaceCreation() {
     endpoint c:Client conn {
@@ -62,11 +62,11 @@ function testInsert() {
        password: "cassandra",
        options: {}
     };
-    c:Parameter pID = {cqlType:c:Type.INT, value:2};
-    c:Parameter pName = {cqlType:c:Type.TEXT, value:"Tim"};
-    c:Parameter pSalary = {cqlType:c:Type.FLOAT, value:100.5};
-    c:Parameter pIncome = {cqlType:c:Type.DOUBLE, value:1000.5};
-    c:Parameter pMarried = {cqlType:c:Type.BOOLEAN, value:true};
+    c:Parameter pID = {cqlType:c:TYPE_INT, value:2};
+    c:Parameter pName = {cqlType:c:TYPE_TEXT, value:"Tim"};
+    c:Parameter pSalary = {cqlType:c:TYPE_FLOAT, value:100.5};
+    c:Parameter pIncome = {cqlType:c:TYPE_DOUBLE, value:1000.5};
+    c:Parameter pMarried = {cqlType:c:TYPE_BOOLEAN, value:true};
     c:Parameter[] pUpdate = [pID, pName, pSalary, pIncome, pMarried];
     _ = conn -> update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
                        pUpdate);
@@ -87,16 +87,18 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     string[] stringDataArray = ["Jack", "Jill"];
     boolean[] booleanDataArray = [true, false];
 
-    c:Parameter idArray = {cqlType:c:Type.INT, value:intDataArray};
-    c:Parameter nameArray = {cqlType:c:Type.TEXT, value:stringDataArray};
-    c:Parameter salaryArray = {cqlType:c:Type.FLOAT, value:floatDataArray};
-    c:Parameter incomeArray = {cqlType:c:Type.DOUBLE, value:doubleDataArray};
-    c:Parameter marriageStatusArray = {cqlType:c:Type.BOOLEAN, value:booleanDataArray};
+    c:Parameter idArray = {cqlType:c:TYPE_INT, value:intDataArray};
+    c:Parameter nameArray = {cqlType:c:TYPE_TEXT, value:stringDataArray};
+    c:Parameter salaryArray = {cqlType:c:TYPE_FLOAT, value:floatDataArray};
+    c:Parameter incomeArray = {cqlType:c:TYPE_DOUBLE, value:doubleDataArray};
+    c:Parameter marriageStatusArray = {cqlType:c:TYPE_BOOLEAN, value:booleanDataArray};
 
     c:Parameter[] params = [idArray, nameArray, salaryArray, incomeArray, marriageStatusArray];
 
-    table dt =? conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
     name in (?) AND salary in (?) AND income in (?) AND married in (?) ALLOW FILTERING", params, typeof RS);
+    
+    var dt = check temp;
 
     int id;
     string name;
@@ -104,7 +106,7 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     boolean married;
 
     while (dt.hasNext()) {
-        var rs =? <RS> dt.getNext();
+        var rs = check <RS> dt.getNext();
         id = rs.id;
         name = rs.name;
         salary = rs.salary;
@@ -122,15 +124,16 @@ function testSelect() returns (int, string, float) {
        password: "cassandra",
        options: {}
     };
-    c:Parameter pID = {cqlType:c:Type.INT, value:1};
+    c:Parameter pID = {cqlType:c:TYPE_INT, value:1};
     c:Parameter[] params = [pID];
-    table dt =? conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", params, typeof
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", params, typeof
     RS);
+    table dt = check temp;
     int id;
     string name;
     float salary;
     while (dt.hasNext()) {
-            var rs =? <RS> dt.getNext();
+            var rs = check <RS> dt.getNext();
             id = rs.id;
             name = rs.name;
             salary = rs.salary;
@@ -147,9 +150,48 @@ function testSelectNonExistentColumn() returns (any) {
         password: "cassandra",
         options: {}
     };
-    c:Parameter pID = {cqlType:c:Type.INT, value:1};
+    c:Parameter pID = {cqlType:c:TYPE_INT, value:1};
     c:Parameter[] params = [pID];
     var result = conn -> select("SELECT x FROM peopleinfoks.person WHERE id = ?", params, typeof RS);
     return result;
+}
+
+function testInsertWithNilParams() {
+    endpoint c:Client conn {
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
+    };
+
+    _ = conn -> update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (10,'Jim',101.5,1001.5,false)",
+        ());
+    _ = conn -> close();
+}
+
+function testSelectWithNilParams() returns (int, string, float) {
+    endpoint c:Client conn {
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
+    };
+
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", (), typeof
+        RS);
+    table dt = check temp;
+    int id;
+    string name;
+    float salary;
+    while (dt.hasNext()) {
+        var rs = check <RS> dt.getNext();
+        id = rs.id;
+        name = rs.name;
+        salary = rs.salary;
+    }
+    _ = conn -> close();
+    return (id, name, salary);
 }
 
