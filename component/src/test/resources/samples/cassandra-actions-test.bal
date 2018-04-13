@@ -96,7 +96,7 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     c:Parameter[] params = [idArray, nameArray, salaryArray, incomeArray, marriageStatusArray];
 
     var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
-    name in (?) AND salary in (?) AND income in (?) AND married in (?) ALLOW FILTERING", params, typeof RS);
+    name in (?) AND salary in (?) AND income in (?) AND married in (?) ALLOW FILTERING", params,  RS);
     
     var dt = check temp;
 
@@ -126,7 +126,7 @@ function testSelect() returns (int, string, float) {
     };
     c:Parameter pID = {cqlType:c:TYPE_INT, value:1};
     c:Parameter[] params = [pID];
-    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", params, typeof
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", params, 
     RS);
     table dt = check temp;
     int id;
@@ -152,7 +152,7 @@ function testSelectNonExistentColumn() returns (any) {
     };
     c:Parameter pID = {cqlType:c:TYPE_INT, value:1};
     c:Parameter[] params = [pID];
-    var result = conn -> select("SELECT x FROM peopleinfoks.person WHERE id = ?", params, typeof RS);
+    var result = conn -> select("SELECT x FROM peopleinfoks.person WHERE id = ?", params,  RS);
     return result;
 }
 
@@ -179,7 +179,7 @@ function testSelectWithNilParams() returns (int, string, float) {
         options: {}
     };
 
-    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", (), typeof
+    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", (), 
         RS);
     table dt = check temp;
     int id;

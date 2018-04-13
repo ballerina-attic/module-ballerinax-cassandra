@@ -36,12 +36,10 @@ import org.ballerinalang.model.values.BBlob;
 import org.ballerinalang.model.values.BBlobArray;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BBooleanArray;
-import org.ballerinalang.model.values.BConnector;
 import org.ballerinalang.model.values.BFloat;
 import org.ballerinalang.model.values.BFloatArray;
 import org.ballerinalang.model.values.BIntArray;
 import org.ballerinalang.model.values.BInteger;
-import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BNewArray;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
@@ -85,20 +83,6 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
     protected void close(CassandraDataSource dbDataSource) {
         dbDataSource.getSession().close();
         dbDataSource.getCluster().close();
-    }
-
-    protected CassandraDataSource getDataSource(BConnector bConnector) {
-        CassandraDataSource datasource = null;
-        BMap sharedMap = (BMap) bConnector.getRefField(1);
-        if (sharedMap.get(new BString(Constants.DATASOURCE_KEY)) != null) {
-            BValue value = sharedMap.get(new BString(Constants.DATASOURCE_KEY));
-            if (value instanceof CassandraDataSource) {
-                datasource = (CassandraDataSource) value;
-            }
-        } else {
-            throw new BallerinaException("datasource not initialized properly");
-        }
-        return datasource;
     }
 
     protected BStructType getStructType(Context context) {
