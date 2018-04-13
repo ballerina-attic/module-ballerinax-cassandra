@@ -41,11 +41,9 @@ import org.ballerinalang.model.values.BFloatArray;
 import org.ballerinalang.model.values.BIntArray;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BNewArray;
-import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.model.values.BTypeDescValue;
 import org.ballerinalang.model.values.BValue;
@@ -87,7 +85,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
 
     protected BStructType getStructType(Context context) {
         BStructType structType = null;
-        BTypeDescValue type = (BTypeDescValue) context.getNullableRefArgument(2);
+        BTypeDescValue type = (BTypeDescValue) context.getNullableRefArgument(1);
         if (type != null) {
             structType = (BStructType) type.value();
         }
@@ -163,10 +161,10 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
             int count;
             int paramCount = (int) parameters.size();
             for (int i = 0; i < paramCount; i++) {
-                BStruct paramValue = (BStruct) parameters.get(i);
+                BRefValueArray paramValue = (BRefValueArray) parameters.get(i);
                 if (paramValue != null) {
-                    String cqlType = getCQLType(paramValue);
-                    BValue value = paramValue.getRefField(1);
+                    String cqlType = paramValue.get(0).stringValue();
+                    BValue value = paramValue.get(1);
                     if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
                             .equalsIgnoreCase(cqlType)) {
                         count = (int) ((BNewArray) value).size();
@@ -228,10 +226,10 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         }
         int paramCount = (int) params.size();
         for (int index = 0; index < paramCount; index++) {
-            BStruct paramStruct = (BStruct) params.get(index);
-            if (paramStruct != null) {
-                String cqlType = getCQLType(paramStruct);
-                BValue value = paramStruct.getRefField(1);
+            BRefValueArray paramArray = (BRefValueArray) params.get(index);
+            if (paramArray != null) {
+                String cqlType = paramArray.get(0).stringValue();
+                BValue value = paramArray.get(1);
                 //If the parameter is an array and sql type is not "array" then treat it as an array of parameters
                 if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
                         .equalsIgnoreCase(cqlType)) {
@@ -289,14 +287,4 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
             dataList.add(Boolean.parseBoolean(value.stringValue()));
         }
     }
-
-    private String getCQLType(BStruct parameter) {
-        String sqlType = null;
-        BRefType type = parameter.getRefField(0);
-        if (type != null) {
-            sqlType = type.stringValue();
-        }
-        return sqlType;
-    }
-
 }

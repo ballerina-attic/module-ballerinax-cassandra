@@ -14,7 +14,7 @@ function testConnectionInitWithLBPolicy() {
         options:{loadBalancingPolicy:"DCAwareRoundRobinPolicy"}
     };
     _ = conn -> update("CREATE KEYSPACE lbtestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor' :1}", null);
+    'replication_factor' :1}");
     _ = conn -> close();
 }
 
@@ -38,7 +38,7 @@ function testConnectionInitWithRetryPolicy() {
     };
 
     _ = conn -> update("CREATE KEYSPACE retrytestkeyspace  WITH replication = {'class': 'SimpleStrategy', 'replication_factor':
-    1}", null);
+    1}");
     _ = conn -> close();
 }
 
@@ -63,7 +63,7 @@ function testConnectionInitWithReconnectionPolicy() {
     };
 
     _ = conn -> update("CREATE KEYSPACE reconnectiontestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor': 1}", null);
+    'replication_factor': 1}");
     _ = conn -> close();
 }
 
@@ -114,7 +114,7 @@ function testConnectionInitWithPoolingOptions() {
                                            coreConnectionsPerHostRemote:1, maxConnectionsPerHostRemote:8,
                                           newConnectionThresholdRemote:100}}};
     _ = conn -> update("CREATE KEYSPACE poolingoptionstestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-        'replication_factor': 1}", null);
+        'replication_factor': 1}");
     _ = conn -> close();
 
 }
@@ -130,7 +130,7 @@ function testConnectionInitWithSocketOptions() {
                                           connectTimeoutMillis: 5000, readTimeoutMillis: 12000, soLinger: 0}}
     };
     _ = conn -> update("CREATE KEYSPACE socketoptionstestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor': 1}", null);
+    'replication_factor': 1}");
     _ = conn -> close();
 }
 
@@ -147,7 +147,7 @@ function testConnectionInitWithQueryOptions() {
                                         refreshNodeIntervalMillis:1000, refreshSchemaIntervalMillis:1000}}
     };
     _ = conn -> update("CREATE KEYSPACE queryoptionstestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor': 1}", null);
+    'replication_factor': 1}");
     _ = conn -> close();
 }
 
@@ -163,7 +163,7 @@ function testConnectionInitWithProtocolOptions() {
     };
 
     _ = conn -> update("CREATE KEYSPACE protocoloptionstestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor' :1}", null);
+    'replication_factor' :1}");
     _ = conn -> close();
 }
 
@@ -178,7 +178,7 @@ function testConnectionInitWithAdditionalConnectionParams() {
     };
 
     _ = conn -> update("CREATE KEYSPACE conparamtestkeyspace  WITH replication = {'class': 'SimpleStrategy',
-    'replication_factor': 1}", null);
+    'replication_factor': 1}");
     _ = conn -> close();
 }
 

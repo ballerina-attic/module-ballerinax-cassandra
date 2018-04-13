@@ -51,7 +51,7 @@ public class Select extends AbstractCassandraAction {
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String query = context.getStringArgument(0);
-        BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(1);
+        BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(2);
         BStructType structType = getStructType(context);
         CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
         try {
