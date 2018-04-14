@@ -97,7 +97,7 @@ public class CassandraActionsTest extends CassandraBaseTest {
     }
 
     @Test(description = "This method tests insertion to Cassandra database")
-    public void testInsert() {
+    public void testInsert() throws Exception {
         BRunUtil.invoke(result, "testInsert");
         PreparedStatement selectStmt = session.prepare("select * from peopleinfoks.person where id = 2");
         ResultSet resultSet = session.execute(selectStmt.bind());
@@ -115,7 +115,7 @@ public class CassandraActionsTest extends CassandraBaseTest {
     }
 
     @Test(description = "This method tests insertion with nil param array")
-    public void testInsertWithNilParams() {
+    public void testInsertWithNilParams() throws Exception {
         BRunUtil.invoke(result, "testInsertWithNilParams");
         PreparedStatement selectStmt = session.prepare("select * from peopleinfoks.person where id = 10");
         ResultSet resultSet = session.execute(selectStmt.bind());
@@ -133,7 +133,7 @@ public class CassandraActionsTest extends CassandraBaseTest {
     }
 
     @Test(description = "This method tests selection from Cassandra database")
-    public void testSelect() {
+    public void testSelect() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "testSelect");
         long id = ((BInteger) results[0]).intValue();
         String name = results[1].stringValue();
@@ -143,7 +143,7 @@ public class CassandraActionsTest extends CassandraBaseTest {
     }
 
     @Test(description = "This method tests selection from Cassandra database with nil param array")
-    public void testSelectWithNilParams() {
+    public void testSelectWithNilParams() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "testSelectWithNilParams");
         long id = ((BInteger) results[0]).intValue();
         String name = results[1].stringValue();
@@ -153,14 +153,14 @@ public class CassandraActionsTest extends CassandraBaseTest {
     }
 
     @Test(description = "This method tests selection failure from Cassandra database")
-    public void testSelectExceptionScenario() {
+    public void testSelectExceptionScenario() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "testSelectNonExistentColumn");
         Assert.assertNotNull(results);
         Assert.assertTrue(results[0].stringValue().contains("Undefined column name x"));
     }
 
     @Test(description = "This method tests select action with parameter arrays")
-    public void testSelectWithParamArray() {
+    public void testSelectWithParamArray() throws Exception {
         BValue[] results = BRunUtil.invoke(result, "testSelectWithParamArray");
         long id = ((BInteger) results[0]).intValue();
         String name = results[1].stringValue();

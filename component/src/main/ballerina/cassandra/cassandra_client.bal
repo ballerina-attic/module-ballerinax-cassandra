@@ -15,14 +15,6 @@
 // under the License.
 package ballerina.cassandra;
 
-@Description {value:"Parameter struct represents a query parameter for the queries specified in connector actions."}
-@Field {value:"cqlType: The cassandra data type of the corresponding parameter"}
-@Field {value:"value: Value of parameter passed into the query"}
-public type Parameter {
-    TYPE cqlType,
-    any value,
-};
-
 @Description {value:"The Datatype of the parameter"}
 @Field {value:"INT: A 32-bit signed integer"}
 @Field {value:"BIGINT: A 64-bit signed long"}
@@ -32,18 +24,20 @@ public type Parameter {
 @Field {value:"TEXT: UTF-8 encoded string"}
 @Field {value:"BOOLEAN: Boolean value either True or false"}
 @Field {value:"LIST: A collection of one or more ordered elements"}
-public type TYPE
+public type Type
 "INT"|"BIGINT"|"VARINT"|"FLOAT"|"DOUBLE"|"TEXT"|"BOOLEAN"|"LIST";
 
-@final public TYPE TYPE_INT = "INT";
-@final public TYPE TYPE_BIGINT = "BIGINT";
-@final public TYPE TYPE_VARINT = "VARINT";
-@final public TYPE TYPE_FLOAT = "FLOAT";
-@final public TYPE TYPE_DOUBLE = "DOUBLE";
-@final public TYPE TYPE_TEXT = "TEXT";
-@final public TYPE TYPE_BOOLEAN = "BOOLEAN";
-@final public TYPE TYPE_LIST = "LIST";
+@final public Type TYPE_INT = "INT";
+@final public Type TYPE_BIGINT = "BIGINT";
+@final public Type TYPE_VARINT = "VARINT";
+@final public Type TYPE_FLOAT = "FLOAT";
+@final public Type TYPE_DOUBLE = "DOUBLE";
+@final public Type TYPE_TEXT = "TEXT";
+@final public Type TYPE_BOOLEAN = "BOOLEAN";
+@final public Type TYPE_LIST = "LIST";
 
+public type Parameter
+(Type, any);
 
 @Description {value:"The Client Connector for Cassandra database."}
 public type CassandraClient object {
@@ -53,17 +47,17 @@ public type CassandraClient object {
 @Param {value:"parameters: Parameter array used with the given query"}
 @Param {value:"type:The Type result should be mapped to"}
 @Return {value:"Result set for the given query"}
-public native function select (string queryString, (Parameter[] | ()) parameters, typedesc recordType)
-returns (table | CassandraConnectorError);
+public native function select (string queryString, typedesc recordType, Parameter... parameters)
+returns (table | error);
 
 @Description {value:"Execute update query on cassandra datasource."}
 @Param {value:"query: Query to be executed"}
 @Param {value:"parameters: Parameter array used with the given query"}
-public native function update (string queryString, (Parameter[] | ()) parameters) returns
-(CassandraConnectorError | ());
+public native function update (string queryString, Parameter... parameters) returns
+(error | ());
 
 @Description {value:"The close action implementation to shutdown the cassandra connections."}
-public native function close () returns (CassandraConnectorError | ());
+public native function close () returns (error | ());
 
 };
 
