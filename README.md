@@ -32,11 +32,11 @@ Sample
 import ballerina/cassandra as c;
 import ballerina/io;
 
-struct RS {
-    int id;
-    string name;
-    float salary;
-}
+type RS {
+    int id,
+    string name,
+    float salary,
+};
 
 
 function main (string[] args) {
@@ -53,47 +53,44 @@ function main (string[] args) {
     };
 
     _ = conn -> update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy', 
-    'replication_factor' : 3}", null);
+    'replication_factor' : 3}");
     io:println("Key space testballerina is created.");
 
     _ = conn -> update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double, 
-    married boolean)", null);
+    married boolean)");
     io:println("Table person created.");
 
-    c:Parameter pID = {cqlType:c:Type.INT, value:1};
-    c:Parameter pName = {cqlType:c:Type.TEXT, value:"Anupama"};
-    c:Parameter pSalary = {cqlType:c:Type.FLOAT, value:100.5};
-    c:Parameter pIncome = {cqlType:c:Type.DOUBLE, value:1000.5};
-    c:Parameter pMarried = {cqlType:c:Type.BOOLEAN, value:true};
-    c:Parameter[] pUpdate = [pID, pName, pSalary, pIncome, pMarried];
+    c:Parameter pID = (c:TYPE_INT, 1);
+    c:Parameter pName = (c:TYPE_TEXT, "Anupama");
+    c:Parameter pSalary = (c:TYPE_FLOAT, 100.5);
+    c:Parameter pIncome = (c:TYPE_DOUBLE, 1000.5);
+    c:Parameter pMarried = (c:TYPE_BOOLEAN, true);
     _ = conn -> update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)",
-                pUpdate);
+                pID, pName, pSalary, pIncome, pMarried);
     io:println("Insert One Row to Table person.");
 
-    c:Parameter[] paramsSelect1 = [pID];
-    table dt1 =? conn -> select("select id, name, salary from testballerina.person where id = ?",
-    paramsSelect1, typeof RS);
+    var temp1 = conn -> select("select id, name, salary from testballerina.person where id = ?", RS, pID);
+    table dt1 = check temp1;
     while (dt1.hasNext()) {
-        var rs =? <RS> dt1.getNext();
+        var rs = check <RS> dt1.getNext();
         int id = rs.id;
         string name = rs.name;
         float salary = rs.salary;
         io:println("Person:" + rs.id + "|" + rs.name + "|" + rs.salary);
     }
 
-    c:Parameter[] paramsSelect2 = [pID, pName];
-    table dt2 =? conn -> select("select id, name, salary from testballerina.person where id = ? and name = ? 
-    ALLOW FILTERING", paramsSelect2, typeof RS);
-    var j =? <json>dt2;
+    var temp2 = conn -> select("select id, name, salary from testballerina.person where id = ? and name = ?
+    ALLOW FILTERING", RS, pID, pName);
+    table dt2 = check temp2;
+    var j = check <json>dt2;
     io:println(j);
 
-    c:Parameter[] paramsSelect3 = [pSalary];
-    table dt3 =? conn -> select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
-    paramsSelect3, typeof RS);
-    var x =? <xml>dt3;
+    var temp3 = conn -> select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING", RS, pSalary);
+    table dt3 = check temp3;
+    var x = check <xml>dt3;
     io:println(x);
 
-    _ = conn -> update("DROP KEYSPACE testballerina", null);
+    _ = conn -> update("DROP KEYSPACE testballerina");
     io:println("KEYSPACE testballerina dropped.");
 
     _ = conn -> close();
