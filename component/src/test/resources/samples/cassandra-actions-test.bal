@@ -9,15 +9,15 @@ type RS {
 
 function testKeySpaceCreation() {
     endpoint c:Client conn {
-       host: "localhost",
-       port: 9142,
-       username: "cassandra",
-       password: "cassandra",
-       options: {}
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
     };
-    _ = conn -> update("CREATE KEYSPACE dummyks  WITH replication = {'class':'SimpleStrategy', 'replication_factor'
+    _ = conn->update("CREATE KEYSPACE dummyks  WITH replication = {'class':'SimpleStrategy', 'replication_factor'
     :1}");
-    _ = conn -> close();
+    conn.stop();
 }
 
 function testDuplicateKeySpaceCreation() returns (any) {
@@ -28,55 +28,71 @@ function testDuplicateKeySpaceCreation() returns (any) {
         password: "cassandra",
         options: {}
     };
-    _ = conn -> update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
+    _ = conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
     'replication_factor':1}");
 
-    var result = conn -> update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
+    var result = conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
     'replication_factor':1}");
-    _ = conn -> close();
+    conn.stop();
 
     return result;
 }
 
 function testTableCreation() {
     endpoint c:Client conn {
-       host: "localhost",
-       port: 9142,
-       username: "cassandra",
-       password: "cassandra",
-       options: {}
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
     };
-    _ = conn -> update("CREATE TABLE peopleinfoks.student(id int PRIMARY KEY,name text, age int)");
-    _ = conn -> close();
+    _ = conn->update("CREATE TABLE peopleinfoks.student(id int PRIMARY KEY,name text, age int)");
+    conn.stop();
 }
 
 function testInsert() {
     endpoint c:Client conn {
-       host: "localhost",
-       port: 9142,
-       username: "cassandra",
-       password: "cassandra",
-       options: {}
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
     };
 
-    c:Parameter pID = (c:TYPE_INT, 2);
-    c:Parameter pName = (c:TYPE_TEXT, "Tim");
-    c:Parameter pSalary = (c:TYPE_FLOAT, 100.5);
-    c:Parameter pIncome = (c:TYPE_DOUBLE, 1000.5);
-    c:Parameter pMarried = (c:TYPE_BOOLEAN, true);
+    c:Parameter pID = { cqlType: c:TYPE_INT, value: 2 };
+    c:Parameter pName = { cqlType: c:TYPE_TEXT, value: "Tim" };
+    c:Parameter pSalary = { cqlType: c:TYPE_FLOAT, value: 100.5 };
+    c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1000.5 };
+    c:Parameter pMarried = { cqlType: c:TYPE_BOOLEAN, value: true };
 
-    _ = conn -> update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
+    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
         pID, pName, pSalary, pIncome, pMarried);
-    _ = conn -> close();
+    conn.stop();
+}
+
+function testInsertRawParams() {
+    endpoint c:Client conn {
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
+    };
+
+    c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1001.5 };
+
+    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
+        10, "Tommy", 101.5, pIncome, false);
+    conn.stop();
 }
 
 function testSelectWithParamArray() returns (int, string, float, boolean) {
     endpoint c:Client conn {
-       host: "localhost",
-       port: 9142,
-       username: "cassandra",
-       password: "cassandra",
-       options: {}
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
     };
     int[] intDataArray = [1, 5];
     float[] floatDataArray = [100.2, 100.5];
@@ -84,13 +100,13 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     string[] stringDataArray = ["Jack", "Jill"];
     boolean[] booleanDataArray = [true, false];
 
-    c:Parameter idArray = (c:TYPE_INT, intDataArray);
-    c:Parameter nameArray = (c:TYPE_TEXT, stringDataArray);
-    c:Parameter salaryArray = (c:TYPE_FLOAT, floatDataArray);
-    c:Parameter incomeArray = (c:TYPE_DOUBLE, doubleDataArray);
-    c:Parameter marriageStatusArray = (c:TYPE_BOOLEAN, booleanDataArray);
+    c:Parameter idArray = { cqlType: c:TYPE_INT, value: intDataArray };
+    c:Parameter nameArray = { cqlType: c:TYPE_TEXT, value: stringDataArray };
+    c:Parameter salaryArray = { cqlType: c:TYPE_FLOAT, value: floatDataArray };
+    c:Parameter incomeArray = { cqlType: c:TYPE_DOUBLE, value: doubleDataArray };
+    c:Parameter marriageStatusArray = { cqlType: c:TYPE_BOOLEAN, value: booleanDataArray };
 
-    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
+    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
     name in (?) AND salary in (?) AND income in (?) AND married in (?) ALLOW FILTERING", RS, idArray, nameArray,
         salaryArray, incomeArray, marriageStatusArray);
 
@@ -102,39 +118,37 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     boolean married;
 
     while (dt.hasNext()) {
-        var rs = check <RS> dt.getNext();
+        var rs = check <RS>dt.getNext();
         id = rs.id;
         name = rs.name;
         salary = rs.salary;
         married = rs.married;
     }
-    _ = conn -> close();
+    conn.stop();
     return (id, name, salary, married);
 }
 
 function testSelect() returns (int, string, float) {
     endpoint c:Client conn {
-       host: "localhost",
-       port: 9142,
-       username: "cassandra",
-       password: "cassandra",
-       options: {}
+        host: "localhost",
+        port: 9142,
+        username: "cassandra",
+        password: "cassandra",
+        options: {}
     };
 
-    c:Parameter pID = (c:TYPE_INT, 1);
-
-    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", RS, pID);
+    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", RS, 1);
     table dt = check temp;
     int id;
     string name;
     float salary;
     while (dt.hasNext()) {
-            var rs = check <RS> dt.getNext();
-            id = rs.id;
-            name = rs.name;
-            salary = rs.salary;
+        var rs = check <RS>dt.getNext();
+        id = rs.id;
+        name = rs.name;
+        salary = rs.salary;
     }
-    _ = conn -> close();
+    conn.stop();
     return (id, name, salary);
 }
 
@@ -149,7 +163,7 @@ function testSelectNonExistentColumn() returns (any) {
 
     c:Parameter pID = (c:TYPE_INT, 1);
 
-    var result = conn -> select("SELECT x FROM peopleinfoks.person WHERE id = ?", RS, pID);
+    var result = conn->select("SELECT x FROM peopleinfoks.person WHERE id = ?", RS, 1);
     return result;
 }
 
@@ -162,8 +176,9 @@ function testInsertWithNilParams() {
         options: {}
     };
 
-    _ = conn -> update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (10,'Jim',101.5,1001.5,false)");
-    _ = conn -> close();
+    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married)
+    values (10,'Jim',101.5,1001.5,false)");
+    conn.stop();
 }
 
 function testSelectWithNilParams() returns (int, string, float) {
@@ -175,18 +190,18 @@ function testSelectWithNilParams() returns (int, string, float) {
         options: {}
     };
 
-    var temp = conn -> select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", RS);
+    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", RS);
     table dt = check temp;
     int id;
     string name;
     float salary;
     while (dt.hasNext()) {
-        var rs = check <RS> dt.getNext();
+        var rs = check <RS>dt.getNext();
         id = rs.id;
         name = rs.name;
         salary = rs.salary;
     }
-    _ = conn -> close();
+    conn.stop();
     return (id, name, salary);
 }
 
