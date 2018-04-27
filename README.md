@@ -55,11 +55,11 @@ function main(string... args) {
                       married boolean)");
     handleUpdate(returned, "Table person creation");
 
-    c:Parameter pID = {cqlType:c:TYPE_INT, value:1};
-    c:Parameter pName = {cqlType:c:TYPE_TEXT, value:"Anupama"};
-    c:Parameter pSalary = {cqlType:c:TYPE_FLOAT, value:100.5};
-    c:Parameter pIncome = {cqlType:c:TYPE_DOUBLE, value:1000.5};
-    c:Parameter pMarried = {cqlType:c:TYPE_BOOLEAN, value:true};
+    c:Parameter pID = { cqlType: c:TYPE_INT, value: 1 };
+    c:Parameter pName = { cqlType: c:TYPE_TEXT, value: "Anupama" };
+    c:Parameter pSalary = { cqlType: c:TYPE_FLOAT, value: 100.5 };
+    c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1000.5 };
+    c:Parameter pMarried = { cqlType: c:TYPE_BOOLEAN, value: true };
     returned = conn->update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)",
         pID, pName, pSalary, pIncome, pMarried);
     handleUpdate(returned, "Insert One Row to Table person");
@@ -91,7 +91,7 @@ function main(string... args) {
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
-                                    Person, pSalary);
+        Person, pSalary);
     match selectRet {
         table tableReturned => dt = tableReturned;
         error e => io:println("Select data from person table failed: " + e.message);
