@@ -84,7 +84,6 @@ public type CallerActions object {
 
         P{{queryString}} Query to be executed
         P{{recordType}} The Type result should be mapped to
-        P{{parameters}} Parameter array used with the given query
         R{{}} `table` representing the result of the select action or `error` if an error occurs
     }
     public native function select(string queryString, typedesc recordType, Param... parameters)
@@ -94,7 +93,6 @@ public type CallerActions object {
         Execute update query on cassandra datasource.
 
         P{{queryString}} Query to be executed
-        P{{parameters}} Parameter array used with the given query
         R{{}} `nil` or `error` if an error occurs
     }
     public native function update(string queryString, Param... parameters) returns (error?);
