@@ -23,8 +23,8 @@ import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
-import org.ballerinalang.natives.annotations.Receiver;
 
 /**
  * {@code Close} action is used to close the Cassandra session.
@@ -33,15 +33,17 @@ import org.ballerinalang.natives.annotations.Receiver;
  */
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CASSANDRA_CLIENT),
-        functionName = "close"
+        functionName = "close",
+        args = {
+                @Argument(name = "parameters", type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS,
+                          structPackage = "ballerina.cassandra")}
 )
 public class Close extends AbstractCassandraAction {
 
     @Override
     public void execute(Context context) {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
-        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CASSANDRA_CLIENT);
+        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             close(datasource);
         } catch (Throwable e) {

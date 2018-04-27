@@ -96,33 +96,15 @@ public class CassandraActionsTest extends CassandraBaseTest {
         Assert.assertEquals(resultList.size(), 0, "An empty result set should have been retrieved");
     }
 
-    @Test(description = "This method tests insertion to Cassandra database")
-    public void testInsert() throws Exception {
-        BRunUtil.invoke(result, "testInsert");
-        PreparedStatement selectStmt = session.prepare("select * from peopleinfoks.person where id = 2");
-        ResultSet resultSet = session.execute(selectStmt.bind());
-        List<Row> resultList = resultSet.all();
-        boolean found = false;
-        for (Row row : resultList) {
-            if (row.get("id", Integer.class) == 2 && "Tim".equals(row.get("name", String.class))
-                    && Float.compare(row.get("salary", Float.class), 100.5f) == 0
-                    && Double.compare(row.get("income", Double.class), 1000.5) == 0 && row
-                    .get("married", Boolean.class)) {
-                found = true;
-            }
-        }
-        Assert.assertTrue(found, "The data might not have been inserted");
-    }
-
-    @Test(description = "This method tests insertion with nil param array")
-    public void testInsertWithNilParams() throws Exception {
-        BRunUtil.invoke(result, "testInsertWithNilParams");
+    @Test(description = "This method tests insertion of raw params to Cassandra database")
+    public void testInsertRawParams() throws Exception {
+        BRunUtil.invoke(result, "testInsertRawParams");
         PreparedStatement selectStmt = session.prepare("select * from peopleinfoks.person where id = 10");
         ResultSet resultSet = session.execute(selectStmt.bind());
         List<Row> resultList = resultSet.all();
         boolean found = false;
         for (Row row : resultList) {
-            if (row.get("id", Integer.class) == 10 && "Jim".equals(row.get("name", String.class))
+            if (row.get("id", Integer.class) == 10 && "Tommy".equals(row.get("name", String.class))
                     && Float.compare(row.get("salary", Float.class), 101.5f) == 0
                     && Double.compare(row.get("income", Double.class), 1001.5) == 0 && !row
                     .get("married", Boolean.class)) {

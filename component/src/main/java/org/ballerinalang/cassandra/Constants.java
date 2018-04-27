@@ -23,10 +23,10 @@ package org.ballerinalang.cassandra;
  * @since 0.95.0
  */
 public final class Constants {
-    public static final String DATASOURCE_KEY = "datasource_key";
     public static final String QUESTION_MARK = "?";
     public static final String CASSANDRA_PACKAGE_PATH = "ballerina.cassandra";
-    public static final String CASSANDRA_CLIENT = "CassandraClient";
+    public static final String CALLER_ACTIONS = "CallerActions";
+    public static final String CASSANDRA_PARAMETER = "Parameter";
     public static final String CASSANDRA_CONNECTOR_ERROR = "CassandraConnectorError";
     public static final String CASSANDRA_EXCEPTION_OCCURED = "Exception Occurred while executing Cassandra database "
             + "operation";

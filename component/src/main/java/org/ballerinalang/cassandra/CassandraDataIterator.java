@@ -69,6 +69,11 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
+    public void reset(boolean b) {
+        /* ignore */
+    }
+
+    @Override
     public String getString(int columnIndex) {
         this.checkCurrentRow();
         return this.current.getString(columnIndex - 1);

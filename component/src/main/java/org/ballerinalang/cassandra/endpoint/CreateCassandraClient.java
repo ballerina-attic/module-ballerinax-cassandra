@@ -35,7 +35,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  */
 @BallerinaFunction(
         orgName = "ballerina", packageName = "cassandra",
-        functionName = "createCassandraClient",
+        functionName = "createClient",
         args = {
                 @Argument(name = "clientEndpointConfig",
                           type = TypeKind.STRUCT,
@@ -61,8 +61,8 @@ public class CreateCassandraClient extends BlockingNativeCallableUnit {
         dataSource.init(host, port, username, password, options);
 
         BStruct cassandraClient = BLangConnectorSPIUtil
-                .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH, Constants.CASSANDRA_CLIENT);
-        cassandraClient.addNativeData(Constants.CASSANDRA_CLIENT, dataSource);
+                .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH, Constants.CALLER_ACTIONS);
+        cassandraClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
         context.setReturnValues(cassandraClient);
     }
 }
