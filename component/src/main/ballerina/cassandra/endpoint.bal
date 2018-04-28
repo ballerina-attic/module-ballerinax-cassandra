@@ -48,7 +48,7 @@ public type Client object {
 };
 
 documentation {
-    The close action implementation to shutdown the cassandra connections.
+    An internal function used by clients to shutdown the connection pool.
 
     P{{callerActions}} CallerActions object that encapsulates the connection/connection pool
 }
