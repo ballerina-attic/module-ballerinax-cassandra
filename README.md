@@ -9,7 +9,7 @@ Ballerina Cassandra Client Endpoint is used to connect Ballerina with Cassandra 
 Steps to Configure
 ==================================
 
-Extract ballerina-cassandra-connector-<version>.zip and copy containing jars in to <BRE_HOME>/bre/lib/
+Extract wso2-cassandra-<version>.zip and copy containing jars in to <BRE_HOME>/bre/lib/
 
 Building from the source
 ==================================
@@ -19,7 +19,7 @@ If you want to build Ballerina Cassandra Connector from the source code:
     https://github.com/wso2-ballerina/package-cassandra
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Copy and extract the distribution created at `/component/target/ballerina-cassandra-connector-<version>.zip`  into <BRE_HOME>/bre/lib/.
+3. Copy and extract the distribution created at `/component/target/wso2-cassandra-package-<version>.zip`  into <BRE_HOME>/bre/lib/.
 
 Sample
 ==================================
