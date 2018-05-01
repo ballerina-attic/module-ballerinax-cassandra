@@ -32,11 +32,11 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "cassandra",
+        orgName = "wso2", packageName = "cassandra",
         functionName = "close",
         args = {
                 @Argument(name = "parameters", type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS,
-                          structPackage = "ballerina.cassandra")}
+                          structPackage = "wso2.cassandra")}
 )
 public class Close extends AbstractCassandraAction {
 

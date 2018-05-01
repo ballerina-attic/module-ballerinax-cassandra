@@ -1,4 +1,4 @@
-import ballerina/cassandra as c;
+import wso2/cassandra as c;
 
 type RS {
     int id;

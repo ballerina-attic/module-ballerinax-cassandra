@@ -1,4 +1,4 @@
-import ballerina/cassandra as c;
+import wso2/cassandra as c;
 
 @final int port = 9142;
 @final string host = "localhost";

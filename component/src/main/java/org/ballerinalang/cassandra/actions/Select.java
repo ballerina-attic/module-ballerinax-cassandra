@@ -36,7 +36,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "cassandra",
+        orgName = "wso2", packageName = "cassandra",
         functionName = "select",
         receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
