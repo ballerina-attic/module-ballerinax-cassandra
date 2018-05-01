@@ -25,7 +25,7 @@ Sample
 ==================================
 
 ```ballerina
-import ballerina/cassandra as c;
+import wso2/cassandra as c;
 import ballerina/io;
 
 type Person {
