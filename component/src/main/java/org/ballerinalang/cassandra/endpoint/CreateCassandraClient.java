@@ -34,7 +34,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
  * @since 0.5.4
  */
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "cassandra",
+        orgName = "wso2", packageName = "cassandra",
         functionName = "createClient",
         args = {
                 @Argument(name = "clientEndpointConfig",

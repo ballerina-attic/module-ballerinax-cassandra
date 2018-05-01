@@ -24,7 +24,7 @@ package org.ballerinalang.cassandra;
  */
 public final class Constants {
     public static final String QUESTION_MARK = "?";
-    public static final String CASSANDRA_PACKAGE_PATH = "ballerina.cassandra";
+    public static final String CASSANDRA_PACKAGE_PATH = "wso2.cassandra";
     public static final String CALLER_ACTIONS = "CallerActions";
     public static final String CASSANDRA_PARAMETER = "Parameter";
     public static final String CASSANDRA_CONNECTOR_ERROR = "CassandraConnectorError";

@@ -34,7 +34,7 @@ import org.ballerinalang.natives.annotations.Receiver;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "ballerina", packageName = "cassandra",
+        orgName = "wso2", packageName = "cassandra",
         functionName = "update",
         receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),

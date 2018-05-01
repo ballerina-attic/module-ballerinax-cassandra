@@ -28,7 +28,6 @@ import org.wso2.ballerinalang.compiler.packaging.repo.Repo;
  * @since 0.95.0
  */
 @JavaSPIService("org.ballerinalang.spi.SystemPackageRepositoryProvider")
-//public class StandardSystemPackageRepositoryProvider implements SystemPackageRepositoryProvider {
 public class CassandraSystemPackageRepositoryProvider implements SystemPackageRepositoryProvider {
 
     public Repo loadRepository() {
