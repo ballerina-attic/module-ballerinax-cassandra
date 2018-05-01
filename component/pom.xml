@@ -24,7 +24,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ballerina-cassandra</artifactId>
+    <artifactId>wso2-cassandra</artifactId>
     <packaging>jar</packaging>
     <name>Ballerina - cassandra Component</name>
     <url>http://ballerinalang.org</url>
@@ -212,7 +212,7 @@
                     <descriptors>
                         <descriptor>src/main/assembly/dist.xml</descriptor>
                     </descriptors>
-                    <finalName>ballerina-cassandra-connector-${project.version}</finalName>
+                    <finalName>wso2-cassandra-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
