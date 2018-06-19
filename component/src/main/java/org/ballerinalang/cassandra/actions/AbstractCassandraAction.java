@@ -28,9 +28,10 @@ import org.ballerinalang.cassandra.CassandraDataIterator;
 import org.ballerinalang.cassandra.CassandraDataSource;
 import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
+import org.ballerinalang.database.table.BCursorTable;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.types.BArrayType;
-import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBlob;
@@ -51,7 +52,7 @@ import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.model.values.BTypeDescValue;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.ArrayList;
@@ -68,13 +69,13 @@ import java.util.Set;
 public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit {
 
     public BTable executeSelect(Context context, CassandraDataSource dataSource, String query,
-            BRefValueArray parameters, BStructType type) {
+            BRefValueArray parameters, BStructureType type) {
         BRefValueArray uniformParams = constructUniformArrayOfParameters(parameters, context);
         String processedQuery = createProcessedQueryString(query, uniformParams);
         PreparedStatement preparedStatement = dataSource.getSession().prepare(processedQuery);
         BoundStatement stmt = createBoundStatement(preparedStatement, uniformParams);
         ResultSet rs = dataSource.getSession().execute(stmt);
-        return new BTable(new CassandraDataIterator(rs, this.getColumnDefinitions(rs), type), false);
+        return new BCursorTable(new CassandraDataIterator(rs, this.getColumnDefinitions(rs), type), false);
     }
 
     public void executeUpdate(Context context, CassandraDataSource dataSource, String query,
@@ -91,11 +92,11 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         dbDataSource.getCluster().close();
     }
 
-    protected BStructType getStructType(Context context) {
-        BStructType structType = null;
+    protected BStructureType getStructType(Context context) {
+        BStructureType structType = null;
         BTypeDescValue type = (BTypeDescValue) context.getNullableRefArgument(1);
         if (type != null) {
-            structType = (BStructType) type.value();
+            structType = (BStructureType) type.value();
         }
         return structType;
     }
@@ -106,7 +107,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         for (int i = 0; i < count; i++) {
             BRefType typeValue = inputParams.get(i);
             BStruct param;
-            if (typeValue.getType().getTag() == TypeTags.STRUCT_TAG) {
+            if (typeValue.getType().getTag() == TypeTags.RECORD_TYPE_TAG) {
                 param = (BStruct) typeValue;
             } else {
                 param = createCQLParameter(context);
@@ -120,7 +121,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
 
     private static BStruct createCQLParameter(Context context) {
         PackageInfo sqlPackageInfo = context.getProgramFile().getPackageInfo(Constants.CASSANDRA_PACKAGE_PATH);
-        StructInfo paramStructInfo = sqlPackageInfo.getStructInfo(Constants.CASSANDRA_PARAMETER);
+        StructureTypeInfo paramStructInfo = sqlPackageInfo.getStructInfo(Constants.CASSANDRA_PARAMETER);
         return new BStruct(paramStructInfo.getType());
     }
 

@@ -34,11 +34,12 @@ import org.ballerinalang.natives.annotations.Receiver;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "wso2", packageName = "cassandra",
+        orgName = "wso2",
+        packageName = "cassandra:0.0.0",
         functionName = "update",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
-                @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+                @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                           structType = "Parameter")
         }
 )

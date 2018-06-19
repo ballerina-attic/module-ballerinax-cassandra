@@ -26,8 +26,8 @@ public type Client object {
     documentation {
         Gets called when the endpoint is being initialized during the package initialization.
     }
-    public function init(ClientEndpointConfiguration clientEndpointConfig) {
-        self.callerActions = createClient(clientEndpointConfig);
+    public function init(ClientEndpointConfiguration config) {
+        self.callerActions = createClient(config);
     }
 
     documentation {
@@ -52,7 +52,7 @@ documentation {
 
     P{{callerActions}} CallerActions object that encapsulates the connection/connection pool
 }
-native function close(CallerActions callerActions);
+public native function close(CallerActions callerActions);
 
 native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 

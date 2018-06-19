@@ -23,19 +23,18 @@ import org.ballerinalang.bre.bvm.BLangVMErrors;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.util.BLangConstants;
 import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructInfo;
+import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
-
-import static org.ballerinalang.bre.bvm.BLangVMErrors.PACKAGE_BUILTIN;
 
 /**
  * This class contains util methods required for Cassandra ballerina package.
  */
 public class CassandraDataSourceUtils {
     public static BStruct getCassandraConnectorError(Context context, Throwable throwable) {
-        PackageInfo builtinPackage = context.getProgramFile().getPackageInfo(PACKAGE_BUILTIN);
-        StructInfo errorStructInfo = builtinPackage.getStructInfo(BLangVMErrors.STRUCT_GENERIC_ERROR);
+        PackageInfo builtinPackage = context.getProgramFile().getPackageInfo(BLangConstants.BALLERINA_BUILTIN_PKG);
+        StructureTypeInfo errorStructInfo = builtinPackage.getStructInfo(BLangVMErrors.STRUCT_GENERIC_ERROR);
         BStruct cassandraConnectorError = new BStruct(errorStructInfo.getType());
         if (throwable.getMessage() == null) {
             cassandraConnectorError.setStringField(0, Constants.CASSANDRA_EXCEPTION_OCCURED);

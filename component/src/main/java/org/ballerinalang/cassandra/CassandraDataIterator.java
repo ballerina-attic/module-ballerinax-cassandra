@@ -22,7 +22,7 @@ import com.datastax.driver.core.Row;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.DataIterator;
-import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.util.exceptions.BallerinaException;
@@ -46,9 +46,9 @@ public class CassandraDataIterator implements DataIterator {
 
     private List<ColumnDefinition> columnDefs;
 
-    private BStructType bStructType;
+    private BStructureType bStructType;
 
-    public CassandraDataIterator(ResultSet rs, List<ColumnDefinition> columnDefs, BStructType structType) {
+    public CassandraDataIterator(ResultSet rs, List<ColumnDefinition> columnDefs, BStructureType structType) {
         this.iterator = rs.iterator();
         this.columnDefs = columnDefs;
         this.bStructType = structType;
@@ -158,7 +158,7 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public BStructType getStructType() {
+    public BStructureType getStructType() {
         return this.bStructType;
     }
 
