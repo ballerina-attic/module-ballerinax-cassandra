@@ -139,6 +139,26 @@
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-database</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <!-- Following ballerina-binary-repo dependencies are required to obtain balos-->
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-builtin</artifactId>
+                <version>${ballerina.version}</version>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-database</artifactId>
+                <version>${ballerina.version}</version>
+                <type>zip</type>
+                <classifier>ballerina-binary-repo</classifier>
+            </dependency>
+            <dependency>
                 <groupId>com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
                 <version>${cassandra.version}</version>
@@ -226,6 +246,26 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>${maven.properties.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-remote-resources-plugin</artifactId>
+                    <version>${maven.remote.resources.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${maven.exec.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>${maven.findbugsplugin.version}</version>
                 </plugin>
@@ -245,7 +285,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.970.0</ballerina.version>
+        <ballerina.version>0.975.0</ballerina.version>
         <cassandra.version>3.4.0</cassandra.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
@@ -253,7 +293,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
         <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/wso2</connectors.source.temp.dir>
+        <connectors.source.temp.dir>${basedir}/target/classes/META-INF/ballerina</connectors.source.temp.dir>
         <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
         <wso2.maven.compiler.source>1.8</wso2.maven.compiler.source>
         <wso2.maven.compiler.target>1.8</wso2.maven.compiler.target>
@@ -265,6 +305,10 @@
         <maven.jacoco.plugin.version>0.8.0</maven.jacoco.plugin.version>
         <findbugs.annotations.version>3.0.1</findbugs.annotations.version>
         <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
+        <maven.properties.plugin.version>1.0.0</maven.properties.plugin.version>
+        <maven.remote.resources.plugin.version>1.5</maven.remote.resources.plugin.version>
+        <maven.exec.plugin.version>1.6.0</maven.exec.plugin.version>
+        <maven.resources.plugin.version>3.0.2</maven.resources.plugin.version>
         <slf4j.version>1.7.25</slf4j.version>
     </properties>
 

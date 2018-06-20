@@ -21,7 +21,7 @@ import org.ballerinalang.bre.Context;
 import org.ballerinalang.cassandra.CassandraDataSource;
 import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
-import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BStruct;
@@ -36,11 +36,12 @@ import org.ballerinalang.natives.annotations.ReturnType;
  * @since 0.95.0
  */
 @BallerinaFunction(
-        orgName = "wso2", packageName = "cassandra",
+        orgName = "wso2",
+        packageName = "cassandra:0.0.0",
         functionName = "select",
-        receiver = @Receiver(type = TypeKind.STRUCT, structType = Constants.CALLER_ACTIONS),
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
-                @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.STRUCT,
+                @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                           structType = "Parameter")
         },
         returnType = { @ReturnType(type = TypeKind.TABLE) }
@@ -52,7 +53,7 @@ public class Select extends AbstractCassandraAction {
         BStruct bConnector = (BStruct) context.getRefArgument(0);
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(2);
-        BStructType structType = getStructType(context);
+        BStructureType structType = getStructType(context);
         CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
         try {
             BTable dataTable = executeSelect(context, dataSource, query, parameters, structType);
