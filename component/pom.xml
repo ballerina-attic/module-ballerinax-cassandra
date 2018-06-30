@@ -89,20 +89,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>ballerina/**</exclude>
-                </excludes>
-            </resource>
-
-            <!-- copy built-in ballerina sources to the jar -->
-            <resource>
-                <directory>src/main/ballerina</directory>
-                <targetPath>META-INF/ballerina</targetPath>
-            </resource>
-        </resources>
         <plugins>
             <!-- For ballerina annotation processing -->
             <plugin>
@@ -161,46 +147,6 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <inherited>false</inherited>
                 <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>${project.artifactId}</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.datastax.cassandra</groupId>
-                                    <artifactId>cassandra-driver-core</artifactId>
-                                    <version>${cassandra.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.google.guava</groupId>
-                                    <artifactId>guava</artifactId>
-                                    <version>${com.google.guava.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>io.dropwizard.metrics</groupId>
-                                    <artifactId>metrics-core</artifactId>
-                                    <version>${io.dropwizard.metrics.version}</version>
-                                    <type>${project.packaging}</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}/distribution</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <overWriteIfNewer>true</overWriteIfNewer>
-                            <useBaseVersion>true</useBaseVersion>
-                        </configuration>
-                    </execution>
                     <!-- Following execution unpacks balo dependencies (ballerina-binary-repo) -->
                     <execution>
                         <id>unpack-dependencies</id>
@@ -211,6 +157,39 @@
                         <configuration>
                             <includeClassifiers>ballerina-binary-repo</includeClassifiers>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>wso2-cassandra-package-${project.version}</finalName>
+                            <artifactSet>
+                                <includes>
+                                    <include>${project.groupId}:${project.artifactId}</include>
+                                    <include>com.datastax.cassandra:cassandra-driver-core</include>
+                                    <include>io.dropwizard.metrics:metrics-core</include>
+                                </includes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resources>
+                                        <resource>installation-scripts/install.bat</resource>
+                                        <resource>installation-scripts/install.sh</resource>
+                                        <resource>installation-scripts/uninstall.bat</resource>
+                                        <resource>installation-scripts/uninstall.sh</resource>
+                                        <resource>installation-scripts/README.txt</resource>
+                                    </resources>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -248,7 +227,7 @@
                         </goals>
                         <configuration>
                             <outputDir>${project.build.directory}/api-docs</outputDir>
-                            <sourceRoot>${basedir}/target/classes/META-INF/ballerina</sourceRoot>
+                            <sourceRoot>${basedir}/src/main/ballerina</sourceRoot>
                             <nativeCode>true</nativeCode>
                             <packageFilter>compression</packageFilter>
                             <orgName>wso2</orgName>
@@ -258,19 +237,16 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <finalName>wso2-cassandra-package-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptor>src/main/assembly/dist.xml</descriptor>
+                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                 </executions>

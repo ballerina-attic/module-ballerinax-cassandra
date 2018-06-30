@@ -19,7 +19,8 @@ If you want to build Ballerina Cassandra Connector from the source code:
     https://github.com/wso2-ballerina/package-cassandra
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Copy and extract the distribution created at `/component/target/wso2-cassandra-package-<version>.zip`  into <BRE_HOME>/bre/lib/.
+3. Extract the distribution created at `/component/target/wso2-cassandra-<version>.zip`. Run the install.{sh/bat} script to install the package.
+You can uninstall the package by running uninstall.{sh/bat}.
 
 Sample
 ==================================
