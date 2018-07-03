@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wso2-ballerina/package-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-cassandra)
+
 # Ballerina Cassandra Client Endpoint
 
 Ballerina Cassandra Client Endpoint is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client endpoint following actions are supported.
