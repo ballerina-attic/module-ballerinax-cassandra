@@ -22,9 +22,15 @@ import com.datastax.driver.core.Row;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.DataIterator;
+import org.ballerinalang.model.types.BField;
 import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BBoolean;
+import org.ballerinalang.model.values.BFloat;
+import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BString;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.nio.ByteBuffer;
@@ -117,33 +123,31 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public BStruct generateNext() {
-        BStruct bStruct = new BStruct(bStructType);
-        int longRegIndex = -1;
-        int doubleRegIndex = -1;
-        int stringRegIndex = -1;
-        int booleanRegIndex = -1;
+    public BMap<String, BValue> generateNext() {
+        BMap<String, BValue> bStruct = new BMap<>(bStructType);
+        BField[] recordFields = this.bStructType.getFields();
         int index = 0;
         for (ColumnDefinition columnDef : columnDefs) {
             String columnName = columnDef.getName();
             TypeKind type = columnDef.getType();
+            String fieldName = recordFields[index].getFieldName();
             ++index;
             switch (type) {
             case STRING:
                 String sValue = getString(index);
-                bStruct.setStringField(++stringRegIndex, sValue);
+                bStruct.put(fieldName, new BString(sValue));
                 break;
             case INT:
                 long lValue = getInt(index);
-                bStruct.setIntField(++longRegIndex, lValue);
+                bStruct.put(fieldName, new BInteger(lValue));
                 break;
             case FLOAT:
                 double fValue = getFloat(index);
-                bStruct.setFloatField(++doubleRegIndex, fValue);
+                bStruct.put(fieldName, new BFloat(fValue));
                 break;
             case BOOLEAN:
                 boolean boolValue = getBoolean(index);
-                bStruct.setBooleanField(++booleanRegIndex, boolValue ? 1 : 0);
+                bStruct.put(fieldName, new BBoolean(boolValue));
                 break;
             default:
                 throw new BallerinaException("unsupported sql type found for the column " + columnName);

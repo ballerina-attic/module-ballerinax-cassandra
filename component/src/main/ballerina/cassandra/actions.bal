@@ -65,7 +65,7 @@ documentation {
     F{{cqlType}} Cassandra type of the parameter
     F{{value}} Value of the parameter
 }
-public type Parameter {
+public type Parameter record {
     Type cqlType,
     any value,
 };

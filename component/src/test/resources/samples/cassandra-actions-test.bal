@@ -1,6 +1,6 @@
 import wso2/cassandra as c;
 
-type RS {
+type RS record {
     int id;
     string name;
     float salary;
@@ -161,7 +161,7 @@ function testSelectNonExistentColumn() returns (any) {
         options: {}
     };
 
-    c:Parameter pID = (c:TYPE_INT, 1);
+    c:Parameter pID = { cqlType: c:TYPE_INT, value:1 };
 
     var result = conn->select("SELECT x FROM peopleinfoks.person WHERE id = ?", RS, 1);
     return result;
