@@ -34,20 +34,18 @@ import org.ballerinalang.model.types.BArrayType;
 import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.types.TypeTags;
-import org.ballerinalang.model.values.BBlob;
-import org.ballerinalang.model.values.BBlobArray;
 import org.ballerinalang.model.values.BBoolean;
 import org.ballerinalang.model.values.BBooleanArray;
 import org.ballerinalang.model.values.BFloat;
 import org.ballerinalang.model.values.BFloatArray;
 import org.ballerinalang.model.values.BIntArray;
 import org.ballerinalang.model.values.BInteger;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BNewArray;
 import org.ballerinalang.model.values.BRefType;
 import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BStringArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.model.values.BTypeDescValue;
 import org.ballerinalang.model.values.BValue;
@@ -106,23 +104,24 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         int count = (int) inputParams.size();
         for (int i = 0; i < count; i++) {
             BRefType typeValue = inputParams.get(i);
-            BStruct param;
+            BMap<String, BValue> param;
             if (typeValue.getType().getTag() == TypeTags.RECORD_TYPE_TAG) {
-                param = (BStruct) typeValue;
+                param = (BMap<String, BValue>) typeValue;
             } else {
                 param = createCQLParameter(context);
-                param.setRefField(0, new BString(CassandraDataSourceUtils.getCQLType(typeValue.getType())));
-                param.setRefField(1, typeValue);
+                param.put(Constants.CQL_TYPE_FIELD,
+                        new BString(CassandraDataSourceUtils.getCQLType(typeValue.getType())));
+                param.put(Constants.VALUE_FIELD, typeValue);
             }
             uniformParams.add(i, param);
         }
         return uniformParams;
     }
 
-    private static BStruct createCQLParameter(Context context) {
+    private static BMap<String, BValue> createCQLParameter(Context context) {
         PackageInfo sqlPackageInfo = context.getProgramFile().getPackageInfo(Constants.CASSANDRA_PACKAGE_PATH);
         StructureTypeInfo paramStructInfo = sqlPackageInfo.getStructInfo(Constants.CASSANDRA_PARAMETER);
-        return new BStruct(paramStructInfo.getType());
+        return new BMap<>(paramStructInfo.getType());
     }
 
     private List<ColumnDefinition> getColumnDefinitions(ResultSet rs) {
@@ -176,7 +175,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         } else if (DataType.cfloat().equals(type)) {
             return TypeKind.FLOAT;
         } else if (DataType.blob().equals(type)) {
-            return TypeKind.BLOB;
+            return TypeKind.ARRAY;
         }  else {
             return TypeKind.STRING;
         }
@@ -194,10 +193,10 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
             int count;
             int paramCount = (int) parameters.size();
             for (int i = 0; i < paramCount; i++) {
-                BStruct paramStruct = (BStruct) parameters.get(i);
+                BMap<String, BValue> paramStruct = (BMap<String, BValue>) parameters.get(i);
                 if (paramStruct != null) {
                     String cqlType = getCQLType(paramStruct);
-                    BValue value = paramStruct.getRefField(1);
+                    BValue value = paramStruct.get(Constants.VALUE_FIELD);
                     if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
                             .equalsIgnoreCase(cqlType)) {
                         count = (int) ((BNewArray) value).size();
@@ -259,10 +258,10 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         }
         int paramCount = (int) params.size();
         for (int index = 0; index < paramCount; index++) {
-            BStruct paramStruct = (BStruct) params.get(index);
+            BMap<String, BValue> paramStruct = (BMap<String, BValue>) params.get(index);
             if (paramStruct != null) {
                 String cqlType = getCQLType(paramStruct);
-                BValue value = paramStruct.getRefField(1);
+                BValue value = paramStruct.get(Constants.VALUE_FIELD);
                 //If the parameter is an array and sql type is not "array" then treat it as an array of parameters
                 if (value != null && value.getType().getTag() == TypeTags.ARRAY_TAG && !Constants.DataTypes.LIST
                         .equalsIgnoreCase(cqlType)) {
@@ -283,9 +282,16 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
                         case TypeTags.BOOLEAN_TAG:
                             paramValue = new BBoolean(((BBooleanArray) value).get(i) > 0);
                             break;
-                        case TypeTags.BLOB_TAG:
-                            paramValue = new BBlob(((BBlobArray) value).get(i));
-                            break;
+                        case TypeTags.ARRAY_TAG:
+                            BValue array = ((BRefValueArray) value).get(i);
+                            if (((BArrayType) value.getType()).getElementType().getTag() == TypeTags.BYTE_TAG) {
+                                paramValue = array;
+                                break;
+                            } else {
+                                throw new BallerinaException("unsupported array type for parameter index: " + index
+                                        + ". Array element type being an array is supported only when the inner array"
+                                        + " element type is BYTE");
+                            }
                         default:
                             throw new BallerinaException("unsupported array type for parameter index " + index);
                         }
@@ -302,9 +308,9 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         return boundStmt;
     }
 
-    private String getCQLType(BStruct parameter) {
+    private String getCQLType(BMap<String, BValue> parameter) {
         String cqlType = "";
-        BRefType refType = parameter.getRefField(0);
+        BValue refType = parameter.get(Constants.CQL_TYPE_FIELD);
         if (refType != null) {
             cqlType = refType.stringValue();
         }

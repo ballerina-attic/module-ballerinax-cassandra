@@ -18,10 +18,8 @@ documentation {
     Represents Cassandra client endpoint.
 }
 public type Client object {
-    public {
-        ClientEndpointConfiguration clientEndpointConfig;
-        CallerActions callerActions;
-    }
+        public ClientEndpointConfiguration clientEndpointConfig;
+        public CallerActions callerActions;
 
     documentation {
         Gets called when the endpoint is being initialized during the package initialization.
@@ -65,7 +63,7 @@ documentation {
     F{{password}} Password for the database connection
     F{{options}} Properties for the connection configuration
 }
-public type ClientEndpointConfiguration {
+public type ClientEndpointConfiguration record {
     string host,
     int port,
     string username,
@@ -95,7 +93,7 @@ documentation {
     hosts
     F{{protocolOptionsConfig}} Options of the Cassandra native binary protocol
 }
-public type ConnectionProperties {
+public type ConnectionProperties record {
     string clusterName,
     string loadBalancingPolicy,
     string reconnectionPolicy,
@@ -125,7 +123,7 @@ documentation {
     F{{initialProtocolVersion}} Version of the native protocol supported by the driver
     F{{compression}} Compression supported by the Cassandra binary protocol
 }
-public type ProtocolOptionsConfiguration {
+public type ProtocolOptionsConfiguration record {
     boolean sslEnabled,
     boolean noCompact,
 
@@ -166,7 +164,7 @@ documentation {
     F{{refreshSchemaIntervalMillis}} Determines the default window size in milliseconds used to debounce schema refresh
     requests
 }
-public type QueryOptionsConfiguration {
+public type QueryOptionsConfiguration record {
     string consistencyLevel,
     string serialConsistencyLevel,
 
@@ -202,7 +200,7 @@ documentation {
     F{{maxConnectionsPerHostRemote}} The maximum number of connections per remote host
     F{{newConnectionThresholdRemote}} The threshold that triggers the creation of a new connection to a remote host
 }
-public type PoolingOptionsConfiguration {
+public type PoolingOptionsConfiguration record {
     int maxRequestsPerConnectionLocal = -1,
     int maxRequestsPerConnectionRemote = -1,
     int idleTimeoutSeconds = -1,
@@ -226,7 +224,7 @@ documentation {
     F{{receiveBufferSize}} A hint to the size of the underlying buffers for incoming network I/O
     F{{sendBufferSize}} A hint to the size of the underlying buffers for outgoing network I/O
 }
-public type SocketOptionsConfiguration {
+public type SocketOptionsConfiguration record {
     int connectTimeoutMillis = -1,
     int readTimeoutMillis = -1,
     int soLinger = -1,

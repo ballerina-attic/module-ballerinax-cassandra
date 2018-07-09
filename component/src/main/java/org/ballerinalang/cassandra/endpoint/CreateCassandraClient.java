@@ -24,7 +24,8 @@ import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.types.TypeKind;
-import org.ballerinalang.model.values.BStruct;
+import org.ballerinalang.model.values.BMap;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 
@@ -48,7 +49,7 @@ public class CreateCassandraClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        BStruct configBStruct = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(0);
         Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
         //Extract parameters from the endpoint config
@@ -61,7 +62,7 @@ public class CreateCassandraClient extends BlockingNativeCallableUnit {
         CassandraDataSource dataSource = new CassandraDataSource();
         dataSource.init(host, port, username, password, options);
 
-        BStruct cassandraClient = BLangConnectorSPIUtil
+        BMap<String, BValue> cassandraClient = BLangConnectorSPIUtil
                 .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH, Constants.CALLER_ACTIONS);
         cassandraClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
         context.setReturnValues(cassandraClient);

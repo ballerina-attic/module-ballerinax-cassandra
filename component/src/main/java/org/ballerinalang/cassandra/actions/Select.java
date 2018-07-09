@@ -23,9 +23,10 @@ import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
+import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BRefValueArray;
-import org.ballerinalang.model.values.BStruct;
 import org.ballerinalang.model.values.BTable;
+import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -50,7 +51,7 @@ public class Select extends AbstractCassandraAction {
 
     @Override
     public void execute(Context context) {
-        BStruct bConnector = (BStruct) context.getRefArgument(0);
+        BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(2);
         BStructureType structType = getStructType(context);
