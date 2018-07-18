@@ -34,7 +34,7 @@ import org.ballerinalang.util.exceptions.BallerinaException;
  * This class contains util methods required for Cassandra ballerina package.
  */
 public class CassandraDataSourceUtils {
-    public static BMap<?, ?> getCassandraConnectorError(Context context, Throwable throwable) {
+    public static BMap<String, BValue> getCassandraConnectorError(Context context, Throwable throwable) {
         PackageInfo builtinPackage = context.getProgramFile().getPackageInfo(BLangConstants.BALLERINA_BUILTIN_PKG);
         StructureTypeInfo errorStructInfo = builtinPackage.getStructInfo(BLangVMErrors.STRUCT_GENERIC_ERROR);
         BMap<String, BValue> cassandraConnectorError = new BMap<>(errorStructInfo.getType());
