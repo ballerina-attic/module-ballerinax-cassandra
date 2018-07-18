@@ -31,7 +31,7 @@ Sample
 import wso2/cassandra as c;
 import ballerina/io;
 
-type Person {
+type Person record {
     int id,
     string name,
     float salary,
