@@ -50,9 +50,9 @@ documentation {
 
     P{{callerActions}} CallerActions object that encapsulates the connection/connection pool
 }
-public native function close(CallerActions callerActions);
+public extern function close(CallerActions callerActions);
 
-native function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
+extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
 documentation {
     The Client endpoint configuration for SQL databases.
