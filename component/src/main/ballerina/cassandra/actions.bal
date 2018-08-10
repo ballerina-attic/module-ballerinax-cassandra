@@ -86,7 +86,7 @@ public type CallerActions object {
         P{{recordType}} The Type result should be mapped to
         R{{}} `table` representing the result of the select action or `error` if an error occurs
     }
-    public native function select(string queryString, typedesc recordType, Param... parameters)
+    public extern function select(string queryString, typedesc recordType, Param... parameters)
         returns (table|error);
 
     documentation {
@@ -95,6 +95,6 @@ public type CallerActions object {
         P{{queryString}} Query to be executed
         R{{}} `nil` or `error` if an error occurs
     }
-    public native function update(string queryString, Param... parameters) returns (error?);
+    public extern function update(string queryString, Param... parameters) returns (error?);
 
 };
