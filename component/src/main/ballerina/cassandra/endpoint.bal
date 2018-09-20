@@ -14,55 +14,43 @@
 // specific language governing permissions and limitations
 // under the License.
 
-documentation {
-    Represents Cassandra client endpoint.
-}
+# Represents Cassandra client endpoint.
 public type Client object {
         public ClientEndpointConfiguration clientEndpointConfig;
         public CallerActions callerActions;
 
-    documentation {
-        Gets called when the endpoint is being initialized during the package initialization.
-    }
+    # Gets called when the endpoint is being initialized during the package initialization.
     public function init(ClientEndpointConfiguration config) {
         self.callerActions = createClient(config);
     }
 
-    documentation {
-        Returns the connector that client code uses.
-
-        R{{}} The connector that client code uses
-    }
+    # Returns the connector that client code uses.
+    #
+    # + return - The connector that client code uses
     public function getCallerActions() returns CallerActions {
         return self.callerActions;
     }
 
-    documentation {
-        Stops the registered service.
-    }
+    # Stops the registered service.
     public function stop() {
         close(self.callerActions);
     }
 };
 
-documentation {
-    An internal function used by clients to shutdown the connection pool.
-
-    P{{callerActions}} CallerActions object that encapsulates the connection/connection pool
-}
+# An internal function used by clients to shutdown the connection pool.
+#
+# + callerActions - CallerActions object that encapsulates the connection/connection pool
 public extern function close(CallerActions callerActions);
 
 extern function createClient(ClientEndpointConfiguration clientEndpointConfig) returns CallerActions;
 
-documentation {
-    The Client endpoint configuration for SQL databases.
-
-    F{{host}} The host of the database to connect
-    F{{port}} The port of the database to connect
-    F{{username}} Username for the database connection
-    F{{password}} Password for the database connection
-    F{{options}} Properties for the connection configuration
-}
+# The Client endpoint configuration for SQL databases.
+#
+# + host - The host of the database to connect
+# + port - The port of the database to connect
+# + username - Username for the database connection
+# + password - Password for the database connection
+# + options - Properties for the connection configuration
 public type ClientEndpointConfiguration record {
     string host,
     int port,
@@ -71,28 +59,26 @@ public type ClientEndpointConfiguration record {
     ConnectionProperties options,
 };
 
-documentation {
-    ConnectionProperties type represents the properties which are used to configure Cassandra connection.
-
-    F{{clusterName}} The name of the cluster object
-    F{{loadBalancingPolicy}} The policy that decides which Cassandra hosts to contact for each new query
-    F{{reconnectionPolicy}} The policy that schedules reconnection attempts to a node
-    F{{retryPolicy}} The policy that defines a default behavior to adopt when a request fails
-    F{{dataCenter}} The data center used with DCAwareRoundRobinPolicy
-    F{{withoutMetrics}} Disables metrics collection for the created cluster if true
-    F{{withoutJMXReporting}} Disables JMX reporting of the metrics if true
-    F{{allowRemoteDCsForLocalConsistencyLevel}} Determine whether to allow DCAwareRoundRobinPolicy to return remote
-    hosts when building query plans for queries having consistency level LOCAL_ONE or LOCAL_QUORUM
-    F{{constantReconnectionPolicyDelay}} The constant wait time between reconnection attempts of
-    ConstantReconnectionPolicy
-    F{{exponentialReconnectionPolicyBaseDelay}} The base delay in milliseconds for ExponentialReconnectionPolicy
-    The maximum delay in milliseconds between reconnection attempts of ExponentialReconnectionPolicy
-    F{{queryOptionsConfig}} Options related to defaults for individual queries
-    F{{poolingOptionsConfig}} Options related to connection pooling
-    F{{socketOptionsConfig}} Options to configure low-level socket options for the connections kept to the Cassandra
-    hosts
-    F{{protocolOptionsConfig}} Options of the Cassandra native binary protocol
-}
+# ConnectionProperties type represents the properties which are used to configure Cassandra connection.
+#
+# + clusterName - The name of the cluster object
+# + loadBalancingPolicy - The policy that decides which Cassandra hosts to contact for each new query
+# + reconnectionPolicy - The policy that schedules reconnection attempts to a node
+# + retryPolicy - The policy that defines a default behavior to adopt when a request fails
+# + dataCenter - The data center used with DCAwareRoundRobinPolicy
+# + withoutMetrics - Disables metrics collection for the created cluster if true
+# + withoutJMXReporting - Disables JMX reporting of the metrics if true
+# + allowRemoteDCsForLocalConsistencyLevel - Determine whether to allow DCAwareRoundRobinPolicy to return remote
+#   hosts when building query plans for queries having consistency level LOCAL_ONE or LOCAL_QUORUM
+# + constantReconnectionPolicyDelay - The constant wait time between reconnection attempts of
+#   ConstantReconnectionPolicy
+# + exponentialReconnectionPolicyBaseDelay - The base delay in milliseconds for ExponentialReconnectionPolicy
+#   The maximum delay in milliseconds between reconnection attempts of ExponentialReconnectionPolicy
+# + queryOptionsConfig - Options related to defaults for individual queries
+# + poolingOptionsConfig - Options related to connection pooling
+# + socketOptionsConfig - Options to configure low-level socket options for the connections kept to the Cassandra
+#   hosts
+# + protocolOptionsConfig - Options of the Cassandra native binary protocol
 public type ConnectionProperties record {
     string clusterName,
     string loadBalancingPolicy,
@@ -114,15 +100,13 @@ public type ConnectionProperties record {
     ProtocolOptionsConfiguration protocolOptionsConfig,
 };
 
-documentation {
-    Options of the Cassandra native binary protocol.
-
-    F{{sslEnabled}} Enables the use of SSL for the created cluster
-    F{{noCompact}} Whether or not to include the NO_COMPACT startup option
-    F{{maxSchemaAgreementWaitSeconds}} The maximum time to wait for schema agreement before returning from a DDL query
-    F{{initialProtocolVersion}} Version of the native protocol supported by the driver
-    F{{compression}} Compression supported by the Cassandra binary protocol
-}
+# Options of the Cassandra native binary protocol.
+#
+# + sslEnabled - Enables the use of SSL for the created cluster
+# + noCompact - Whether or not to include the NO_COMPACT startup option
+# + maxSchemaAgreementWaitSeconds - The maximum time to wait for schema agreement before returning from a DDL query
+# + initialProtocolVersion - Version of the native protocol supported by the driver
+# + compression - Compression supported by the Cassandra binary protocol
 public type ProtocolOptionsConfiguration record {
     boolean sslEnabled,
     boolean noCompact,
@@ -133,37 +117,35 @@ public type ProtocolOptionsConfiguration record {
     string compression,
 };
 
-documentation {
-    Options related to defaults for individual queries.
-
-    F{{consistencyLevel}} Determines how many nodes in the replica must respond for the coordinator node to
-    successfully process a non-lightweight transaction. Supported values are ANY, ONE, TWO, THREE, QUORUM,
-    ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE
-    F{{serialConsistencyLevel}} The serial consistency level is only used by conditional updates
-    (INSERT, UPDATE or DELETE statements with an IF condition). For those, the serial consistency level
-    defines the consistency level of the serial phase (or 'paxos' phase) while the normal consistency level
-     defines the consistency for the 'learn' phase. Supported values are SERIAL, LOCAL_SERIAL
-    F{{defaultIdempotence}} A statement is idempotent if it can be applied multiple times without changing the
-    result beyond the initial application
-    F{{metadataEnabled}} Toggles client-side token and schema metadata
-    enablement
-    F{{reprepareOnUp}} Determines whether the driver should re-prepare all cached prepared statements on a host
-    when it marks it back up
-    F{{prepareOnAllHosts}} Determines whether the driver should prepare statements on all hosts in the cluster
-    F{{fetchSize}} Sets the default fetch size to use for SELECT queries
-    F{{maxPendingRefreshNodeListRequests}} Determines the maximum number of node list refresh requests that
-    the control connection can accumulate before executing them
-    F{{maxPendingRefreshNodeRequests}} Determines the maximum number of node refresh requests that the control
-    connection can accumulate before executing them
-    F{{maxPendingRefreshSchemaRequests}} Determines the maximum number of schema refresh requests that the
-    control connection can accumulate before executing them
-    F{{refreshNodeListIntervalMillis}} Determines the default window size in milliseconds used to debounce node
-    list refresh requests
-    F{{refreshNodeIntervalMillis}} Determines the default window size in milliseconds used to debounce node
-    refresh requests
-    F{{refreshSchemaIntervalMillis}} Determines the default window size in milliseconds used to debounce schema refresh
-    requests
-}
+# Options related to defaults for individual queries.
+#
+# + consistencyLevel - Determines how many nodes in the replica must respond for the coordinator node to
+#   successfully process a non-lightweight transaction. Supported values are ANY, ONE, TWO, THREE, QUORUM,
+#   ALL, LOCAL_QUORUM, EACH_QUORUM, SERIAL, LOCAL_SERIAL, LOCAL_ONE
+# + serialConsistencyLevel - The serial consistency level is only used by conditional updates
+#   (INSERT, UPDATE or DELETE statements with an IF condition). For those, the serial consistency level
+#   defines the consistency level of the serial phase (or 'paxos' phase) while the normal consistency level
+#   defines the consistency for the 'learn' phase. Supported values are SERIAL, LOCAL_SERIAL
+# + defaultIdempotence - A statement is idempotent if it can be applied multiple times without changing the
+#   result beyond the initial application
+# + metadataEnabled - Toggles client-side token and schema metadata
+#   enablement
+# + reprepareOnUp - Determines whether the driver should re-prepare all cached prepared statements on a host
+#   when it marks it back up
+# + prepareOnAllHosts - Determines whether the driver should prepare statements on all hosts in the cluster
+# + fetchSize - Sets the default fetch size to use for SELECT queries
+# + maxPendingRefreshNodeListRequests - Determines the maximum number of node list refresh requests that
+#   the control connection can accumulate before executing them
+# + maxPendingRefreshNodeRequests - Determines the maximum number of node refresh requests that the control
+#   connection can accumulate before executing them
+# + maxPendingRefreshSchemaRequests - Determines the maximum number of schema refresh requests that the
+#   control connection can accumulate before executing them
+# + refreshNodeListIntervalMillis - Determines the default window size in milliseconds used to debounce node
+#   list refresh requests
+# + refreshNodeIntervalMillis - Determines the default window size in milliseconds used to debounce node
+#   refresh requests
+# + refreshSchemaIntervalMillis - Determines the default window size in milliseconds used to debounce schema refresh
+#   requests
 public type QueryOptionsConfiguration record {
     string consistencyLevel,
     string serialConsistencyLevel,
@@ -183,23 +165,21 @@ public type QueryOptionsConfiguration record {
 };
 
 
-documentation {
-    Options related to connection pooling.
-
-    F{{maxRequestsPerConnectionLocal}} The maximum number of requests per connection for local hosts
-    F{{maxRequestsPerConnectionRemote}} The maximum number of requests per connection for remote hosts
-    F{{idleTimeoutSeconds}} The timeout before an idle connection is removed
-    F{{poolTimeoutMillis}} The timeout when trying to acquire a connection from a host's pool
-    F{{maxQueueSize}} The maximum number of requests that get enqueued if no connection is available
-    F{{heartbeatIntervalSeconds}} The heart beat interval, after which a message is sent on an idle connection
-    to make sure it's still alive
-    F{{coreConnectionsPerHostLocal}} The core number of connections per local host
-    F{{maxConnectionsPerHostLocal}} The maximum number of connections per local host
-    F{{newConnectionThresholdLocal}} The threshold that triggers the creation of a new connection to a local host
-    F{{coreConnectionsPerHostRemote}} The core number of connections per remote host
-    F{{maxConnectionsPerHostRemote}} The maximum number of connections per remote host
-    F{{newConnectionThresholdRemote}} The threshold that triggers the creation of a new connection to a remote host
-}
+# Options related to connection pooling.
+#
+# + maxRequestsPerConnectionLocal - The maximum number of requests per connection for local hosts
+# + maxRequestsPerConnectionRemote - The maximum number of requests per connection for remote hosts
+# + idleTimeoutSeconds - The timeout before an idle connection is removed
+# + poolTimeoutMillis - The timeout when trying to acquire a connection from a host's pool
+# + maxQueueSize - The maximum number of requests that get enqueued if no connection is available
+# + heartbeatIntervalSeconds - The heart beat interval, after which a message is sent on an idle connection
+#   to make sure it's still alive
+# + coreConnectionsPerHostLocal - The core number of connections per local host
+# + maxConnectionsPerHostLocal - The maximum number of connections per local host
+# + newConnectionThresholdLocal - The threshold that triggers the creation of a new connection to a local host
+# + coreConnectionsPerHostRemote - The core number of connections per remote host
+# + maxConnectionsPerHostRemote - The maximum number of connections per remote host
+# + newConnectionThresholdRemote - The threshold that triggers the creation of a new connection to a remote host
 public type PoolingOptionsConfiguration record {
     int maxRequestsPerConnectionLocal = -1,
     int maxRequestsPerConnectionRemote = -1,
@@ -215,15 +195,13 @@ public type PoolingOptionsConfiguration record {
     int newConnectionThresholdRemote = -1,
 };
 
-documentation {
-    Options to configure low-level socket options for the connections kept to the Cassandra hosts.
-
-    F{{connectTimeoutMillis}} The connection timeout in milliseconds
-    F{{readTimeoutMillis}} The per-host read timeout in milliseconds
-    F{{soLinger}} The linger-on-close timeout
-    F{{receiveBufferSize}} A hint to the size of the underlying buffers for incoming network I/O
-    F{{sendBufferSize}} A hint to the size of the underlying buffers for outgoing network I/O
-}
+# Options to configure low-level socket options for the connections kept to the Cassandra hosts.
+#
+# + connectTimeoutMillis - The connection timeout in milliseconds
+# + readTimeoutMillis - The per-host read timeout in milliseconds
+# + soLinger - The linger-on-close timeout
+# + receiveBufferSize - A hint to the size of the underlying buffers for incoming network I/O
+# + sendBufferSize - A hint to the size of the underlying buffers for outgoing network I/O
 public type SocketOptionsConfiguration record {
     int connectTimeoutMillis = -1,
     int readTimeoutMillis = -1,
