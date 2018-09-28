@@ -46,8 +46,8 @@ public type Type "INT"|"BIGINT"|"VARINT"|"FLOAT"|"DOUBLE"|"TEXT"|"BOOLEAN"|"LIST
 # + cqlType - Cassandra type of the parameter
 # + value - Value of the parameter
 public type Parameter record {
-    Type cqlType,
-    any value,
+    Type cqlType;
+    any value;
 };
 
 # The union type representing either a `Parameter` or a primitive ballerina type.

@@ -52,11 +52,11 @@ extern function createClient(ClientEndpointConfiguration clientEndpointConfig) r
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
 public type ClientEndpointConfiguration record {
-    string host,
-    int port,
-    string username,
-    string password,
-    ConnectionProperties options,
+    string host;
+    int port;
+    string username;
+    string password;
+    ConnectionProperties options;
 };
 
 # ConnectionProperties type represents the properties which are used to configure Cassandra connection.
@@ -80,24 +80,24 @@ public type ClientEndpointConfiguration record {
 #   hosts
 # + protocolOptionsConfig - Options of the Cassandra native binary protocol
 public type ConnectionProperties record {
-    string clusterName,
-    string loadBalancingPolicy,
-    string reconnectionPolicy,
-    string retryPolicy,
-    string dataCenter,
+    string clusterName;
+    string loadBalancingPolicy;
+    string reconnectionPolicy;
+    string retryPolicy;
+    string dataCenter;
 
-    boolean withoutMetrics,
-    boolean withoutJMXReporting,
-    boolean allowRemoteDCsForLocalConsistencyLevel,
+    boolean withoutMetrics;
+    boolean withoutJMXReporting;
+    boolean allowRemoteDCsForLocalConsistencyLevel;
 
-    int constantReconnectionPolicyDelay = -1,
-    int exponentialReconnectionPolicyBaseDelay = -1,
-    int exponentialReconnectionPolicyMaxDelay = -1,
+    int constantReconnectionPolicyDelay = -1;
+    int exponentialReconnectionPolicyBaseDelay = -1;
+    int exponentialReconnectionPolicyMaxDelay = -1;
 
-    QueryOptionsConfiguration queryOptionsConfig,
-    PoolingOptionsConfiguration poolingOptionsConfig,
-    SocketOptionsConfiguration socketOptionsConfig,
-    ProtocolOptionsConfiguration protocolOptionsConfig,
+    QueryOptionsConfiguration queryOptionsConfig;
+    PoolingOptionsConfiguration poolingOptionsConfig;
+    SocketOptionsConfiguration socketOptionsConfig;
+    ProtocolOptionsConfiguration protocolOptionsConfig;
 };
 
 # Options of the Cassandra native binary protocol.
@@ -108,13 +108,13 @@ public type ConnectionProperties record {
 # + initialProtocolVersion - Version of the native protocol supported by the driver
 # + compression - Compression supported by the Cassandra binary protocol
 public type ProtocolOptionsConfiguration record {
-    boolean sslEnabled,
-    boolean noCompact,
+    boolean sslEnabled;
+    boolean noCompact;
 
-    int maxSchemaAgreementWaitSeconds = -1,
+    int maxSchemaAgreementWaitSeconds = -1;
 
-    string initialProtocolVersion,
-    string compression,
+    string initialProtocolVersion;
+    string compression;
 };
 
 # Options related to defaults for individual queries.
@@ -147,21 +147,21 @@ public type ProtocolOptionsConfiguration record {
 # + refreshSchemaIntervalMillis - Determines the default window size in milliseconds used to debounce schema refresh
 #   requests
 public type QueryOptionsConfiguration record {
-    string consistencyLevel,
-    string serialConsistencyLevel,
+    string consistencyLevel;
+    string serialConsistencyLevel;
 
-    boolean defaultIdempotence,
-    boolean metadataEnabled = true,
-    boolean reprepareOnUp = true,
-    boolean prepareOnAllHosts = true,
+    boolean defaultIdempotence;
+    boolean metadataEnabled = true;
+    boolean reprepareOnUp = true;
+    boolean prepareOnAllHosts = true;
 
-    int fetchSize = -1,
-    int maxPendingRefreshNodeListRequests = -1,
-    int maxPendingRefreshNodeRequests = -1,
-    int maxPendingRefreshSchemaRequests = -1,
-    int refreshNodeListIntervalMillis = -1,
-    int refreshNodeIntervalMillis = -1,
-    int refreshSchemaIntervalMillis = -1,
+    int fetchSize = -1;
+    int maxPendingRefreshNodeListRequests = -1;
+    int maxPendingRefreshNodeRequests = -1;
+    int maxPendingRefreshSchemaRequests = -1;
+    int refreshNodeListIntervalMillis = -1;
+    int refreshNodeIntervalMillis = -1;
+    int refreshSchemaIntervalMillis = -1;
 };
 
 
@@ -181,18 +181,18 @@ public type QueryOptionsConfiguration record {
 # + maxConnectionsPerHostRemote - The maximum number of connections per remote host
 # + newConnectionThresholdRemote - The threshold that triggers the creation of a new connection to a remote host
 public type PoolingOptionsConfiguration record {
-    int maxRequestsPerConnectionLocal = -1,
-    int maxRequestsPerConnectionRemote = -1,
-    int idleTimeoutSeconds = -1,
-    int poolTimeoutMillis = -1,
-    int maxQueueSize = -1,
-    int heartbeatIntervalSeconds = -1,
-    int coreConnectionsPerHostLocal = -1,
-    int maxConnectionsPerHostLocal = -1,
-    int newConnectionThresholdLocal = -1,
-    int coreConnectionsPerHostRemote = -1,
-    int maxConnectionsPerHostRemote = -1,
-    int newConnectionThresholdRemote = -1,
+    int maxRequestsPerConnectionLocal = -1;
+    int maxRequestsPerConnectionRemote = -1;
+    int idleTimeoutSeconds = -1;
+    int poolTimeoutMillis = -1;
+    int maxQueueSize = -1;
+    int heartbeatIntervalSeconds = -1;
+    int coreConnectionsPerHostLocal = -1;
+    int maxConnectionsPerHostLocal = -1;
+    int newConnectionThresholdLocal = -1;
+    int coreConnectionsPerHostRemote = -1;
+    int maxConnectionsPerHostRemote = -1;
+    int newConnectionThresholdRemote = -1;
 };
 
 # Options to configure low-level socket options for the connections kept to the Cassandra hosts.
@@ -203,10 +203,10 @@ public type PoolingOptionsConfiguration record {
 # + receiveBufferSize - A hint to the size of the underlying buffers for incoming network I/O
 # + sendBufferSize - A hint to the size of the underlying buffers for outgoing network I/O
 public type SocketOptionsConfiguration record {
-    int connectTimeoutMillis = -1,
-    int readTimeoutMillis = -1,
-    int soLinger = -1,
-    int receiveBufferSize = -1,
-    int sendBufferSize = -1,
+    int connectTimeoutMillis = -1;
+    int readTimeoutMillis = -1;
+    int soLinger = -1;
+    int receiveBufferSize = -1;
+    int sendBufferSize = -1;
 };
 
