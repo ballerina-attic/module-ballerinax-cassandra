@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-cassandra)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-cassandra)
 
 # Ballerina Cassandra Client Endpoint
 
@@ -18,11 +18,11 @@ Building from the source
 If you want to build Ballerina Cassandra Connector from the source code:
 
 1. Get a clone or download the source from this repository:
-    https://github.com/wso2-ballerina/package-cassandra
+    https://github.com/wso2-ballerina/module-cassandra
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Extract the distribution created at `/component/target/wso2-cassandra-<version>.zip`. Run the install.{sh/bat} script to install the package.
-You can uninstall the package by running uninstall.{sh/bat}.
+3. Extract the distribution created at `/component/target/wso2-cassandra-<version>.zip`. Run the install.{sh/bat} script to install the module.
+You can uninstall the module by running uninstall.{sh/bat}.
 
 Sample
 ==================================
