@@ -353,8 +353,8 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.982.0</ballerina.version>
-        <cassandra.version>3.4.0</cassandra.version>
+        <ballerina.version>0.982.1-SNAPSHOT</ballerina.version>
+        <cassandra.version>3.6.0</cassandra.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
@@ -368,7 +368,7 @@
         <maven.wagon.ssh.version>2.1</maven.wagon.ssh.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
-        <cassandraunit.version>3.3.0.2</cassandraunit.version>
+        <cassandraunit.version>3.5.0.1</cassandraunit.version>
         <maven.findbugsplugin.version>3.0.5</maven.findbugsplugin.version>
         <maven.jacoco.plugin.version>0.8.0</maven.jacoco.plugin.version>
         <findbugs.annotations.version>3.0.1</findbugs.annotations.version>

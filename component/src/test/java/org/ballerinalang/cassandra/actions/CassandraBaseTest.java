@@ -52,6 +52,7 @@ public class CassandraBaseTest {
 
     @AfterSuite(alwaysRun = true)
     public static void stopCassandraServer() {
-        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
+        session.close();
+        cluster.close();
     }
 }
