@@ -27,6 +27,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+/**
+ * This class contains test cases for connection initialization scenarios.
+ */
 public class CassandraConnectionInitTest extends CassandraBaseTest {
     private static CompileResult result;
 
