@@ -32,12 +32,12 @@ import wso2/cassandra as c;
 import ballerina/io;
 
 type Person record {
-    int id,
-    string name,
-    float salary,
+    int id;
+    string name;
+    float salary;
 };
 
-function main(string... args) {
+public function main() {
     endpoint c:Client conn {
         host: "localhost",
         port: 9042,
@@ -103,7 +103,7 @@ function main(string... args) {
     match xmlRet {
         xml x => {
             io:print("XML: ");
-            io:println(io:sprintf("%l", x));
+            io:println(io:sprintf("%s", x));
         }
         error e => io:println("Error in table to xml conversion");
     }
