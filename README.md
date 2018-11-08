@@ -18,11 +18,11 @@ Building from the source
 If you want to build Ballerina Cassandra Connector from the source code:
 
 1. Get a clone or download the source from this repository:
-    https://github.com/wso2-ballerina/package-cassandra
+    https://github.com/wso2-ballerina/module-cassandra
 2. Run the following Maven command from the ballerina directory: 
     mvn clean install
-3. Extract the distribution created at `/component/target/wso2-cassandra-<version>.zip`. Run the install.{sh/bat} script to install the package.
-You can uninstall the package by running uninstall.{sh/bat}.
+3. Extract the distribution created at `/component/target/wso2-cassandra-<version>.zip`. Run the install.{sh/bat} script to install the module.
+You can uninstall the module by running uninstall.{sh/bat}.
 
 Sample
 ==================================
@@ -32,12 +32,12 @@ import wso2/cassandra as c;
 import ballerina/io;
 
 type Person record {
-    int id,
-    string name,
-    float salary,
+    int id;
+    string name;
+    float salary;
 };
 
-function main(string... args) {
+public function main() {
     endpoint c:Client conn {
         host: "localhost",
         port: 9042,
@@ -103,7 +103,7 @@ function main(string... args) {
     match xmlRet {
         xml x => {
             io:print("XML: ");
-            io:println(io:sprintf("%l", x));
+            io:println(io:sprintf("%s", x));
         }
         error e => io:println("Error in table to xml conversion");
     }

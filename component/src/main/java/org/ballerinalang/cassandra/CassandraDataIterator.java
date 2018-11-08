@@ -70,12 +70,12 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public void close(boolean b) {
+    public void close() {
         /* ignore */
     }
 
     @Override
-    public void reset(boolean b) {
+    public void reset() {
         /* ignore */
     }
 

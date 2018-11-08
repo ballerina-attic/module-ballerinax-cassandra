@@ -221,7 +221,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>wso2-cassandra-package-${project.version}</finalName>
+                            <finalName>wso2-cassandra-module-${project.version}</finalName>
                             <artifactSet>
                                 <includes>
                                     <include>${project.groupId}:${project.artifactId}</include>
@@ -424,7 +424,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
-                    <!-- Following execution generates balo for cassandra package -->
+                    <!-- Following execution generates balo for cassandra module -->
                     <execution>
                         <id>gen-balo</id>
                         <goals>
