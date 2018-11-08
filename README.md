@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/package-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/package-cassandra)
+[![Build Status](https://travis-ci.org/wso2-ballerina/module-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-cassandra)
 
 # Ballerina Cassandra Client Endpoint
 
