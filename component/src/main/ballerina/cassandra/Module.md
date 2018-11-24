@@ -14,7 +14,7 @@ Once the endpoint is created, database operations can be executed through that e
 
 ### Creating an endpoint
 ```ballerina
-endpoint c:Client conn {
+cassandra:Client conn = new({
     host: "localhost",
     port: 9042,
     username: "cassandra",
@@ -24,7 +24,7 @@ endpoint c:Client conn {
         protocolOptionsConfig: { sslEnabled: false },
         socketOptionsConfig: { connectTimeoutMillis: 500, readTimeoutMillis: 1000 },
         poolingOptionsConfig: { maxConnectionsPerHostLocal: 5, newConnectionThresholdLocal: 10 } }
-};
+});
 ```
 For the full list of available configuration options refer the API docs of the endpoint.
 
@@ -34,9 +34,10 @@ For the full list of available configuration options refer the API docs of the e
 
 var returned = conn->update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double,
                       married boolean)");
-match returned {
-  () => io:println("Table creation success ");
-  error e => io:println("Table creation failed: " + e.message);
+if (returned is ()) {
+    io:println("Table creation success ");
+} else if (returned is error) {
+    io:println("Table creation failed: " + returned.reason());
 }
 ```
 
@@ -44,11 +45,12 @@ match returned {
 
 ```ballerina
 
-table dt;
 var selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
                                     Person, pSalary);
-match selectRet {
-    table tableReturned => dt = tableReturned;
-    error e => io:println("Select data from person table failed: " + e.message);
+if (selectRet is table) {
+    table dt = selectRet;
+    // Processing logic
+} else if (selectRet is error) {
+    io:println("Select data from person table failed: " + selectRet.reason());
 }
 ```
