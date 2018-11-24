@@ -38,6 +38,7 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This iterator wraps a cassandra data row.
@@ -125,12 +126,12 @@ public class CassandraDataIterator implements DataIterator {
     @Override
     public BMap<String, BValue> generateNext() {
         BMap<String, BValue> bStruct = new BMap<>(bStructType);
-        BField[] recordFields = this.bStructType.getFields();
+        Map<String, BField> recordFields = this.bStructType.getFields();
         int index = 0;
         for (ColumnDefinition columnDef : columnDefs) {
             String columnName = columnDef.getName();
             TypeKind type = columnDef.getType();
-            String fieldName = recordFields[index].getFieldName();
+            String fieldName = recordFields.values().toArray(new BField[0])[index].getFieldName();
             ++index;
             switch (type) {
             case STRING:

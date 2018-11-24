@@ -20,31 +20,27 @@ package org.ballerinalang.cassandra;
 
 import org.ballerinalang.bre.Context;
 import org.ballerinalang.bre.bvm.BLangVMErrors;
+import org.ballerinalang.connector.api.BLangConnectorSPIUtil;
 import org.ballerinalang.model.types.BType;
+import org.ballerinalang.model.types.BTypes;
 import org.ballerinalang.model.types.TypeTags;
+import org.ballerinalang.model.values.BError;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BString;
 import org.ballerinalang.model.values.BValue;
-import org.ballerinalang.util.BLangConstants;
-import org.ballerinalang.util.codegen.PackageInfo;
-import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 /**
  * This class contains util methods required for Cassandra ballerina package.
  */
 public class CassandraDataSourceUtils {
-    public static BMap<String, BValue> getCassandraConnectorError(Context context, Throwable throwable) {
-        PackageInfo builtinPackage = context.getProgramFile().getPackageInfo(BLangConstants.BALLERINA_BUILTIN_PKG);
-        StructureTypeInfo errorStructInfo = builtinPackage.getStructInfo(BLangVMErrors.STRUCT_GENERIC_ERROR);
-        BMap<String, BValue> cassandraConnectorError = new BMap<>(errorStructInfo.getType());
-        if (throwable.getMessage() == null) {
-            cassandraConnectorError
-                    .put(Constants.ERROR_MESSAGE_FIELD, new BString(Constants.CASSANDRA_EXCEPTION_OCCURED));
-        } else {
-            cassandraConnectorError.put(Constants.ERROR_MESSAGE_FIELD, new BString(throwable.getMessage()));
-        }
-        return cassandraConnectorError;
+    public static BError getCassandraConnectorError(Context context, Throwable throwable) {
+        String detailedErrorMessage =
+                throwable.getMessage() != null ? throwable.getMessage() : Constants.CASSANDRA_EXCEPTION_OCCURED;
+        BMap<String, BValue> sqlClientErrorDetailRecord = BLangConnectorSPIUtil
+                .createBStruct(context, Constants.CASSANDRA_PACKAGE_PATH, Constants.DATABASE_ERROR_DATA_RECORD_NAME,
+                        detailedErrorMessage);
+        return BLangVMErrors.createError(context, true, BTypes.typeError, Constants.DATABASE_ERROR_CODE,
+                sqlClientErrorDetailRecord);
     }
 
     public static String getCQLType(BType value) {

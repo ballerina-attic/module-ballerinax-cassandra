@@ -37,7 +37,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
 @BallerinaFunction(
         orgName = "wso2",
         packageName = "cassandra:0.0.0",
-        functionName = "createClient",
+        functionName = "initClient",
         args = {
                 @Argument(name = "clientEndpointConfig",
                           type = TypeKind.RECORD,
@@ -45,11 +45,11 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
         },
         isPublic = true
 )
-public class CreateCassandraClient extends BlockingNativeCallableUnit {
+public class InitCassandraClient extends BlockingNativeCallableUnit {
 
     @Override
     public void execute(Context context) {
-        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(0);
+        BMap<String, BValue> configBStruct = (BMap<String, BValue>) context.getRefArgument(1);
         Struct clientEndpointConfig = BLangConnectorSPIUtil.toStruct(configBStruct);
 
         //Extract parameters from the endpoint config
@@ -62,9 +62,8 @@ public class CreateCassandraClient extends BlockingNativeCallableUnit {
         CassandraDataSource dataSource = new CassandraDataSource();
         dataSource.init(host, port, username, password, options);
 
-        BMap<String, BValue> cassandraClient = BLangConnectorSPIUtil
-                .createBStruct(context.getProgramFile(), Constants.CASSANDRA_PACKAGE_PATH, Constants.CALLER_ACTIONS);
-        cassandraClient.addNativeData(Constants.CALLER_ACTIONS, dataSource);
+        BMap<String, BValue> cassandraClient = (BMap<String, BValue>) context.getRefArgument(0);
+        cassandraClient.addNativeData(Constants.CLIENT, dataSource);
         context.setReturnValues(cassandraClient);
     }
 }

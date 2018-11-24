@@ -25,13 +25,14 @@ package org.ballerinalang.cassandra;
 public final class Constants {
     public static final String QUESTION_MARK = "?";
     public static final String CASSANDRA_PACKAGE_PATH = "wso2/cassandra:0.0.0";
-    public static final String CALLER_ACTIONS = "CallerActions";
+    public static final String CLIENT = "Client";
     public static final String CASSANDRA_PARAMETER = "Parameter";
     public static final String CASSANDRA_EXCEPTION_OCCURED = "Exception Occurred while executing Cassandra database "
             + "operation";
-    public static final String ERROR_MESSAGE_FIELD = "message";
     public static final String CQL_TYPE_FIELD = "cqlType";
     public static final String VALUE_FIELD = "value";
+    public static final String DATABASE_ERROR_DATA_RECORD_NAME = "DatabaseErrorData";
+    public static final String DATABASE_ERROR_CODE = "{wso2/cassandra}DatabaseError";
 
     /**
      * Constants for DataTypes.

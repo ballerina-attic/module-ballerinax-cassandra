@@ -40,7 +40,7 @@ import org.ballerinalang.natives.annotations.ReturnType;
         orgName = "wso2",
         packageName = "cassandra:0.0.0",
         functionName = "select",
-        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CLIENT),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                           structType = "Parameter")
@@ -55,7 +55,7 @@ public class Select extends AbstractCassandraAction {
         String query = context.getStringArgument(0);
         BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(2);
         BStructureType structType = getStructType(context);
-        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             BTable dataTable = executeSelect(context, dataSource, query, parameters, structType);
             context.setReturnValues(dataTable);
