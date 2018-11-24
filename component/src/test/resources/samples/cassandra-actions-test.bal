@@ -8,26 +8,26 @@ type RS record {
 };
 
 function testKeySpaceCreation() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
     _ = conn->update("CREATE KEYSPACE dummyks  WITH replication = {'class':'SimpleStrategy', 'replication_factor'
     :1}");
     conn.stop();
 }
 
 function testDuplicateKeySpaceCreation() returns (any) {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
     _ = conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
     'replication_factor':1}");
 
@@ -39,25 +39,25 @@ function testDuplicateKeySpaceCreation() returns (any) {
 }
 
 function testTableCreation() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
     _ = conn->update("CREATE TABLE peopleinfoks.student(id int PRIMARY KEY,name text, age int)");
     conn.stop();
 }
 
 function testInsert() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
     c:Parameter pID = { cqlType: c:TYPE_INT, value: 2 };
     c:Parameter pName = { cqlType: c:TYPE_TEXT, value: "Tim" };
@@ -71,13 +71,13 @@ function testInsert() {
 }
 
 function testInsertRawParams() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
     c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1001.5 };
 
@@ -87,13 +87,13 @@ function testInsertRawParams() {
 }
 
 function testSelectWithParamArray() returns (int, string, float, boolean) {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
     int[] intDataArray = [1, 5];
     float[] floatDataArray = [100.2, 100.5];
     float[] doubleDataArray = [10000.5, 11100.8];
@@ -106,60 +106,67 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     c:Parameter incomeArray = { cqlType: c:TYPE_DOUBLE, value: doubleDataArray };
     c:Parameter marriageStatusArray = { cqlType: c:TYPE_BOOLEAN, value: booleanDataArray };
 
-    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
+    var dt = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id in (?) AND
     name in (?) AND salary in (?) AND income in (?) AND married in (?) ALLOW FILTERING", RS, idArray, nameArray,
         salaryArray, incomeArray, marriageStatusArray);
 
-    var dt = check temp;
+    int id = -1;
+    string name = "";
+    float salary = -1;
+    boolean married = false;
 
-    int id;
-    string name;
-    float salary;
-    boolean married;
-
-    while (dt.hasNext()) {
-        var rs = check <RS>dt.getNext();
-        id = rs.id;
-        name = rs.name;
-        salary = rs.salary;
-        married = rs.married;
+    if (dt is table) {
+        while (dt.hasNext()) {
+            var rs = <RS>dt.getNext();
+            if (rs is RS) {
+                id = rs.id;
+                name = rs.name;
+                salary = rs.salary;
+                married = rs.married;
+            }
+        }
     }
     conn.stop();
     return (id, name, salary, married);
 }
 
 function testSelect() returns (int, string, float) {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
-    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", RS, 1);
-    table dt = check temp;
-    int id;
-    string name;
-    float salary;
-    while (dt.hasNext()) {
-        var rs = check <RS>dt.getNext();
-        id = rs.id;
-        name = rs.name;
-        salary = rs.salary;
+    var dt = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = ?", RS, 1);
+
+    int id = -1;
+    string name = "";
+    float salary = -1;
+
+    if (dt is table) {
+        while (dt.hasNext()) {
+            var rs = <RS>dt.getNext();
+            if (rs is RS) {
+                id = rs.id;
+                name = rs.name;
+                salary = rs.salary;
+            }
+        }
     }
     conn.stop();
     return (id, name, salary);
 }
 
 function testSelectNonExistentColumn() returns (any) {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
     c:Parameter pID = { cqlType: c:TYPE_INT, value:1 };
 
@@ -168,13 +175,13 @@ function testSelectNonExistentColumn() returns (any) {
 }
 
 function testInsertWithNilParams() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
     _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married)
     values (10,'Jim',101.5,1001.5,false)");
@@ -182,24 +189,29 @@ function testInsertWithNilParams() {
 }
 
 function testSelectWithNilParams() returns (int, string, float) {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9142,
         username: "cassandra",
         password: "cassandra",
         options: {}
-    };
+    });
 
-    var temp = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", RS);
-    table dt = check temp;
-    int id;
-    string name;
-    float salary;
-    while (dt.hasNext()) {
-        var rs = check <RS>dt.getNext();
-        id = rs.id;
-        name = rs.name;
-        salary = rs.salary;
+    var dt = conn->select("SELECT id, name, salary, married FROM peopleinfoks.person WHERE id = 1", RS);
+
+    int id = -1;
+    string name = "";
+    float salary = -1;
+
+    if (dt is table) {
+        while (dt.hasNext()) {
+            var rs = <RS>dt.getNext();
+            if (rs is RS) {
+                id = rs.id;
+                name = rs.name;
+                salary = rs.salary;
+            }
+        }
     }
     conn.stop();
     return (id, name, salary);
