@@ -61,10 +61,10 @@ public type Param string|int|boolean|float|Parameter;
 # + password - Password for the database connection
 # + options - Properties for the connection configuration
 public type ClientEndpointConfig record {
-    string host = "";
-    int port = 0;
-    string username = "";
-    string password = "";
+    string host;
+    int port;
+    string username;
+    string password;
     ConnectionProperties options = {};
     !...
 };

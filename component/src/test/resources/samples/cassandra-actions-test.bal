@@ -115,15 +115,13 @@ function testSelectWithParamArray() returns (int, string, float, boolean) {
     float salary = -1;
     boolean married = false;
 
-    if (dt is table) {
+    if (dt is table<record {}>) {
         while (dt.hasNext()) {
             var rs = <RS>dt.getNext();
-            if (rs is RS) {
-                id = rs.id;
-                name = rs.name;
-                salary = rs.salary;
-                married = rs.married;
-            }
+            id = rs.id;
+            name = rs.name;
+            salary = rs.salary;
+            married = rs.married;
         }
     }
     conn.stop();
@@ -145,14 +143,12 @@ function testSelect() returns (int, string, float) {
     string name = "";
     float salary = -1;
 
-    if (dt is table) {
+    if (dt is table<record {}>) {
         while (dt.hasNext()) {
             var rs = <RS>dt.getNext();
-            if (rs is RS) {
-                id = rs.id;
-                name = rs.name;
-                salary = rs.salary;
-            }
+            id = rs.id;
+            name = rs.name;
+            salary = rs.salary;
         }
     }
     conn.stop();
@@ -203,14 +199,12 @@ function testSelectWithNilParams() returns (int, string, float) {
     string name = "";
     float salary = -1;
 
-    if (dt is table) {
+    if (dt is table<record {}>) {
         while (dt.hasNext()) {
             var rs = <RS>dt.getNext();
-            if (rs is RS) {
-                id = rs.id;
-                name = rs.name;
-                salary = rs.salary;
-            }
+            id = rs.id;
+            name = rs.name;
+            salary = rs.salary;
         }
     }
     conn.stop();

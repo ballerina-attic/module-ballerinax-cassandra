@@ -30,7 +30,7 @@ public type Client client object {
     # + recordType - The Type result should be mapped to
     # + return - `table` representing the result of the select action or `error` if an error occurs
     public remote extern function select(string queryString, typedesc recordType, Param... parameters)
-       returns (table|error);
+       returns (table<record {}>|error);
 
     # Execute update query on cassandra datasource.
 

@@ -70,39 +70,39 @@ public function main() {
     var selectRet = conn->select("select id, name, salary from testballerina.person where id = ?", Person, pID);
 
     if (selectRet is table<Person>) {
-        foreach row in selectRet {
+        foreach var row in selectRet {
             io:println("Person:" + row.id + "|" + row.name + "|" + row.salary);
         }
-    } else if (selectRet is error) {
+    } else {
         io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where id = ? and name = ?
                                     ALLOW FILTERING", Person, pID, pName);
 
-    if (selectRet is table) {
-        var jsonRet = <json>selectRet;
+    if (selectRet is table<record {}>) {
+        var jsonRet = json.convert(selectRet);
         if (jsonRet is json) {
             io:print("JSON: ");
             io:println(io:sprintf("%s", jsonRet));
         } else {
             io:println("Error in table to json conversion");
         }
-    } else if (selectRet is error) {
+    } else {
         io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
         Person, pSalary);
-    if (selectRet is table) {
-        var xmlRet = <xml>selectRet;
+    if (selectRet is table<record {}>) {
+        var xmlRet = xml.convert(selectRet);
         if (xmlRet is xml) {
             io:print("XML: ");
             io:println(io:sprintf("%s", xmlRet));
         } else {
             io:println("Error in table to xml conversion");
         }
-    } else if (selectRet is error) {
+    } else {
         io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
@@ -116,7 +116,7 @@ public function main() {
 function handleUpdate(()|error returned, string message) {
     if (returned is ()) {
         io:println(message + " success ");
-    } else if (returned is error) {
+    } else {
         io:println(message + " failed: " + <string>returned.detail().message);
     }
 }
