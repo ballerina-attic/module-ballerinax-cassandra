@@ -23,8 +23,8 @@ import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.values.BMap;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.natives.annotations.Argument;
 import org.ballerinalang.natives.annotations.BallerinaFunction;
 import org.ballerinalang.natives.annotations.Receiver;
@@ -38,7 +38,7 @@ import org.ballerinalang.natives.annotations.Receiver;
         orgName = "wso2",
         packageName = "cassandra:0.0.0",
         functionName = "update",
-        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CALLER_ACTIONS),
+        receiver = @Receiver(type = TypeKind.OBJECT, structType = Constants.CLIENT),
         args = {@Argument(name = "queryString", type = TypeKind.STRING),
                 @Argument(name = "parameters", type = TypeKind.ARRAY, elementType = TypeKind.RECORD,
                           structType = "Parameter")
@@ -49,8 +49,8 @@ public class Update extends AbstractCassandraAction {
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
         String query = context.getStringArgument(0);
-        BRefValueArray parameters = (BRefValueArray) context.getNullableRefArgument(1);
-        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        BValueArray parameters = (BValueArray) context.getNullableRefArgument(1);
+        CassandraDataSource dataSource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             executeUpdate(context, dataSource, query, parameters);
         } catch (Throwable e) {

@@ -35,20 +35,16 @@ import org.ballerinalang.model.types.BStructureType;
 import org.ballerinalang.model.types.TypeKind;
 import org.ballerinalang.model.types.TypeTags;
 import org.ballerinalang.model.values.BBoolean;
-import org.ballerinalang.model.values.BBooleanArray;
 import org.ballerinalang.model.values.BFloat;
-import org.ballerinalang.model.values.BFloatArray;
-import org.ballerinalang.model.values.BIntArray;
 import org.ballerinalang.model.values.BInteger;
 import org.ballerinalang.model.values.BMap;
 import org.ballerinalang.model.values.BNewArray;
 import org.ballerinalang.model.values.BRefType;
-import org.ballerinalang.model.values.BRefValueArray;
 import org.ballerinalang.model.values.BString;
-import org.ballerinalang.model.values.BStringArray;
 import org.ballerinalang.model.values.BTable;
 import org.ballerinalang.model.values.BTypeDescValue;
 import org.ballerinalang.model.values.BValue;
+import org.ballerinalang.model.values.BValueArray;
 import org.ballerinalang.util.codegen.PackageInfo;
 import org.ballerinalang.util.codegen.StructureTypeInfo;
 import org.ballerinalang.util.exceptions.BallerinaException;
@@ -67,8 +63,8 @@ import java.util.Set;
 public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit {
 
     public BTable executeSelect(Context context, CassandraDataSource dataSource, String query,
-            BRefValueArray parameters, BStructureType type) {
-        BRefValueArray uniformParams = constructUniformArrayOfParameters(parameters, context);
+            BValueArray parameters, BStructureType type) {
+        BValueArray uniformParams = constructUniformArrayOfParameters(parameters, context);
         String processedQuery = createProcessedQueryString(query, uniformParams);
         PreparedStatement preparedStatement = dataSource.getSession().prepare(processedQuery);
         BoundStatement stmt = createBoundStatement(preparedStatement, uniformParams);
@@ -77,8 +73,8 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
     }
 
     public void executeUpdate(Context context, CassandraDataSource dataSource, String query,
-            BRefValueArray parameters) {
-        BRefValueArray uniformParams = constructUniformArrayOfParameters(parameters, context);
+            BValueArray parameters) {
+        BValueArray uniformParams = constructUniformArrayOfParameters(parameters, context);
         String processedQuery = createProcessedQueryString(query, uniformParams);
         PreparedStatement preparedStatement = dataSource.getSession().prepare(processedQuery);
         BoundStatement stmt = createBoundStatement(preparedStatement, uniformParams);
@@ -99,11 +95,11 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         return structType;
     }
 
-    private BRefValueArray constructUniformArrayOfParameters(BRefValueArray inputParams, Context context) {
-        BRefValueArray uniformParams = new BRefValueArray();
+    private BValueArray constructUniformArrayOfParameters(BValueArray inputParams, Context context) {
+        BValueArray uniformParams = new BValueArray();
         int count = (int) inputParams.size();
         for (int i = 0; i < count; i++) {
-            BRefType typeValue = inputParams.get(i);
+            BRefType typeValue = inputParams.getRefValue(i);
             BMap<String, BValue> param;
             if (typeValue.getType().getTag() == TypeTags.RECORD_TYPE_TAG) {
                 param = (BMap<String, BValue>) typeValue;
@@ -185,7 +181,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
      * If there are any arrays of parameter for types other than sql array, the given query is expanded by adding "?" s
      * to match with the array size.
      */
-    private String createProcessedQueryString(String query, BRefValueArray parameters) {
+    private String createProcessedQueryString(String query, BValueArray parameters) {
         String currentQuery = query;
         if (parameters != null) {
             int start = 0;
@@ -193,7 +189,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
             int count;
             int paramCount = (int) parameters.size();
             for (int i = 0; i < paramCount; i++) {
-                BMap<String, BValue> paramStruct = (BMap<String, BValue>) parameters.get(i);
+                BMap<String, BValue> paramStruct = (BMap<String, BValue>) parameters.getBValue(i);
                 if (paramStruct != null) {
                     String cqlType = getCQLType(paramStruct);
                     BValue value = paramStruct.get(Constants.VALUE_FIELD);
@@ -250,7 +246,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         return builder.toString();
     }
 
-    private BoundStatement createBoundStatement(PreparedStatement stmt, BRefValueArray params) {
+    private BoundStatement createBoundStatement(PreparedStatement stmt, BValueArray params) {
         ArrayList<Object> dataList = new ArrayList<>();
         BoundStatement boundStmt = stmt.bind();
         if (params == null) {
@@ -258,7 +254,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         }
         int paramCount = (int) params.size();
         for (int index = 0; index < paramCount; index++) {
-            BMap<String, BValue> paramStruct = (BMap<String, BValue>) params.get(index);
+            BMap<String, BValue> paramStruct = (BMap<String, BValue>) params.getBValue(index);
             if (paramStruct != null) {
                 String cqlType = getCQLType(paramStruct);
                 BValue value = paramStruct.get(Constants.VALUE_FIELD);
@@ -271,19 +267,19 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
                         BValue paramValue;
                         switch (typeTag) {
                         case TypeTags.INT_TAG:
-                            paramValue = new BInteger(((BIntArray) value).get(i));
+                            paramValue = new BInteger(((BValueArray) value).getInt(i));
                             break;
                         case TypeTags.FLOAT_TAG:
-                            paramValue = new BFloat(((BFloatArray) value).get(i));
+                            paramValue = new BFloat(((BValueArray) value).getFloat(i));
                             break;
                         case TypeTags.STRING_TAG:
-                            paramValue = new BString(((BStringArray) value).get(i));
+                            paramValue = new BString(((BValueArray) value).getString(i));
                             break;
                         case TypeTags.BOOLEAN_TAG:
-                            paramValue = new BBoolean(((BBooleanArray) value).get(i) > 0);
+                            paramValue = new BBoolean(((BValueArray) value).getBoolean(i) > 0);
                             break;
                         case TypeTags.ARRAY_TAG:
-                            BValue array = ((BRefValueArray) value).get(i);
+                            BValue array = ((BValueArray) value).getBValue(i);
                             if (((BArrayType) value.getType()).getElementType().getTag() == TypeTags.BYTE_TAG) {
                                 paramValue = array;
                                 break;
