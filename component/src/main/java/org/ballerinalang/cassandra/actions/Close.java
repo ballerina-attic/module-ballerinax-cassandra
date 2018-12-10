@@ -37,7 +37,7 @@ import org.ballerinalang.natives.annotations.BallerinaFunction;
         packageName = "cassandra:0.0.0",
         functionName = "close",
         args = {
-                @Argument(name = "parameters", type = TypeKind.RECORD, structType = Constants.CALLER_ACTIONS,
+                @Argument(name = "parameters", type = TypeKind.RECORD, structType = Constants.CLIENT,
                           structPackage = "wso2.cassandra")}
 )
 public class Close extends AbstractCassandraAction {
@@ -45,7 +45,7 @@ public class Close extends AbstractCassandraAction {
     @Override
     public void execute(Context context) {
         BMap<String, BValue> bConnector = (BMap<String, BValue>) context.getRefArgument(0);
-        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CALLER_ACTIONS);
+        CassandraDataSource datasource = (CassandraDataSource) bConnector.getNativeData(Constants.CLIENT);
         try {
             close(datasource);
         } catch (Throwable e) {

@@ -531,7 +531,11 @@ public class CassandraDataSource implements BValue {
     }
 
     @Override
-    public BValue copy() {
+    public void stamp(BType bType) {
+    }
+
+    @Override
+    public BValue copy(Map<BValue, BValue> map) {
         return null;
     }
 

@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/wso2-ballerina/module-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-cassandra)
 
-# Ballerina Cassandra Client Endpoint
+# Ballerina Cassandra Client
 
-Ballerina Cassandra Client Endpoint is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client endpoint following actions are supported.
+Ballerina Cassandra Client is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client following operations are supported.
 
 1. update - To execute a data or schema update query
 2. select - To select data from the datasource
@@ -38,7 +38,7 @@ type Person record {
 };
 
 public function main() {
-    endpoint c:Client conn {
+    c:Client conn = new({
         host: "localhost",
         port: 9042,
         username: "cassandra",
@@ -48,7 +48,7 @@ public function main() {
             protocolOptionsConfig: { sslEnabled: false },
             socketOptionsConfig: { connectTimeoutMillis: 500, readTimeoutMillis: 1000 },
             poolingOptionsConfig: { maxConnectionsPerHostLocal: 5, newConnectionThresholdLocal: 10 } }
-    };
+    });
 
     var returned = conn->update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy',
                       'replication_factor' : 3}");
@@ -67,45 +67,43 @@ public function main() {
         pID, pName, pSalary, pIncome, pMarried);
     handleUpdate(returned, "Insert One Row to Table person");
 
-    table<Person> dt;
     var selectRet = conn->select("select id, name, salary from testballerina.person where id = ?", Person, pID);
-    match selectRet {
-        table tableReturned => dt = tableReturned;
-        error e => io:println("Select data from person table failed: " + e.message);
-    }
 
-    foreach row in dt {
-        io:println("Person:" + row.id + "|" + row.name + "|" + row.salary);
+    if (selectRet is table<Person>) {
+        foreach var row in selectRet {
+            io:println("Person:" + row.id + "|" + row.name + "|" + row.salary);
+        }
+    } else {
+        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where id = ? and name = ?
                                     ALLOW FILTERING", Person, pID, pName);
-    match selectRet {
-        table tableReturned => dt = tableReturned;
-        error e => io:println("Select data from person table failed: " + e.message);
-    }
-    var jsonRet = <json>dt;
-    match jsonRet {
-        json j => {
+
+    if (selectRet is table<record {}>) {
+        var jsonRet = json.convert(selectRet);
+        if (jsonRet is json) {
             io:print("JSON: ");
-            io:println(io:sprintf("%s", j));
+            io:println(io:sprintf("%s", jsonRet));
+        } else {
+            io:println("Error in table to json conversion");
         }
-        error e => io:println("Error in table to json conversion");
+    } else {
+        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
         Person, pSalary);
-    match selectRet {
-        table tableReturned => dt = tableReturned;
-        error e => io:println("Select data from person table failed: " + e.message);
-    }
-    var xmlRet = <xml>dt;
-    match xmlRet {
-        xml x => {
+    if (selectRet is table<record {}>) {
+        var xmlRet = xml.convert(selectRet);
+        if (xmlRet is xml) {
             io:print("XML: ");
-            io:println(io:sprintf("%s", x));
+            io:println(io:sprintf("%s", xmlRet));
+        } else {
+            io:println("Error in table to xml conversion");
         }
-        error e => io:println("Error in table to xml conversion");
+    } else {
+        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
     }
 
     returned = conn->update("DROP KEYSPACE testballerina");
@@ -116,9 +114,10 @@ public function main() {
 }
 
 function handleUpdate(()|error returned, string message) {
-    match returned {
-        () => io:println(message + " success ");
-        error e => io:println(message + " failed: " + e.message);
+    if (returned is ()) {
+        io:println(message + " success ");
+    } else {
+        io:println(message + " failed: " + <string>returned.detail().message);
     }
 }
  ```
