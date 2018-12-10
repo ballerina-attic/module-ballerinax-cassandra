@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/wso2-ballerina/module-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-cassandra)
 
-# Ballerina Cassandra Client Endpoint
+# Ballerina Cassandra Client
 
-Ballerina Cassandra Client Endpoint is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client endpoint following actions are supported.
+Ballerina Cassandra Client is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client following operations are supported.
 
 1. update - To execute a data or schema update query
 2. select - To select data from the datasource
