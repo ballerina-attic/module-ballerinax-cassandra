@@ -329,7 +329,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.990.0</ballerina.version>
+        <ballerina.version>0.990.1-SNAPSHOT</ballerina.version>
         <cassandra.version>3.6.0</cassandra.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
