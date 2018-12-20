@@ -87,19 +87,19 @@ public class CassandraDataIterator implements DataIterator {
     }
 
     @Override
-    public long getInt(int columnIndex) {
+    public Long getInt(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getInt(columnIndex - 1);
+        return (long) this.current.getInt(columnIndex - 1);
     }
 
     @Override
-    public double getFloat(int columnIndex) {
+    public Double getFloat(int columnIndex) {
         this.checkCurrentRow();
-        return this.current.getFloat(columnIndex - 1);
+        return (double) this.current.getFloat(columnIndex - 1);
     }
 
     @Override
-    public boolean getBoolean(int columnIndex) {
+    public Boolean getBoolean(int columnIndex) {
         this.checkCurrentRow();
         return this.current.getBool(columnIndex - 1);
     }
