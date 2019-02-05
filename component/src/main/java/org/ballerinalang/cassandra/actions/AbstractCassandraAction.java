@@ -69,7 +69,7 @@ public abstract class AbstractCassandraAction extends BlockingNativeCallableUnit
         PreparedStatement preparedStatement = dataSource.getSession().prepare(processedQuery);
         BoundStatement stmt = createBoundStatement(preparedStatement, uniformParams);
         ResultSet rs = dataSource.getSession().execute(stmt);
-        return new BCursorTable(new CassandraDataIterator(rs, this.getColumnDefinitions(rs), type));
+        return new BCursorTable(new CassandraDataIterator(rs, this.getColumnDefinitions(rs), type), type);
     }
 
     public void executeUpdate(Context context, CassandraDataSource dataSource, String query,

@@ -66,7 +66,7 @@ public type ClientEndpointConfig record {
     string username;
     string password;
     ConnectionProperties options = {};
-    !...
+    !...;
 };
 
 # ConnectionProperties type represents the properties which are used to configure Cassandra connection.
@@ -108,6 +108,7 @@ public type ConnectionProperties record {
     PoolingOptionsConfig poolingOptionsConfig = {};
     SocketOptionsConfig socketOptionsConfig = {};
     ProtocolOptionsConfig protocolOptionsConfig = {};
+    !...;
 };
 
 # Options of the Cassandra native binary protocol.
@@ -125,6 +126,7 @@ public type ProtocolOptionsConfig record {
 
     string initialProtocolVersion = "";
     string compression = "";
+    !...;
 };
 
 # Options related to defaults for individual queries.
@@ -172,6 +174,7 @@ public type QueryOptionsConfig record {
     int refreshNodeListIntervalMillis = -1;
     int refreshNodeIntervalMillis = -1;
     int refreshSchemaIntervalMillis = -1;
+    !...;
 };
 
 
@@ -203,6 +206,7 @@ public type PoolingOptionsConfig record {
     int coreConnectionsPerHostRemote = -1;
     int maxConnectionsPerHostRemote = -1;
     int newConnectionThresholdRemote = -1;
+    !...;
 };
 
 # Options to configure low-level socket options for the connections kept to the Cassandra hosts.
@@ -218,9 +222,10 @@ public type SocketOptionsConfig record {
     int soLinger = -1;
     int receiveBufferSize = -1;
     int sendBufferSize = -1;
+    !...;
 };
 
 public type DatabaseErrorData record {
     string message;
-    !...
+    !...;
 };
