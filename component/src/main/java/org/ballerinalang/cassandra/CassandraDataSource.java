@@ -38,12 +38,14 @@ import com.datastax.driver.core.policies.LatencyAwarePolicy;
 import com.datastax.driver.core.policies.LoggingRetryPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
+import org.ballerinalang.bre.bvm.BVM;
 import org.ballerinalang.connector.api.Struct;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.values.BValue;
 import org.ballerinalang.util.exceptions.BallerinaException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -531,7 +533,8 @@ public class CassandraDataSource implements BValue {
     }
 
     @Override
-    public void stamp(BType bType) {
+    public void stamp(BType bType, List<BVM.TypeValuePair> list) {
+
     }
 
     @Override
