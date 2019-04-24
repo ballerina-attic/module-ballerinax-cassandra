@@ -130,7 +130,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
                 <exclusions>
                     <exclusion>
@@ -185,7 +185,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-runtime</artifactId>
+                <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
@@ -244,6 +244,7 @@
                 <configuration>
                     <source>${wso2.maven.compiler.source}</source>
                     <target>${wso2.maven.compiler.target}</target>
+                    <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
             </plugin>
             <plugin>
@@ -329,7 +330,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.990.3</ballerina.version>
+        <ballerina.version>0.991.0</ballerina.version>
         <cassandra.version>3.6.0</cassandra.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>

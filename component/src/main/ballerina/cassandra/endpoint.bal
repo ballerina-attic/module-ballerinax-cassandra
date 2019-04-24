@@ -29,14 +29,14 @@ public type Client client object {
     # + queryString - Query to be executed
     # + recordType - The Type result should be mapped to
     # + return - `table` representing the result of the select action or `error` if an error occurs
-    public remote extern function select(string queryString, typedesc recordType, Param... parameters)
-       returns (table<record {}>|error);
+    public remote function select(string queryString, typedesc recordType, Param... parameters)
+       returns (table<record {}>|error) = external;
 
     # Execute update query on cassandra datasource.
 
     # + queryString - Query to be executed
     # + return - `nil` or `error` if an error occurs
-    public remote extern function update(string queryString, Param... parameters) returns (error?);
+    public remote function update(string queryString, Param... parameters) returns (error?) = external;
 
     # Stops the registered service.
     public function stop() {
@@ -47,6 +47,6 @@ public type Client client object {
 # An internal function used by clients to shutdown the connection pool.
 #
 # + cassandraClient - Client object that encapsulates the connection/connection pool
-extern function close(Client cassandraClient);
+function close(Client cassandraClient) = external;
 
-extern function initClient(Client cassandraClient, ClientEndpointConfig clientEndpointConfig);
+function initClient(Client cassandraClient, ClientEndpointConfig clientEndpointConfig) = external;
