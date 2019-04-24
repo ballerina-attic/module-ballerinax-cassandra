@@ -15,12 +15,12 @@ function testKeySpaceCreation() {
         password: "cassandra",
         options: {}
     });
-    _ = conn->update("CREATE KEYSPACE dummyks  WITH replication = {'class':'SimpleStrategy', 'replication_factor'
+    checkpanic conn->update("CREATE KEYSPACE dummyks  WITH replication = {'class':'SimpleStrategy', 'replication_factor'
     :1}");
     conn.stop();
 }
 
-function testDuplicateKeySpaceCreation() returns (any) {
+function testDuplicateKeySpaceCreation() returns error? {
     c:Client conn = new({
         host: "localhost",
         port: 9142,
@@ -28,7 +28,7 @@ function testDuplicateKeySpaceCreation() returns (any) {
         password: "cassandra",
         options: {}
     });
-    _ = conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
+    checkpanic conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
     'replication_factor':1}");
 
     var result = conn->update("CREATE KEYSPACE duplicatekstest  WITH replication = {'class':'SimpleStrategy',
@@ -46,7 +46,7 @@ function testTableCreation() {
         password: "cassandra",
         options: {}
     });
-    _ = conn->update("CREATE TABLE peopleinfoks.student(id int PRIMARY KEY,name text, age int)");
+    checkpanic conn->update("CREATE TABLE peopleinfoks.student(id int PRIMARY KEY,name text, age int)");
     conn.stop();
 }
 
@@ -65,7 +65,7 @@ function testInsert() {
     c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1000.5 };
     c:Parameter pMarried = { cqlType: c:TYPE_BOOLEAN, value: true };
 
-    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
+    checkpanic conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
         pID, pName, pSalary, pIncome, pMarried);
     conn.stop();
 }
@@ -81,7 +81,7 @@ function testInsertRawParams() {
 
     c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1001.5 };
 
-    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
+    checkpanic conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married) values (?,?,?,?,?)",
         10, "Tommy", 101.5, pIncome, false);
     conn.stop();
 }
@@ -155,7 +155,7 @@ function testSelect() returns (int, string, float) {
     return (id, name, salary);
 }
 
-function testSelectNonExistentColumn() returns (any) {
+function testSelectNonExistentColumn() returns any | error {
     c:Client conn = new({
         host: "localhost",
         port: 9142,
@@ -179,7 +179,7 @@ function testInsertWithNilParams() {
         options: {}
     });
 
-    _ = conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married)
+    checkpanic conn->update("INSERT INTO peopleinfoks.person(id, name, salary, income, married)
     values (10,'Jim',101.5,1001.5,false)");
     conn.stop();
 }

@@ -47,8 +47,7 @@ if (returned is ()) {
 
 var selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
                                     Person, pSalary);
-if (selectRet is table) {
-    table dt = selectRet;
+if (selectRet is table<Person>) {
     // Processing logic
 } else {
     io:println("Select data from person table failed: " + selectRet.reason());
