@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ballerinalang</groupId>
     <artifactId>connector-cassandra-parent</artifactId>
-    <version>0.8.4-SNAPSHOT</version>
+    <version>0.8.5</version>
     <packaging>pom</packaging>
     <name>Ballerina - Cassandra Parent</name>
 
@@ -32,6 +32,9 @@
         <tag>HEAD</tag>
     </scm>
 
+    <modules>
+
+    </modules>
     <repositories>
         <!-- WSO2 released artifact repository -->
         <repository>
@@ -125,6 +128,11 @@
         <dependencies>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
+                <artifactId>ballerina-lang</artifactId>
+                <version>${ballerina.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-core</artifactId>
                 <version>${ballerina.version}</version>
             </dependency>
@@ -132,56 +140,11 @@
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-runtime-api</artifactId>
                 <version>${ballerina.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-nop</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-jdk14</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-builtin</artifactId>
+                <artifactId>ballerina-runtime</artifactId>
                 <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-lang</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-sql</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-logging</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-log-api</artifactId>
-                <version>${ballerina.version}</version>
-            </dependency>
-            <!-- Following ballerina-binary-repo dependencies are required to obtain balos-->
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-builtin</artifactId>
-                <version>${ballerina.version}</version>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-sql</artifactId>
-                <version>${ballerina.version}</version>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
             </dependency>
             <dependency>
                 <groupId>org.ballerinalang</groupId>
@@ -189,13 +152,6 @@
                 <version>${ballerina.version}</version>
                 <type>zip</type>
                 <classifier>ballerina-binary-repo</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-log-api</artifactId>
-                <type>zip</type>
-                <classifier>ballerina-binary-repo</classifier>
-                <version>${ballerina.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.datastax.cassandra</groupId>
@@ -207,12 +163,6 @@
                 <artifactId>cassandra-unit</artifactId>
                 <version>${cassandraunit.version}</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.ballerinalang</groupId>
-                <artifactId>ballerina-launcher</artifactId>
-                <version>${ballerina.version}</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -330,7 +280,7 @@
 
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
-        <ballerina.version>0.991.0</ballerina.version>
+        <ballerina.version>1.2.0</ballerina.version>
         <cassandra.version>3.6.0</cassandra.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
@@ -357,9 +307,4 @@
         <maven.shade.plugin.version>3.1.1</maven.shade.plugin.version>
         <slf4j.version>1.7.25</slf4j.version>
     </properties>
-
-    <modules>
-        <module>component</module>
-    </modules>
-
 </project>
