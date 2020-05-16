@@ -38,7 +38,6 @@ import org.ballerinalang.jvm.values.api.BArray;
 import org.ballerinalang.jvm.values.api.BMap;
 import org.ballerinalang.jvm.values.api.BRefValue;
 import org.ballerinalang.jvm.values.api.BTable;
-import org.ballerinalang.jvm.values.api.BValue;
 import org.ballerinalang.jvm.values.api.BValueCreator;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.wso2.ballerinalang.compiler.util.TypeTags;
@@ -82,7 +81,7 @@ class ActionUtil {
     }
 
     private static List<ColumnDefinition> getColumnDefinitions(ResultSet rs) {
-        List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
+        List<ColumnDefinition> columnDefs = new ArrayList<>();
         Set<String> columnNames = new HashSet<>();
         for (ColumnDefinitions.Definition def : rs.getColumnDefinitions().asList()) {
             String colName = def.getName();
@@ -177,12 +176,7 @@ class ActionUtil {
     }
 
     private static String getCQLType(BMap parameter) {
-        String cqlType = "";
-        BValue refType = (BValue) parameter.get(Constants.CQL_TYPE_FIELD);
-        if (refType != null) {
-            cqlType = refType.stringValue();
-        }
-        return cqlType;
+        return (String) parameter.get(Constants.CQL_TYPE_FIELD);
     }
 
     private static void bindValue(ArrayList<Object> dataList, Object value, String csqlType) {
@@ -306,10 +300,9 @@ class ActionUtil {
                 BMap param = (BMap) parameters.get(i);
                 if (param != null) {
                     String cqlType = getCQLType(param);
-                    BValue value = (BValue) param.get(Constants.VALUE_FIELD);
-                    if (value != null && value.getType().getTag() == TypeTags.ARRAY && !Constants.DataTypes.LIST
-                            .equalsIgnoreCase(cqlType)) {
-                        count = (int) ((BArray) value).size();
+                    Object value = param.get(Constants.VALUE_FIELD);
+                    if (value instanceof BArray && !Constants.DataTypes.LIST.equalsIgnoreCase(cqlType)) {
+                        count = ((BArray) value).size();
                     } else {
                         count = 1;
                     }

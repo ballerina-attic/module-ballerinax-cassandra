@@ -63,8 +63,8 @@ public type Param string|int|boolean|float|Parameter;
 public type ClientConfig record {|
     string host;
     int port;
-    string username;
-    string password;
+    string username?;
+    string password?;
     ConnectionProperties options = {};
 |};
 

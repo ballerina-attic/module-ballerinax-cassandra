@@ -50,7 +50,7 @@ public class ExternAction {
         try {
             ActionUtil.close(dataSource);
         } catch (Throwable e) {
-            throw new BallerinaConnectorException("Error occurred while closing", e);
+            throw new BallerinaConnectorException("error occurred while closing the client: ", e);
         }
     }
 
@@ -60,7 +60,8 @@ public class ExternAction {
         try {
             return ActionUtil.executeSelect(dataSource, queryString, parameters, recordType);
         } catch (Throwable e) {
-            return BallerinaErrors.createError("Error occured while select");
+            return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE, "Error occurred while executing the " +
+                    "select statement: " + e.getMessage());
         }
     }
 
@@ -70,7 +71,8 @@ public class ExternAction {
             ActionUtil.executeUpdate(dataSource, queryString, parameters);
             return null;
         } catch (Throwable e) {
-            return BallerinaErrors.createError("Error occured while select");
+            return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE, "Error occurred while executing the " +
+                    "update statement: " + e.getMessage());
         }
     }
 

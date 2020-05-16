@@ -24,11 +24,11 @@
     <parent>
         <artifactId>connector-cassandra-parent</artifactId>
         <groupId>org.ballerinalang</groupId>
-        <version>0.8.5</version>
+        <version>0.8.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <artifactId>cassandra-utils</artifactId>
     <packaging>jar</packaging>
     <name>Cassandra Utils</name>
@@ -49,6 +49,10 @@
         <dependency>
             <groupId>org.ballerinalang</groupId>
             <artifactId>ballerina-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
         </dependency>
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
@@ -89,6 +93,33 @@
                             <overWriteReleases>false</overWriteReleases>
                             <overWriteSnapshots>false</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>${project.groupId}:${project.artifactId}</include>
+                                    <include>io.lettuce:lettuce-core</include>
+                                    <include>io.projectreactor:reactor-core</include>
+                                    <include>org.reactivestreams:reactive-streams</include>
+                                    <include>org.apache.commons:commons-pool2</include>
+                                    <include>com.github.kstyrc:embedded-redis</include>
+                                    <include>com.google.guava:guava</include>
+                                    <include>commons-io:commons-io</include>
+                                    <include>io.netty:netty-all</include>
+                                </includes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
