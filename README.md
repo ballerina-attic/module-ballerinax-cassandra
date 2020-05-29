@@ -28,7 +28,7 @@ Sample
 ==================================
 
 ```ballerina
-import wso2/cassandra as c;
+import ballerinax/cassandra as c;
 import ballerina/io;
 
 type Person record {
@@ -38,31 +38,32 @@ type Person record {
 };
 
 public function main() {
-    c:Client conn = new({
+    c:Client conn = new ({
         host: "localhost",
         port: 9042,
         username: "cassandra",
         password: "cassandra",
         options: {
-            queryOptionsConfig: { consistencyLevel: "ONE", defaultIdempotence: false },
-            protocolOptionsConfig: { sslEnabled: false },
-            socketOptionsConfig: { connectTimeoutMillis: 500, readTimeoutMillis: 1000 },
-            poolingOptionsConfig: { maxConnectionsPerHostLocal: 5, newConnectionThresholdLocal: 10 } }
+            queryOptionsConfig: {consistencyLevel: "ONE", defaultIdempotence: false},
+            protocolOptionsConfig: {sslEnabled: false},
+            socketOptionsConfig: {connectTimeoutMillis: 500, readTimeoutMillis: 1000},
+            poolingOptionsConfig: {maxConnectionsPerHostLocal: 5, newConnectionThresholdLocal: 10}
+        }
     });
 
-    var returned = conn->update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy',
-                      'replication_factor' : 3}");
+    var returned = conn->update("CREATE KEYSPACE testballerina  WITH replication = {'class':'SimpleStrategy'," +
+        "'replication_factor' : 3}");
     handleUpdate(returned, "Keyspace testballerina creation");
 
-    returned = conn->update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double,
-                      married boolean)");
+    returned = conn->update("CREATE TABLE testballerina.person(id int PRIMARY KEY,name text,salary float,income double," +
+        "married boolean)");
     handleUpdate(returned, "Table person creation");
 
-    c:Parameter pID = { cqlType: c:TYPE_INT, value: 1 };
-    c:Parameter pName = { cqlType: c:TYPE_TEXT, value: "Anupama" };
-    c:Parameter pSalary = { cqlType: c:TYPE_FLOAT, value: 100.5 };
-    c:Parameter pIncome = { cqlType: c:TYPE_DOUBLE, value: 1000.5 };
-    c:Parameter pMarried = { cqlType: c:TYPE_BOOLEAN, value: true };
+    c:Parameter pID = {cqlType: c:TYPE_INT, value: 1};
+    c:Parameter pName = {cqlType: c:TYPE_TEXT, value: "Anupama"};
+    c:Parameter pSalary = {cqlType: c:TYPE_FLOAT, value: 100.5};
+    c:Parameter pIncome = {cqlType: c:TYPE_DOUBLE, value: 1000.5};
+    c:Parameter pMarried = {cqlType: c:TYPE_BOOLEAN, value: true};
     returned = conn->update("INSERT INTO testballerina.person(id, name, salary, income, married) values (?,?,?,?,?)",
         pID, pName, pSalary, pIncome, pMarried);
     handleUpdate(returned, "Insert One Row to Table person");
@@ -71,17 +72,15 @@ public function main() {
 
     if (selectRet is table<Person>) {
         foreach var row in selectRet {
-            io:println("Person:" + row.id + "|" + row.name + "|" + row.salary);
+            io:println("Person:" + row.id.toString() + "|" + row.name + "|" + row.salary.toString());
         }
-    } else {
-        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
-    }
+    } 
 
-    selectRet = conn->select("select id, name, salary from testballerina.person where id = ? and name = ?
-                                    ALLOW FILTERING", Person, pID, pName);
+    selectRet = conn->select("select id, name, salary from testballerina.person where id = ? and name = ?" +
+        "ALLOW FILTERING", Person, pID, pName);
 
     if (selectRet is table<record {}>) {
-        var jsonRet = json.convert(selectRet);
+        var jsonRet = json.constructFrom(selectRet);
         if (jsonRet is json) {
             io:print("JSON: ");
             io:println(io:sprintf("%s", jsonRet));
@@ -89,13 +88,13 @@ public function main() {
             io:println("Error in table to json conversion");
         }
     } else {
-        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
+        io:println("Select data from person table failed: " + <string>selectRet.detail()?.message);
     }
 
     selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
         Person, pSalary);
     if (selectRet is table<record {}>) {
-        var xmlRet = xml.convert(selectRet);
+        var xmlRet = xml.constructFrom(selectRet);
         if (xmlRet is xml) {
             io:print("XML: ");
             io:println(io:sprintf("%s", xmlRet));
@@ -103,7 +102,7 @@ public function main() {
             io:println("Error in table to xml conversion");
         }
     } else {
-        io:println("Select data from person table failed: " + <string>selectRet.detail().message);
+        io:println("Select data from person table failed: " + <string>selectRet.detail()?.message);
     }
 
     returned = conn->update("DROP KEYSPACE testballerina");
@@ -117,7 +116,7 @@ function handleUpdate(()|error returned, string message) {
     if (returned is ()) {
         io:println(message + " success ");
     } else {
-        io:println(message + " failed: " + <string>returned.detail().message);
+        io:println(message + " failed: " + <string>returned.detail()?.message);
     }
 }
  ```

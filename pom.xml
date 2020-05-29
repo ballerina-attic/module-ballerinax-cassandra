@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ballerinalang</groupId>
     <artifactId>connector-cassandra-parent</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
     <packaging>pom</packaging>
     <name>Ballerina - Cassandra Parent</name>
 
@@ -33,7 +33,8 @@
     </scm>
 
     <modules>
-
+        <module>cassandra-utils</module>
+        <module>cassandra/src/cassandra</module>
     </modules>
     <repositories>
         <!-- WSO2 released artifact repository -->
@@ -175,6 +176,11 @@
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -282,6 +288,7 @@
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>1.2.0</ballerina.version>
         <cassandra.version>3.6.0</cassandra.version>
+        <netty.version>4.1.49.Final</netty.version>
         <com.google.guava.version>19.0</com.google.guava.version>
         <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
