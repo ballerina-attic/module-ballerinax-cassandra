@@ -34,7 +34,7 @@
 
     <modules>
         <module>cassandra-utils</module>
-        <module>cassandra/src/cassandra</module>
+        <module>cassandra</module>
     </modules>
     <repositories>
         <!-- WSO2 released artifact repository -->
