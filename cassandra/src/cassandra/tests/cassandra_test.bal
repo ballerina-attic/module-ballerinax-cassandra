@@ -66,7 +66,10 @@ function test_select_values() {
     var result = conn->selectData("select * from testballerina.person", Person);
     if (result is table<Person>) {
         foreach var row in result {
-            io:println(row);
+            test:assertEquals(row.id, 4, "incorrect id");
+            test:assertEquals(row.name, "Bob", "incorrect name");
+            test:assertEquals(row.salary, 100.5, "incorrect salary");
+            test:assertEquals(row.income, 1000.5, "incorrect income");
         }
     } else {
         handleUpdate(error("SELECT_ERROR", message = "Error in select statement"));
