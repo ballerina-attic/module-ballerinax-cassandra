@@ -74,8 +74,8 @@ public class ExternAction {
             ActionUtil.executeUpdate(dataSource, queryString.getValue(), parameters);
             return null;
         } catch (Throwable e) {
-            return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE, "Error occurred while executing the " +
-                    "update statement: " + e.getMessage());
+            return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE,
+                    "Error occurred while executing the update statement: " + e.getMessage());
         }
     }
 

@@ -27,7 +27,6 @@ import org.ballerinalang.jvm.values.api.BString;
  */
 public final class Constants {
     public static final String QUESTION_MARK = "?";
-    public static final String CASSANDRA_PACKAGE_PATH = "ballerina/cassandra:0.0.0";
     public static final String CLIENT = "Client";
     public static final String CASSANDRA_PARAMETER = "Parameter";
     public static final String CQL_TYPE_FIELD = "cqlType";
