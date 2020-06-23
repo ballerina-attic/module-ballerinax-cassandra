@@ -17,6 +17,9 @@
  */
 package org.ballerinalang.cassandra;
 
+import org.ballerinalang.jvm.StringUtils;
+import org.ballerinalang.jvm.values.api.BString;
+
 /**
  * Constants for Cassandra Connector.
  *
@@ -49,10 +52,10 @@ public final class Constants {
      * Constants for Endpoint Configs.
      */
     public static final class EndpointConfig {
-        public static final String HOST = "host";
-        public static final String PORT = "port";
-        public static final String USERNAME = "username";
-        public static final String PASSWORD = "password";
-        public static final String OPTIONS = "options";
+        public static final BString HOST = StringUtils.fromString("host");
+        public static final BString PORT = StringUtils.fromString("port");
+        public static final BString USERNAME = StringUtils.fromString("username");
+        public static final BString PASSWORD = StringUtils.fromString("password");
+        public static final BString OPTIONS = StringUtils.fromString("options");
     }
 }
