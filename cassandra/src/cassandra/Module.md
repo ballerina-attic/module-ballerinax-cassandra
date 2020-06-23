@@ -45,7 +45,7 @@ if (returned is ()) {
 
 ```ballerina
 
-var selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
+var selectRet = conn->selectData("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
                                     Person, pSalary);
 if (selectRet is table<Person>) {
     // Processing logic
