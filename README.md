@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/wso2-ballerina/module-cassandra.svg?branch=master)](https://travis-ci.org/wso2-ballerina/module-cassandra)
-
+[![Build Status](https://travis-ci.com/ballerina-platform/module-ballerinax-cassandra.svg?branch=master)](https://travis-ci.com/ballerina-platform/module-ballerinax-cassandra)
 # Ballerina Cassandra Client
 
 Ballerina Cassandra Client is used to connect Ballerina with Cassandra data source. With the Ballerina Cassandra client following operations are supported.

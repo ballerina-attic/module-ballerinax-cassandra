@@ -28,6 +28,7 @@ import org.ballerinalang.cassandra.CassandraDataSource;
 import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.jvm.ColumnDefinition;
+import org.ballerinalang.jvm.StringUtils;
 import org.ballerinalang.jvm.types.BArrayType;
 import org.ballerinalang.jvm.types.BPackage;
 import org.ballerinalang.jvm.types.BStructureType;
@@ -37,7 +38,7 @@ import org.ballerinalang.jvm.values.TypedescValue;
 import org.ballerinalang.jvm.values.api.BArray;
 import org.ballerinalang.jvm.values.api.BMap;
 import org.ballerinalang.jvm.values.api.BRefValue;
-import org.ballerinalang.jvm.values.api.BTable;
+import org.ballerinalang.jvm.values.api.BString;
 import org.ballerinalang.jvm.values.api.BValueCreator;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.wso2.ballerinalang.compiler.util.TypeTags;
@@ -55,7 +56,7 @@ import java.util.Set;
  */
 class ActionUtil {
 
-    static BTable executeSelect(CassandraDataSource dataSource, String query,
+    static BCursorTable executeSelect(CassandraDataSource dataSource, String query,
                                 ArrayValue parameters, TypedescValue recordType) {
         BArray uniformParams = constructUniformArrayOfParameters(parameters);
         String processedQuery = createProcessedQueryString(query, uniformParams);
@@ -270,15 +271,15 @@ class ActionUtil {
         BArray uniformParams = BValueCreator.createArrayValue(arrayType);
         for (int i = 0; i < count; i++) {
             BRefValue typeValue = (BRefValue) inputParams.getRefValue(i);
-            BMap<String, Object> param;
+            BMap<BString, Object> param;
             if (typeValue.getType().getTag() == TypeTags.RECORD) {
-                param = (BMap<String, Object>) typeValue;
+                param = (BMap<BString, Object>) typeValue;
             } else {
                 param = BValueCreator.createRecordValue(new BPackage("ballerina", "cassandra"),
                                                         Constants.CASSANDRA_PARAMETER);
-                param.put(Constants.CQL_TYPE_FIELD,
+                param.put(StringUtils.fromString(Constants.CQL_TYPE_FIELD),
                           CassandraDataSourceUtils.getCQLType(typeValue.getType()));
-                param.put(Constants.VALUE_FIELD, typeValue);
+                param.put(StringUtils.fromString(Constants.VALUE_FIELD), typeValue);
             }
             uniformParams.add(i, param);
         }

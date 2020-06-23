@@ -21,11 +21,13 @@ package org.ballerinalang.cassandra.actions;
 import org.ballerinalang.cassandra.CassandraDataSource;
 import org.ballerinalang.cassandra.Constants;
 import org.ballerinalang.jvm.BallerinaErrors;
+import org.ballerinalang.jvm.StringUtils;
 import org.ballerinalang.jvm.util.exceptions.BallerinaConnectorException;
 import org.ballerinalang.jvm.values.ArrayValue;
 import org.ballerinalang.jvm.values.MapValue;
 import org.ballerinalang.jvm.values.ObjectValue;
 import org.ballerinalang.jvm.values.TypedescValue;
+import org.ballerinalang.jvm.values.api.BString;
 
 /**
  * Util class for Cassandra client action handling.
@@ -34,11 +36,11 @@ import org.ballerinalang.jvm.values.TypedescValue;
  */
 public class ExternAction {
 
-    public static void init(ObjectValue cassandraClient, MapValue<String, Object> clientConfig) {
-        String host = clientConfig.getStringValue(Constants.EndpointConfig.HOST);
+    public static void init(ObjectValue cassandraClient, MapValue<BString, Object> clientConfig) {
+        String host = clientConfig.getStringValue(Constants.EndpointConfig.HOST).getValue();
         int port = Math.toIntExact(clientConfig.getIntValue(Constants.EndpointConfig.PORT));
-        String username = clientConfig.getStringValue(Constants.EndpointConfig.USERNAME);
-        String password = clientConfig.getStringValue(Constants.EndpointConfig.PASSWORD);
+        String username = clientConfig.getStringValue(Constants.EndpointConfig.USERNAME).getValue();
+        String password = clientConfig.getStringValue(Constants.EndpointConfig.PASSWORD).getValue();
         MapValue options = clientConfig.getMapValue(Constants.EndpointConfig.OPTIONS);
         CassandraDataSource dataSource = new CassandraDataSource();
         dataSource.init(host, port, username, password, options);
@@ -54,21 +56,22 @@ public class ExternAction {
         }
     }
 
-    public static Object select(ObjectValue cassandraClient, String queryString, TypedescValue recordType,
+    public static Object select(ObjectValue cassandraClient, BString queryString, TypedescValue recordType,
                                 ArrayValue parameters) {
         CassandraDataSource dataSource = (CassandraDataSource) cassandraClient.getNativeData(Constants.CLIENT);
         try {
-            return ActionUtil.executeSelect(dataSource, queryString, parameters, recordType);
+            return ActionUtil.executeSelect(dataSource, queryString.getValue(), parameters, recordType);
         } catch (Throwable e) {
-            return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE, "Error occurred while executing the " +
-                    "select statement: " + e.getMessage());
+            return BallerinaErrors.createError(
+                    StringUtils.fromString("Error occurred while executing the select statement: "
+                                                       + e.getMessage()));
         }
     }
 
-    public static Object update(ObjectValue cassandraClient, String queryString, ArrayValue parameters) {
+    public static Object update(ObjectValue cassandraClient, BString queryString, ArrayValue parameters) {
         CassandraDataSource dataSource = (CassandraDataSource) cassandraClient.getNativeData(Constants.CLIENT);
         try {
-            ActionUtil.executeUpdate(dataSource, queryString, parameters);
+            ActionUtil.executeUpdate(dataSource, queryString.getValue(), parameters);
             return null;
         } catch (Throwable e) {
             return BallerinaErrors.createError(Constants.DATABASE_ERROR_CODE, "Error occurred while executing the " +

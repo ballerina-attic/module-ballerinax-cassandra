@@ -1,4 +1,24 @@
 org_name = "ballerinax"
 version = "0.8.6"
 lockfile_version = "1.0.0"
-ballerina_version = "1.2.4"
+ballerina_version = "slp1"
+
+[[imports."ballerinax/cassandra:0.8.6"]]
+org_name = "ballerina"
+name = "java"
+version = "0.9.0"
+
+[[imports."ballerina/io:0.5.0"]]
+org_name = "ballerina"
+name = "java"
+version = "0.9.0"
+
+[[imports."ballerinax/test:0.8.6"]]
+org_name = "ballerinax"
+name = "cassandra"
+version = "0.8.6"
+
+[[imports."ballerinax/test:0.8.6"]]
+org_name = "ballerina"
+name = "io"
+version = "0.5.0"
