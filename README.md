@@ -30,6 +30,8 @@ Sample
 ```ballerina
 import ballerinax/cassandra as c;
 import ballerina/io;
+import ballerina/jsonutils;
+import ballerina/xmlutils;
 
 type Person record {
     int id;
@@ -68,7 +70,7 @@ public function main() {
         pID, pName, pSalary, pIncome, pMarried);
     handleUpdate(returned, "Insert One Row to Table person");
 
-    var selectRet = conn->select("select id, name, salary from testballerina.person where id = ?", Person, pID);
+    var selectRet = conn->selectData("select id, name, salary from testballerina.person where id = ?", Person, pID);
 
     if (selectRet is table<Person>) {
         foreach var row in selectRet {
@@ -76,33 +78,23 @@ public function main() {
         }
     } 
 
-    selectRet = conn->select("select id, name, salary from testballerina.person where id = ? and name = ?" +
+    selectRet = conn->selectData("select id, name, salary from testballerina.person where id = ? and name = ?" +
         "ALLOW FILTERING", Person, pID, pName);
 
     if (selectRet is table<record {}>) {
-        var jsonRet = json.constructFrom(selectRet);
-        if (jsonRet is json) {
-            io:print("JSON: ");
-            io:println(io:sprintf("%s", jsonRet));
-        } else {
-            io:println("Error in table to json conversion");
-        }
+        json jsonRet = jsonutils:fromTable(selectRet);
+        io:println("JSON: ", jsonRet);
     } else {
-        io:println("Select data from person table failed: " + <string>selectRet.detail()?.message);
+        io:println("Select data from person table failed: " + selectRet.message());
     }
 
-    selectRet = conn->select("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
+    selectRet = conn->selectData("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
         Person, pSalary);
     if (selectRet is table<record {}>) {
-        var xmlRet = xml.constructFrom(selectRet);
-        if (xmlRet is xml) {
-            io:print("XML: ");
-            io:println(io:sprintf("%s", xmlRet));
-        } else {
-            io:println("Error in table to xml conversion");
-        }
+        xml xmlRet = xmlutils:fromTable(selectRet);
+        io:println("XML: ", xmlRet);
     } else {
-        io:println("Select data from person table failed: " + <string>selectRet.detail()?.message);
+        io:println("Select data from person table failed: " + selectRet.message());
     }
 
     returned = conn->update("DROP KEYSPACE testballerina");
@@ -116,7 +108,7 @@ function handleUpdate(()|error returned, string message) {
     if (returned is ()) {
         io:println(message + " success ");
     } else {
-        io:println(message + " failed: " + <string>returned.detail()?.message);
+        io:println(message + " failed: " + returned.message());
     }
 }
  ```
