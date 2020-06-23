@@ -63,7 +63,7 @@ function test_update_values() {
     dependsOn: ["test_update_values"]
 }
 function test_select_values() {
-    var result = conn->select("select * from testballerina.person", Person);
+    var result = conn->selectData("select * from testballerina.person", Person);
     if (result is table<Person>) {
         foreach var row in result {
             io:println(row);
@@ -84,6 +84,6 @@ function handleUpdate(()|error result, string message = "") {
     if (result is ()) {
         io:println(message + " success ");
     } else {
-        test:assertFail(msg = <string>result.detail()?.message);
+        test:assertFail(msg = <string>result.message());
     }
 }
