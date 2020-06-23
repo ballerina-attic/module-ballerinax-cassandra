@@ -22,22 +22,27 @@ import com.datastax.driver.core.ColumnDefinitions;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
-import org.ballerinalang.cassandra.BCursorTable;
 import org.ballerinalang.cassandra.CassandraDataIterator;
 import org.ballerinalang.cassandra.CassandraDataSource;
 import org.ballerinalang.cassandra.CassandraDataSourceUtils;
 import org.ballerinalang.cassandra.Constants;
+import org.ballerinalang.jvm.BallerinaValues;
 import org.ballerinalang.jvm.ColumnDefinition;
+import org.ballerinalang.jvm.DataIterator;
+import org.ballerinalang.jvm.StringUtils;
 import org.ballerinalang.jvm.types.BArrayType;
 import org.ballerinalang.jvm.types.BPackage;
 import org.ballerinalang.jvm.types.BStructureType;
+import org.ballerinalang.jvm.types.BTableType;
 import org.ballerinalang.jvm.types.BTypes;
 import org.ballerinalang.jvm.values.ArrayValue;
+import org.ballerinalang.jvm.values.TableValue;
+import org.ballerinalang.jvm.values.TableValueImpl;
 import org.ballerinalang.jvm.values.TypedescValue;
 import org.ballerinalang.jvm.values.api.BArray;
 import org.ballerinalang.jvm.values.api.BMap;
 import org.ballerinalang.jvm.values.api.BRefValue;
-import org.ballerinalang.jvm.values.api.BTable;
+import org.ballerinalang.jvm.values.api.BString;
 import org.ballerinalang.jvm.values.api.BValueCreator;
 import org.ballerinalang.util.exceptions.BallerinaException;
 import org.wso2.ballerinalang.compiler.util.TypeTags;
@@ -46,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -55,15 +61,15 @@ import java.util.Set;
  */
 class ActionUtil {
 
-    static BTable executeSelect(CassandraDataSource dataSource, String query,
-                                ArrayValue parameters, TypedescValue recordType) {
+    static TableValue executeSelect(CassandraDataSource dataSource, String query,
+                                    ArrayValue parameters, TypedescValue recordType) {
         BArray uniformParams = constructUniformArrayOfParameters(parameters);
         String processedQuery = createProcessedQueryString(query, uniformParams);
         PreparedStatement preparedStatement = dataSource.getSession().prepare(processedQuery);
         BoundStatement stmt = createBoundStatement(preparedStatement, uniformParams);
         ResultSet rs = dataSource.getSession().execute(stmt);
         BStructureType structureType = recordType != null ? (BStructureType) recordType.getDescribingType() : null;
-        return new BCursorTable(new CassandraDataIterator(rs, getColumnDefinitions(rs), structureType), structureType);
+        return getTable(new CassandraDataIterator(rs, getColumnDefinitions(rs), structureType), structureType);
     }
 
     static void executeUpdate(CassandraDataSource dataSource, String query,
@@ -152,7 +158,7 @@ class ActionUtil {
             } else if (query.charAt(i) == '\"') {
                 doubleQuoteExists = !doubleQuoteExists;
             } else if (query.charAt(i) == '?' && !(doubleQuoteExists || singleQuoteExists)) {
-                result.append(query.substring(0, i));
+                result.append(query, 0, i);
                 result.append(generateQuestionMarks(count));
                 end = result.length() + 1;
                 if (i + 1 < n) {
@@ -176,7 +182,7 @@ class ActionUtil {
     }
 
     private static String getCQLType(BMap parameter) {
-        return (String) parameter.get(Constants.CQL_TYPE_FIELD);
+        return parameter.get(StringUtils.fromString(Constants.CQL_TYPE_FIELD)).toString();
     }
 
     private static void bindValue(ArrayList<Object> dataList, Object value, String csqlType) {
@@ -210,16 +216,16 @@ class ActionUtil {
         if (params == null) {
             return boundStmt;
         }
-        int paramCount = (int) params.size();
+        int paramCount = params.size();
         for (int index = 0; index < paramCount; index++) {
             BMap<String, Object> paramStruct = (BMap<String, Object>) params.get(index);
             if (paramStruct != null) {
                 String cqlType = getCQLType(paramStruct);
-                Object value = paramStruct.get(Constants.VALUE_FIELD);
+                Object value = paramStruct.get(StringUtils.fromString(Constants.VALUE_FIELD));
                 //If the parameter is an array and sql type is not "array" then treat it as an array of parameters
                 if (value instanceof BArray && !Constants.DataTypes.LIST
                         .equalsIgnoreCase(cqlType)) {
-                    int arrayLength = (int) ((BArray) value).size();
+                    int arrayLength = ((BArray) value).size();
                     int typeTag = ((BArray) ((BArray) value).getType()).getElementType().getTag();
                     for (int i = 0; i < arrayLength; i++) {
                         Object paramValue;
@@ -244,9 +250,9 @@ class ActionUtil {
                                     break;
                                 } else {
                                     throw new BallerinaException("unsupported array type for parameter index: " +
-                                                                         index + ". Array element type being an array" +
-                                                                         " is supported only when the inner array" +
-                                                                         " element type is BYTE");
+                                            index + ". Array element type being an array" +
+                                            " is supported only when the inner array" +
+                                            " element type is BYTE");
                                 }
                             default:
                                 throw new BallerinaException("unsupported array type for parameter index " + index);
@@ -270,15 +276,14 @@ class ActionUtil {
         BArray uniformParams = BValueCreator.createArrayValue(arrayType);
         for (int i = 0; i < count; i++) {
             BRefValue typeValue = (BRefValue) inputParams.getRefValue(i);
-            BMap<String, Object> param;
-            if (typeValue.getType().getTag() == TypeTags.RECORD) {
-                param = (BMap<String, Object>) typeValue;
-            } else {
+            BMap<BString, Object> param;
+            if (typeValue.getType().getTag() == TypeTags.RECORD) param = (BMap<BString, Object>) typeValue;
+            else {
                 param = BValueCreator.createRecordValue(new BPackage("ballerina", "cassandra"),
-                                                        Constants.CASSANDRA_PARAMETER);
-                param.put(Constants.CQL_TYPE_FIELD,
-                          CassandraDataSourceUtils.getCQLType(typeValue.getType()));
-                param.put(Constants.VALUE_FIELD, typeValue);
+                        Constants.CASSANDRA_PARAMETER);
+                param.put(StringUtils.fromString(Constants.CQL_TYPE_FIELD),
+                        CassandraDataSourceUtils.getCQLType(typeValue.getType()));
+                param.put(StringUtils.fromString(Constants.VALUE_FIELD), typeValue);
             }
             uniformParams.add(i, param);
         }
@@ -295,12 +300,12 @@ class ActionUtil {
             int start = 0;
             Object[] vals;
             int count;
-            int paramCount = (int) parameters.size();
+            int paramCount = parameters.size();
             for (int i = 0; i < paramCount; i++) {
                 BMap param = (BMap) parameters.get(i);
                 if (param != null) {
                     String cqlType = getCQLType(param);
-                    Object value = param.get(Constants.VALUE_FIELD);
+                    Object value = param.get(StringUtils.fromString(Constants.VALUE_FIELD));
                     if (value instanceof BArray && !Constants.DataTypes.LIST.equalsIgnoreCase(cqlType)) {
                         count = ((BArray) value).size();
                     } else {
@@ -313,5 +318,15 @@ class ActionUtil {
             }
         }
         return currentQuery;
+    }
+
+    private static TableValueImpl getTable(DataIterator dataIterator, BStructureType constraintType) {
+        BTableType newTableType = new BTableType(constraintType, false);
+        TableValueImpl table = new TableValueImpl(newTableType);
+        while (dataIterator.next()) {
+            table.add(BallerinaValues.createRecordValue(constraintType.getPackage(), constraintType.getName(),
+                    (Map<String, Object>) dataIterator.generateNext()));
+        }
+        return table;
     }
 }
