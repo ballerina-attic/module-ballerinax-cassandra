@@ -23,7 +23,7 @@ public type Client client object {
     # Gets called when the `Client` is instantiated.
     #
     # + config - Client endpoint configuration
-    public function __init(ClientConfig config) {
+    public function init(ClientConfig config) {
         self.clientConfig = config;
         initClient(self, config);
     }
@@ -34,9 +34,9 @@ public type Client client object {
     # + recordType - The Type result should be mapped to
     # + parameters - The parameters to be passed to the select query
     # + return - `table` representing the result of the select action or `error` if an error occurs
-    public remote function 'select(string queryString, typedesc<record {|any|error...;|}> recordType,
+    public remote function 'selectData(string queryString, typedesc<record {|any|error...;|}> recordType,
         Param... parameters) returns table<record {}>|error {
-        return externSelect(self, java:fromString(queryString), recordType, parameters);
+        return externSelect(self, queryString, recordType, parameters);
     }
 
     # Execute update query on cassandra datasource.
@@ -45,7 +45,7 @@ public type Client client object {
     # + parameters - The parameters to be passed to the update query
     # + return - `nil` upon success or `error` if an error occurs
     public remote function update(string queryString, Param... parameters) returns error? {
-        return externUpdate(self, java:fromString(queryString), parameters);
+        return externUpdate(self, queryString, parameters);
     }
 
     # Stops the registered service.
@@ -59,14 +59,14 @@ function initClient(Client cassandraClient, ClientConfig clientConfig) = @java:M
     class: "org.ballerinalang.cassandra.actions.ExternAction"
 } external;
 
-function externUpdate(Client cassandraClient, handle queryString, Param[] parameters) returns error? = @java:Method {
+function externUpdate(Client cassandraClient, string queryString, Param[] parameters) returns error? = @java:Method {
     name: "update",
     class: "org.ballerinalang.cassandra.actions.ExternAction"
 } external;
 
-function externSelect(Client cassandraClient, handle queryString, typedesc<record {|any|error...;|}> recordType,
+function externSelect(Client cassandraClient, string queryString, typedesc<record {|any|error...;|}> recordType,
     Param[] parameters) returns table<record {}>|error = @java:Method {
-    name: "select",
+    name: "selectData",
     class: "org.ballerinalang.cassandra.actions.ExternAction"
 } external;
 
