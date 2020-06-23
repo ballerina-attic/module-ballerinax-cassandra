@@ -98,31 +98,38 @@ public class CassandraDataSource implements BValue {
      * @return Populated Cluster Builder
      */
     private Cluster.Builder populateOptions(Cluster.Builder builder, MapValue options) {
-        MapValue queryOptionsConfig = options.getMapValue(StringUtils.fromString(ConnectionParam.QUERY_OPTIONS.getKey()));
+        MapValue queryOptionsConfig = options.getMapValue(StringUtils.fromString(
+                ConnectionParam.QUERY_OPTIONS.getKey()));
         if (queryOptionsConfig != null) {
             populateQueryOptions(builder, queryOptionsConfig);
         }
-        MapValue poolingOptionsConfig = options.getMapValue(StringUtils.fromString(ConnectionParam.POOLING_OPTIONS.getKey()));
+        MapValue poolingOptionsConfig = options.getMapValue(StringUtils.fromString(
+                ConnectionParam.POOLING_OPTIONS.getKey()));
         if (poolingOptionsConfig != null) {
             populatePoolingOptions(builder, poolingOptionsConfig);
         }
-        MapValue socketOptionsConfig = options.getMapValue(StringUtils.fromString(ConnectionParam.SOCKET_OPTIONS.getKey()));
+        MapValue socketOptionsConfig = options.getMapValue(StringUtils.fromString(
+                ConnectionParam.SOCKET_OPTIONS.getKey()));
         if (socketOptionsConfig != null) {
             populateSocketOptions(builder, socketOptionsConfig);
         }
-        MapValue protocolOptionsConfig = options.getMapValue(StringUtils.fromString(ConnectionParam.PROTOCOL_OPTIONS.getKey()));
+        MapValue protocolOptionsConfig = options.getMapValue(StringUtils.fromString(
+                ConnectionParam.PROTOCOL_OPTIONS.getKey()));
         if (protocolOptionsConfig != null) {
             populateProtocolOptions(builder, protocolOptionsConfig);
         }
-        BString clusterName = options.getStringValue(StringUtils.fromString(ConnectionParam.CLUSTER_NAME.getKey()));
+        BString clusterName = options.getStringValue(StringUtils.fromString(
+                ConnectionParam.CLUSTER_NAME.getKey()));
         if (!clusterName.toString().equals("")) {
             builder.withClusterName(String.valueOf(clusterName));
         }
-        boolean jmxReportingDisabled = options.getBooleanValue(StringUtils.fromString(ConnectionParam.WITHOUT_JMX_REPORTING.getKey()));
+        boolean jmxReportingDisabled = options.getBooleanValue(StringUtils.fromString(
+                ConnectionParam.WITHOUT_JMX_REPORTING.getKey()));
         if (jmxReportingDisabled) {
             builder.withoutJMXReporting();
         }
-        boolean metricsDisabled = options.getBooleanValue(StringUtils.fromString(ConnectionParam.WITHOUT_METRICS.getKey()));
+        boolean metricsDisabled = options.getBooleanValue(StringUtils.fromString(
+                ConnectionParam.WITHOUT_METRICS.getKey()));
         if (metricsDisabled) {
             builder.withoutMetrics();
         }
@@ -140,7 +147,8 @@ public class CassandraDataSource implements BValue {
      * @param options BStruct containing available options for cluster connection initialization
      */
     private void populateRetryPolicy(Cluster.Builder builder, MapValue options) {
-        BString retryPolicyString = options.getStringValue(StringUtils.fromString(ConnectionParam.RETRY_POLICY.getKey()));
+        BString retryPolicyString = options.getStringValue(StringUtils.fromString(
+                ConnectionParam.RETRY_POLICY.getKey()));
         if (!retryPolicyString.toString().equals("")) {
             RetryPolicy retryPolicy = retrieveRetryPolicy(retryPolicyString.toString());
             switch (retryPolicy) {
@@ -184,14 +192,16 @@ public class CassandraDataSource implements BValue {
      * @param options BStruct containing available options for cluster connection initialization
      */
     private void populateReconnectionPolicy(Cluster.Builder builder, MapValue options) {
-        BString reconnectionPolicyString = options.getStringValue(StringUtils.fromString(ConnectionParam.RECONNECTION_POLICY.getKey()));
+        BString reconnectionPolicyString = options.getStringValue(StringUtils.fromString(
+                ConnectionParam.RECONNECTION_POLICY.getKey()));
 
         if (!reconnectionPolicyString.toString().equals("")) {
             ReconnectionPolicy reconnectionPolicy = retrieveReconnectionPolicy(reconnectionPolicyString.toString());
             switch (reconnectionPolicy) {
                 case CONSTANT_RECONNECTION_POLICY:
                     long constantReconnectionPolicyDelay = options
-                            .getIntValue(StringUtils.fromString(ConnectionParam.CONSTANT_RECONNECTION_POLICY_DELAY.getKey()));
+                            .getIntValue(StringUtils.fromString(
+                                    ConnectionParam.CONSTANT_RECONNECTION_POLICY_DELAY.getKey()));
                     if (constantReconnectionPolicyDelay != -1) {
                         builder.withReconnectionPolicy(new ConstantReconnectionPolicy(constantReconnectionPolicyDelay));
                     } else {
@@ -203,9 +213,11 @@ public class CassandraDataSource implements BValue {
                     break;
                 case EXPONENTIAL_RECONNECTION_POLICY:
                     long exponentialReconnectionPolicyBaseDelay = options
-                            .getIntValue(StringUtils.fromString(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY.getKey()));
+                            .getIntValue(StringUtils.fromString(
+                                    ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_BASE_DELAY.getKey()));
                     long exponentialReconnectionPolicyMaxDelay = options
-                            .getIntValue(StringUtils.fromString(ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY.getKey()));
+                            .getIntValue(StringUtils.fromString(
+                                    ConnectionParam.EXPONENTIAL_RECONNECTION_POLICY_MAX_DELAY.getKey()));
                     if (exponentialReconnectionPolicyBaseDelay != -1 && exponentialReconnectionPolicyMaxDelay != -1) {
                         builder.withReconnectionPolicy(
                                 new ExponentialReconnectionPolicy(exponentialReconnectionPolicyBaseDelay,
@@ -243,9 +255,11 @@ public class CassandraDataSource implements BValue {
      */
     private void populateLoadBalancingPolicy(Cluster.Builder builder, MapValue options) {
         BString dataCenter = options.getStringValue(StringUtils.fromString(ConnectionParam.DATA_CENTER.getKey()));
-        BString loadBalancingPolicyString = options.getStringValue(StringUtils.fromString(ConnectionParam.LOAD_BALANCING_POLICY.getKey()));
+        BString loadBalancingPolicyString = options.getStringValue(StringUtils.fromString(
+                ConnectionParam.LOAD_BALANCING_POLICY.getKey()));
         boolean allowRemoteDCsForLocalConsistencyLevel =
-                options.getBooleanValue(StringUtils.fromString(ConnectionParam.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL.getKey()));
+                options.getBooleanValue(StringUtils.fromString(
+                        ConnectionParam.ALLOW_REMOTE_DCS_FOR_LOCAL_CONSISTENCY_LEVEL.getKey()));
 
         if (!loadBalancingPolicyString.toString().equals("")) {
             LoadBalancingPolicy loadBalancingPolicy = retrieveLoadBalancingPolicy(loadBalancingPolicyString.toString());
@@ -253,8 +267,8 @@ public class CassandraDataSource implements BValue {
                 case DC_AWARE_ROUND_ROBIN_POLICY:
                     if (dataCenter != null && !dataCenter.toString().equals("")) {
                         if (allowRemoteDCsForLocalConsistencyLevel) {
-                            builder.withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter.toString())
-                                                                    .allowRemoteDCsForLocalConsistencyLevel().build());
+                            builder.withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().withLocalDc(
+                                    dataCenter.toString()).allowRemoteDCsForLocalConsistencyLevel().build());
                         } else {
                             builder.withLoadBalancingPolicy(
                                     DCAwareRoundRobinPolicy.builder().withLocalDc(dataCenter.toString()).build());
@@ -315,19 +329,24 @@ public class CassandraDataSource implements BValue {
     private void populateQueryOptions(Cluster.Builder builder, MapValue queryOptionsConfig) {
         QueryOptions queryOptions = new QueryOptions();
 
-        BString consistencyLevel = queryOptionsConfig.getStringValue(StringUtils.fromString(QueryOptionsParam.CONSISTENCY_LEVEL.getKey()));
+        BString consistencyLevel = queryOptionsConfig.getStringValue(StringUtils.fromString(
+                QueryOptionsParam.CONSISTENCY_LEVEL.getKey()));
         BString serialConsistencyLevel = queryOptionsConfig
                 .getStringValue(StringUtils.fromString(QueryOptionsParam.SERIAL_CONSISTENCY_LEVEL.getKey()));
         boolean defaultIdempotence =
-                queryOptionsConfig.getBooleanValue(StringUtils.fromString(QueryOptionsParam.DEFAULT_IDEMPOTENCE.getKey()));
+                queryOptionsConfig.getBooleanValue(StringUtils.fromString(
+                        QueryOptionsParam.DEFAULT_IDEMPOTENCE.getKey()));
         boolean metadataEnabled =
                 queryOptionsConfig.getBooleanValue(StringUtils.fromString(QueryOptionsParam.METADATA_ENABLED.getKey()));
-        boolean reprepareOnUp = queryOptionsConfig.getBooleanValue(StringUtils.fromString(QueryOptionsParam.REPREPARE_ON_UP.getKey()));
+        boolean reprepareOnUp = queryOptionsConfig.getBooleanValue(StringUtils.fromString(
+                QueryOptionsParam.REPREPARE_ON_UP.getKey()));
         queryOptions.setReprepareOnUp(reprepareOnUp);
         boolean prepareOnAllHosts =
-                queryOptionsConfig.getBooleanValue(StringUtils.fromString(QueryOptionsParam.PREPARE_ON_ALL_HOSTS.getKey()));
+                queryOptionsConfig.getBooleanValue(StringUtils.fromString(
+                        QueryOptionsParam.PREPARE_ON_ALL_HOSTS.getKey()));
         queryOptions.setPrepareOnAllHosts(prepareOnAllHosts);
-        int fetchSize = Math.toIntExact(queryOptionsConfig.getIntValue(StringUtils.fromString(QueryOptionsParam.FETCH_SIZE.getKey())));
+        int fetchSize = Math.toIntExact(queryOptionsConfig.getIntValue(StringUtils.fromString(
+                QueryOptionsParam.FETCH_SIZE.getKey())));
         int maxPendingRefreshNodeListRequests = Math.toIntExact(queryOptionsConfig
                 .getIntValue(StringUtils.fromString(QueryOptionsParam.MAX_PENDING_REFRESH_NODELIST_REQUESTS.getKey())));
         int maxPendingRefreshNodeRequests = (Math.toIntExact(queryOptionsConfig
@@ -403,7 +422,8 @@ public class CassandraDataSource implements BValue {
         int poolTimeoutMillis = Math.toIntExact(poolingOptionsConfig
                 .getIntValue(StringUtils.fromString(PoolingOptionsParam.POOL_TIMEOUT_MILLIS.getKey())));
         int maxQueueSize =
-                Math.toIntExact(poolingOptionsConfig.getIntValue(StringUtils.fromString(PoolingOptionsParam.MAX_QUEUE_SIZE.getKey())));
+                Math.toIntExact(poolingOptionsConfig.getIntValue(StringUtils.fromString(
+                        PoolingOptionsParam.MAX_QUEUE_SIZE.getKey())));
         int heartbeatIntervalSeconds = Math.toIntExact(poolingOptionsConfig
                 .getIntValue(StringUtils.fromString(PoolingOptionsParam.HEART_BEAT_INTERVAL_SECONDS.getKey())));
 
@@ -460,11 +480,14 @@ public class CassandraDataSource implements BValue {
                 .getIntValue(StringUtils.fromString(SocketOptionsParam.CONNECT_TIMEOUT_MILLIS.getKey())));
         int readTimeoutMillis = Math.toIntExact(socketOptionsConfig
                 .getIntValue(StringUtils.fromString(SocketOptionsParam.READ_TIMEOUT_MILLIS.getKey())));
-        int soLinger = Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(SocketOptionsParam.SO_LINGER.getKey())));
+        int soLinger = Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(
+                SocketOptionsParam.SO_LINGER.getKey())));
         int receiveBufferSize =
-                Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(SocketOptionsParam.RECEIVE_BUFFER_SIZE.getKey())));
+                Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(
+                        SocketOptionsParam.RECEIVE_BUFFER_SIZE.getKey())));
         int sendBufferSize =
-                Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(SocketOptionsParam.SEND_BUFFER_SIZE.getKey())));
+                Math.toIntExact(socketOptionsConfig.getIntValue(StringUtils.fromString(
+                        SocketOptionsParam.SEND_BUFFER_SIZE.getKey())));
 
         if (connectTimeoutMillis != -1) {
             socketOptions.setConnectTimeoutMillis(connectTimeoutMillis);
@@ -503,12 +526,15 @@ public class CassandraDataSource implements BValue {
      * @param protocolOptionsConfig BStruct containing available protocol options for cluster connection initialization
      */
     private void populateProtocolOptions(Cluster.Builder builder, MapValue protocolOptionsConfig) {
-        boolean sslEnabled = protocolOptionsConfig.getBooleanValue(StringUtils.fromString(ProtocolOptionsParam.SSL_ENABLED.getKey()));
-        boolean noCompact = protocolOptionsConfig.getBooleanValue(StringUtils.fromString(ProtocolOptionsParam.NO_COMPACT.getKey()));
+        boolean sslEnabled = protocolOptionsConfig.getBooleanValue(StringUtils.fromString(
+                ProtocolOptionsParam.SSL_ENABLED.getKey()));
+        boolean noCompact = protocolOptionsConfig.getBooleanValue(StringUtils.fromString(
+                ProtocolOptionsParam.NO_COMPACT.getKey()));
 
         int maxSchemaAgreementWaitSeconds = Math.toIntExact(protocolOptionsConfig
                 .getIntValue(StringUtils.fromString(ProtocolOptionsParam.MAX_SCHEMA_AGREEMENT_WAIT_SECONDS.getKey())));
-        BString compression = protocolOptionsConfig.getStringValue(StringUtils.fromString(ProtocolOptionsParam.COMPRESSION.getKey()));
+        BString compression = protocolOptionsConfig.getStringValue(StringUtils.fromString(
+                ProtocolOptionsParam.COMPRESSION.getKey()));
         BString initialProtocolVersion = protocolOptionsConfig
                 .getStringValue(StringUtils.fromString(ProtocolOptionsParam.INITIAL_PROTOCOL_VERSION.getKey()));
 
@@ -531,10 +557,6 @@ public class CassandraDataSource implements BValue {
 
     @Override
     public String stringValue() {
-        return null;
-    }
-
-    public BString bStringValue() {
         return null;
     }
 
@@ -583,10 +605,7 @@ public class CassandraDataSource implements BValue {
     private enum SocketOptionsParam {
         // int params
         CONNECT_TIMEOUT_MILLIS("connectTimeoutMillis"), READ_TIMEOUT_MILLIS("readTimeoutMillis"), SO_LINGER(
-                "soLinger"), RECEIVE_BUFFER_SIZE("receiveBufferSize"), SEND_BUFFER_SIZE("sendBufferSize"),
-
-        // boolean params
-        KEEP_ALIVE("keepAlive"), REUSE_ADDRESS("reuseAddress"), TCP_NO_DELAY("tcpNoDelay");
+                "soLinger"), RECEIVE_BUFFER_SIZE("receiveBufferSize"), SEND_BUFFER_SIZE("sendBufferSize");
 
         private String key;
 
