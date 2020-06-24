@@ -7,7 +7,7 @@ target = "java8"
 
 [[platform.libraries]]
 module = "cassandra"
-path = "../cassandra-utils/target/original-cassandra-utils-0.8.6.jar"
+path = "../cassandra-utils/target/original-cassandra-utils-0.9.0.jar"
 artifactId = "cassandra-utils"
 version = "0.8.5"
 groupId = "org.ballerinalang"
