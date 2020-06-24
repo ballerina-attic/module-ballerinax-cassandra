@@ -24,11 +24,11 @@
     <parent>
         <artifactId>connector-cassandra-parent</artifactId>
         <groupId>org.ballerinalang</groupId>
-        <version>0.8.6</version>
+        <version>0.9.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>0.8.6</version>
+    <version>0.9.0</version>
     <artifactId>cassandra-utils</artifactId>
     <packaging>jar</packaging>
     <name>Cassandra Utils</name>
