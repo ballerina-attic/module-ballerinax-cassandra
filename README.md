@@ -70,7 +70,7 @@ public function main() {
         pID, pName, pSalary, pIncome, pMarried);
     handleUpdate(returned, "Insert One Row to Table person");
 
-    var selectRet = conn->selectData("select id, name, salary from testballerina.person where id = ?", Person, pID);
+    var selectRet = conn->query("select id, name, salary from testballerina.person where id = ?", Person, pID);
 
     if (selectRet is table<Person>) {
         foreach var row in selectRet {
@@ -78,7 +78,7 @@ public function main() {
         }
     } 
 
-    selectRet = conn->selectData("select id, name, salary from testballerina.person where id = ? and name = ?" +
+    selectRet = conn->query("select id, name, salary from testballerina.person where id = ? and name = ?" +
         "ALLOW FILTERING", Person, pID, pName);
 
     if (selectRet is table<record {}>) {
@@ -88,7 +88,7 @@ public function main() {
         io:println("Select data from person table failed: " + selectRet.message());
     }
 
-    selectRet = conn->selectData("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
+    selectRet = conn->query("select id, name, salary from testballerina.person where salary = ? ALLOW FILTERING",
         Person, pSalary);
     if (selectRet is table<record {}>) {
         xml xmlRet = xmlutils:fromTable(selectRet);
