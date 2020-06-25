@@ -1,13 +1,13 @@
 [project]
 org-name="ballerinax"
-version="0.9.0"
+version="0.99.0"
 
 [platform]
 target = "java8"
 
 [[platform.libraries]]
 module = "cassandra"
-path = "../cassandra-utils/target/original-cassandra-utils-0.9.0.jar"
+path = "../cassandra-utils/target/original-cassandra-utils-0.99.0.jar"
 artifactId = "cassandra-utils"
 version = "0.8.5"
 groupId = "org.ballerinalang"
