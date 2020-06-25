@@ -56,7 +56,7 @@ public class ExternAction {
         }
     }
 
-    public static Object selectData(ObjectValue cassandraClient, BString queryString, TypedescValue recordType,
+    public static Object query(ObjectValue cassandraClient, BString queryString, TypedescValue recordType,
                                 ArrayValue parameters) {
         CassandraDataSource dataSource = (CassandraDataSource) cassandraClient.getNativeData(Constants.CLIENT);
         try {

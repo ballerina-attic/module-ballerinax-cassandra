@@ -34,9 +34,9 @@ public type Client client object {
     # + recordType - The Type result should be mapped to
     # + parameters - The parameters to be passed to the select query
     # + return - `table` representing the result of the select action or `error` if an error occurs
-    public remote function 'selectData(string queryString, typedesc<record {|any|error...;|}> recordType,
+    public remote function 'query(string queryString, typedesc<record {|any|error...;|}> recordType,
         Param... parameters) returns table<record {}>|error {
-        return externSelect(self, queryString, recordType, parameters);
+        return externQuery(self, queryString, recordType, parameters);
     }
 
     # Execute update query on cassandra datasource.
@@ -64,9 +64,9 @@ function externUpdate(Client cassandraClient, string queryString, Param[] parame
     class: "org.ballerinalang.cassandra.actions.ExternAction"
 } external;
 
-function externSelect(Client cassandraClient, string queryString, typedesc<record {|any|error...;|}> recordType,
+function externQuery(Client cassandraClient, string queryString, typedesc<record {|any|error...;|}> recordType,
     Param[] parameters) returns table<record {}>|error = @java:Method {
-    name: "selectData",
+    name: "query",
     class: "org.ballerinalang.cassandra.actions.ExternAction"
 } external;
 

@@ -63,7 +63,7 @@ function test_update_values() {
     dependsOn: ["test_update_values"]
 }
 function test_select_values() {
-    var result = conn->selectData("select * from testballerina.person", Person);
+    var result = conn->query("select * from testballerina.person", Person);
     if (result is table<Person>) {
         foreach var row in result {
             test:assertEquals(row.id, 4, "incorrect id");
