@@ -8,6 +8,12 @@ Ballerina Cassandra Client is used to connect Ballerina with Cassandra data sour
 2. select - To select data from the datasource
 3. close - To close the cassandra connection.
 
+## Compatibility
+|                        |    Version                  |  
+|:----------------------:|:---------------------------:|
+|   Ballerina Language   |   Swan Lake Preview1        |
+|    Cassandra module    |     0.99.0                  |
+
 Steps to Configure
 ==================================
 
