@@ -6,6 +6,12 @@ This module provides the functionality required to access and manipulate data st
 
 To access a Cassandra datasource, you must first create a `client` object. Create a client object of the cassandra client type (i.e., `cassandra:Client`) and provide the necessary connection parameters. This will create a pool of connections to the given Cassandra database. A sample for creating a client with a Cassandra client can be found below.
 
+### Compatibility
+|                        |    Version                  |  
+|:----------------------:|:---------------------------:|
+|   Ballerina Language   |   Swan Lake Preview1        |
+|    Cassandra module    |     0.99.0                  |
+
 ### Database operations
 
 Once the client is created, database operations can be executed through that client. This module provides support for updating data/schema and select data.
