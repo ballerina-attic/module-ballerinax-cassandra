@@ -21,20 +21,6 @@ groupId = "com.datastax.cassandra"
 
 [[platform.libraries]]
 module = "cassandra"
-path = "../cassandra-utils/target/classes/lib/cassandra-all-3.11.2.jar"
-artifactId = "cassandra-all"
-version = "3.11.2"
-groupId = "com.datastax.cassandra"
-
-[[platform.libraries]]
-module = "cassandra"
-path = "../cassandra-utils/target/classes/lib/cassandra-thrift-3.11.2.jar"
-artifactId = "cassandra-thrift"
-version = "3.11.2"
-groupId = "com.datastax.cassandra"
-
-[[platform.libraries]]
-module = "cassandra"
 path = "../cassandra-utils/target/classes/lib/guava-19.0.jar"
 artifactId = "guava"
 version = "19.0"
