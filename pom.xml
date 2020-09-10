@@ -133,6 +133,16 @@
                 <version>${ballerina.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ballerinalang</groupId>
                 <artifactId>ballerina-core</artifactId>
                 <version>${ballerina.version}</version>
@@ -287,10 +297,10 @@
     <properties>
         <project.scm.id>my-scm-server</project.scm.id>
         <ballerina.version>2.0.0-Preview1</ballerina.version>
+        <guava.version>19.0</guava.version>
+        <metrics.version>3.2.2</metrics.version>
         <cassandra.version>3.6.0</cassandra.version>
         <netty.version>4.1.49.Final</netty.version>
-        <com.google.guava.version>19.0</com.google.guava.version>
-        <io.dropwizard.metrics.version>3.1.2</io.dropwizard.metrics.version>
         <mvn.processor.plugin.version>2.2.4</mvn.processor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
